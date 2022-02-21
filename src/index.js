@@ -38,6 +38,7 @@ import { RIPEMD160Algo, RIPEMD160, HmacRIPEMD160 } from './algo/hash/ripemd160.j
 import { PBKDF2Algo, PBKDF2 } from './algo/pbkdf2/pbkdf2.js';
 import { EvpKDFAlgo, EvpKDF } from './encryption/evpkdf.js';
 import { AESAlgo, AES } from './encryption/aes.js';
+import { BlowfishAlgo, Blowfish } from './encryption/blowfish';
 import {
   DESAlgo,
   DES,
@@ -110,6 +111,7 @@ export default {
     EvpKDF: EvpKDFAlgo,
 
     AES: AESAlgo,
+    Blowfish: BlowfishAlgo,
     DES: DESAlgo,
     TripleDES: TripleDESAlgo,
     Rabbit: RabbitAlgo,
@@ -166,6 +168,7 @@ export default {
   EvpKDF,
 
   AES,
+  Blowfish,
   DES,
   TripleDES,
   Rabbit,

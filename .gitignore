@@ -2,3 +2,5 @@ node_modules
 /lib
 .svn
 coverage
+.idea
+pnpm-lock.yaml

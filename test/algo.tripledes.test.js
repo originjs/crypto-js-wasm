@@ -70,6 +70,39 @@ describe('algo-tripledes-test', () => {
     expect(iv.toString()).toBe(expectedIv);
   });
 
+  test('test64BitKey', () => {
+    let message = C.enc.Hex.parse('00112233445566778899aabbccddeeff');
+    let key = C.enc.Hex.parse('0011223344556677');
+    let extendedKey = C.enc.Hex.parse('001122334455667700112233445566770011223344556677');
+
+    let output1 = C.TripleDES.encrypt(message, key, { mode: C.mode.ECB }).toString();
+    let output2 = C.TripleDES.encrypt(message, extendedKey, { mode: C.mode.ECB }).toString();
+
+    expect(output1).toBe(output2);
+  });
+
+  test('test128BitKey', () => {
+    let message = C.enc.Hex.parse('00112233445566778899aabbccddeeff');
+    let key = C.enc.Hex.parse('00112233445566778899aabbccddeeff');
+    let extendedKey = C.enc.Hex.parse('00112233445566778899aabbccddeeff0011223344556677');
+
+    let output1 = C.TripleDES.encrypt(message, key, { mode: C.mode.ECB }).toString();
+    let output2 = C.TripleDES.encrypt(message, extendedKey, { mode: C.mode.ECB }).toString();
+
+    expect(output1).toBe(output2);
+  });
+
+  test('test256BitKey', () => {
+    let message = C.enc.Hex.parse('00112233445566778899aabbccddeeff');
+    let key = C.enc.Hex.parse('00112233445566778899aabbccddeeff0112233445566778899aabbccddeeff0');
+    let truncatedKey = C.enc.Hex.parse('00112233445566778899aabbccddeeff0112233445566778');
+
+    let output1 = C.TripleDES.encrypt(message, key, { mode: C.mode.ECB }).toString();
+    let output2 = C.TripleDES.encrypt(message, truncatedKey, { mode: C.mode.ECB }).toString();
+
+    expect(output1).toBe(output2);
+  });
+
   test('testHelper', () => {
     // Save original random method
     let random = C.lib.WordArray.random;

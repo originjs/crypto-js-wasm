@@ -7,6 +7,64 @@ import { Utf8 } from '../encoding/enc-utf8';
 import { Hex } from '../encoding/enc-hax';
 import { isString } from '../utils';
 
+let crypto;
+// Native crypto from window (Browser)
+if (typeof window !== 'undefined' && window.crypto) {
+  crypto = window.crypto;
+}
+
+// Native crypto in web worker (Browser)
+if (typeof self !== 'undefined' && self.crypto) {
+  crypto = self.crypto;
+}
+
+// Native crypto from worker
+// eslint-disable-next-line no-undef
+if (typeof globalThis !== 'undefined' && globalThis.crypto) {
+  // eslint-disable-next-line no-undef
+  crypto = globalThis.crypto;
+}
+
+// Native (experimental IE 11) crypto from window (Browser)
+if (!crypto && typeof window !== 'undefined' && window.msCrypto) {
+  crypto = window.msCrypto;
+}
+
+// Native crypto from global (NodeJS)
+if (!crypto && typeof global !== 'undefined' && global.crypto) {
+  crypto = global.crypto;
+}
+
+// Native crypto import via require (NodeJS)
+if (!crypto && typeof require === 'function') {
+  try {
+    crypto = require('crypto');
+    // eslint-disable-next-line no-empty
+  } catch (err) {}
+}
+
+const cryptoSecureRandomInt = () => {
+  if (crypto) {
+    // Use getRandomValues method (Browser)
+    if (typeof crypto.getRandomValues === 'function') {
+      try {
+        return crypto.getRandomValues(new Uint32Array(1))[0];
+        // eslint-disable-next-line no-empty
+      } catch (err) {}
+    }
+
+    // Use randomBytes method (NodeJS)
+    if (typeof crypto.randomBytes === 'function') {
+      try {
+        return crypto.randomBytes(4).readInt32LE();
+        // eslint-disable-next-line no-empty
+      } catch (err) {}
+    }
+  }
+
+  throw new Error('Native crypto module could not be used to get secure random number.');
+};
+
 export class Base {
 
   /**
@@ -119,26 +177,8 @@ export class WordArray extends Base {
   static random(nBytes) {
     const words = [];
 
-    const r = (m_w) => {
-      let _m_w = m_w;
-      let _m_z = 0x3ade68b1;
-      const mask = 0xffffffff;
-
-      return () => {
-        _m_z = (0x9069 * (_m_z & 0xFFFF) + (_m_z >> 0x10)) & mask;
-        _m_w = (0x4650 * (_m_w & 0xFFFF) + (_m_w >> 0x10)) & mask;
-        let result = ((_m_z << 0x10) + _m_w) & mask;
-        result /= 0x100000000;
-        result += 0.5;
-        return result * (Math.random() > 0.5 ? 1 : -1);
-      };
-    };
-
-    for (let i = 0, rcache; i < nBytes; i += 4) {
-      const _r = r((rcache || Math.random()) * 0x100000000);
-
-      rcache = _r() * 0x3ade67b7;
-      words.push((_r() * 0x100000000) | 0);
+    for (var i = 0; i < nBytes; i += 4) {
+      words.push(cryptoSecureRandomInt());
     }
 
     return new WordArray(words, nBytes);

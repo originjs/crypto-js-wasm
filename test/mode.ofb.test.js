@@ -51,5 +51,5 @@ describe('mode-ofb-test', () => {
       padding: C.pad.NoPadding
     });
     expect(decrypted.toString()).toBe(data.message.toString());
-  })
+  });
 });

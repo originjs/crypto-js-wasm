@@ -24,6 +24,22 @@ import { Pkcs7 } from '../pad/pad-pkcs7';
  * @property {number} _DEC_XFORM_MODE A constant representing decryption mode.
  */
 export class Cipher extends BufferedBlockAlgorithm {
+  static get _ENC_XFORM_MODE() {
+    return 1;
+  }
+
+  static get _DEC_XFORM_MODE() {
+    return 2;
+  }
+
+  static get keySize() {
+    return 128 / 32;
+  }
+
+  static get ivSize() {
+    return 128 / 32;
+  }
+
   /**
    * Initializes a newly created cipher.
    *
@@ -187,8 +203,6 @@ export class Cipher extends BufferedBlockAlgorithm {
     return finalProcessedData;
   }
 }
-Cipher._ENC_XFORM_MODE = 1;
-Cipher._DEC_XFORM_MODE = 2;
 
 /**
  * Abstract base stream cipher template.
@@ -378,7 +392,7 @@ export class BlockCipher extends Cipher {
       mode: CBC,
       padding: Pkcs7
     },
-      cfg,
+    cfg,
     ));
 
     this.blockSize = 128 / 32;
@@ -696,8 +710,8 @@ export class SerializableCipher extends Base {
  */
 SerializableCipher.cfg = Object.assign(
   new Base(), {
-  format: OpenSSLFormatter
-},
+    format: OpenSSLFormatter
+  },
 );
 
 /**
@@ -722,7 +736,7 @@ export const OpenSSLKdf = {
    *     let derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32);
    *     let derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32, 'saltsalt');
    */
-  execute(password, keySize, ivSize, salt) {
+  execute(password, keySize, ivSize, salt, hasher) {
     let _salt = salt;
 
     // Generate random salt
@@ -731,9 +745,12 @@ export const OpenSSLKdf = {
     }
 
     // Derive key and IV
-    const key = new EvpKDFAlgo({
-      keySize: keySize + ivSize
-    }).compute(password, _salt);
+    let key;
+    if (!hasher) {
+      key = new EvpKDFAlgo({keySize: keySize + ivSize}).compute(password, _salt);
+    } else {
+      key = new EvpKDFAlgo({keySize: keySize + ivSize, hasher: hasher}).compute(password, salt);
+    }
 
     // Separate key and IV
     const iv = new WordArray(key.words.slice(keySize), ivSize * 4);
@@ -777,7 +794,7 @@ export class PasswordBasedCipher extends SerializableCipher {
     const _cfg = Object.assign(new Base(), this.cfg, cfg);
 
     // Derive key and other params
-    const derivedParams = _cfg.kdf.execute(password, cipher.keySize, cipher.ivSize);
+    const derivedParams = _cfg.kdf.execute(password, cipher.keySize, cipher.ivSize, _cfg.salt, _cfg.hasher);
 
     // Add IV to config
     _cfg.iv = derivedParams.iv;
@@ -824,7 +841,7 @@ export class PasswordBasedCipher extends SerializableCipher {
 
     // Derive key and other params
     const derivedParams = _cfg.kdf
-      .execute(password, cipher.keySize, cipher.ivSize, _ciphertext.salt);
+      .execute(password, cipher.keySize, cipher.ivSize, _ciphertext.salt, _cfg.hasher);
 
     // Add IV to config
     _cfg.iv = derivedParams.iv;

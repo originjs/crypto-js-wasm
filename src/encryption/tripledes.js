@@ -13,7 +13,7 @@ const PC1 = [
   60, 52, 44, 36, 63, 55, 47, 39,
   31, 23, 15, 7, 62, 54, 46, 38,
   30, 22, 14, 6, 61, 53, 45, 37,
-  29, 21, 13, 5, 28, 20, 12, 4,
+  29, 21, 13, 5, 28, 20, 12, 4
 ];
 
 // Permuted Choice 2 constants
@@ -25,7 +25,7 @@ const PC2 = [
   41, 52, 31, 37, 47, 55,
   30, 40, 51, 45, 33, 48,
   44, 49, 39, 56, 34, 53,
-  46, 42, 50, 36, 29, 32,
+  46, 42, 50, 36, 29, 32
 ];
 
 // Cumulative bit shift constants
@@ -586,6 +586,18 @@ function exchangeRL(offset, mask) {
  * DES block cipher algorithm.
  */
 export class DESAlgo extends BlockCipher {
+  static get keySize() {
+    return 64 / 32;
+  }
+
+  static get ivSize() {
+    return 64 / 32;
+  }
+
+  static get blockSize() {
+    return 64 / 32;
+  }
+
   constructor(...args) {
     super(...args);
 
@@ -716,6 +728,18 @@ export const DES = BlockCipher._createHelper(DESAlgo);
  * Triple-DES block cipher algorithm.
  */
 export class TripleDESAlgo extends BlockCipher {
+  static get keySize() {
+    return 192 / 32;
+  }
+
+  static get ivSize() {
+    return 64 / 32;
+  }
+
+  static get blockSize() {
+    return 64 / 32;
+  }
+
   constructor(...args) {
     super(...args);
 
@@ -729,10 +753,20 @@ export class TripleDESAlgo extends BlockCipher {
     const key = this._key;
     const keyWords = key.words;
 
+    // Make sure the key length is valid (64, 128 or >= 192 bit)
+    if (keyWords.length !== 2 && keyWords.length !== 4 && keyWords.length < 6) {
+      throw new Error('Invalid key length - 3DES requires the key length to be 64, 128, 192 or >192.');
+    }
+
+    // Extend the key according to the keying options defined in 3DES standard
+    const key1 = keyWords.slice(0, 2);
+    const key2 = keyWords.length < 4 ? keyWords.slice(0, 2) : keyWords.slice(2, 4);
+    const key3 = keyWords.length < 6 ? keyWords.slice(0, 2) : keyWords.slice(4, 6);
+
     // Create DES instances
-    this._des1 = DESAlgo.createEncryptor(new WordArray(keyWords.slice(0, 2)));
-    this._des2 = DESAlgo.createEncryptor(new WordArray(keyWords.slice(2, 4)));
-    this._des3 = DESAlgo.createEncryptor(new WordArray(keyWords.slice(4, 6)));
+    this._des1 = DESAlgo.createEncryptor(new WordArray(key1));
+    this._des2 = DESAlgo.createEncryptor(new WordArray(key2));
+    this._des3 = DESAlgo.createEncryptor(new WordArray(key3));
   }
 
   encryptBlock(M, offset) {
