@@ -1,8 +1,8 @@
 import {
-  WordArray,
+  WordArray
 } from '../core/core.js';
 import {
-  ZeroPadding,
+  ZeroPadding
 } from './pad-zeropadding.js';
 
 /**

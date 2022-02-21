@@ -44,5 +44,5 @@ describe('algo-hmac-sha512-test', () => {
     let keyClamped = key.clone();
     keyClamped.clamp();
     expect(C.HmacSHA512('Message', key).toString()).toBe(C.HmacSHA512('Message', keyClamped).toString());
-  })
+  });
 });

@@ -1,6 +1,4 @@
-import {
-  Base, WordArray
-} from '../../core/core.js';
+import { Base } from '../../core/core.js';
 import { Utf8 } from '../../encoding/enc-utf8';
 import { isString } from '../../utils';
 

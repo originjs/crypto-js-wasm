@@ -1,5 +1,5 @@
 import {
-  WordArray,
+  WordArray
 } from '../core/core.js';
 
 /**

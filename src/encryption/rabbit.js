@@ -82,7 +82,7 @@ export class RabbitAlgo extends StreamCipher {
       K[0], (K[3] << 16) | (K[2] >>> 16),
       K[1], (K[0] << 16) | (K[3] >>> 16),
       K[2], (K[1] << 16) | (K[0] >>> 16),
-      K[3], (K[2] << 16) | (K[1] >>> 16),
+      K[3], (K[2] << 16) | (K[1] >>> 16)
     ];
     const X = this._X;
 
@@ -91,7 +91,7 @@ export class RabbitAlgo extends StreamCipher {
       (K[2] << 16) | (K[2] >>> 16), (K[0] & 0xffff0000) | (K[1] & 0x0000ffff),
       (K[3] << 16) | (K[3] >>> 16), (K[1] & 0xffff0000) | (K[2] & 0x0000ffff),
       (K[0] << 16) | (K[0] >>> 16), (K[2] & 0xffff0000) | (K[3] & 0x0000ffff),
-      (K[1] << 16) | (K[1] >>> 16), (K[3] & 0xffff0000) | (K[0] & 0x0000ffff),
+      (K[1] << 16) | (K[1] >>> 16), (K[3] & 0xffff0000) | (K[0] & 0x0000ffff)
     ];
     const C = this._C;
 
