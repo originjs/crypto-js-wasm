@@ -56,6 +56,8 @@ export class Cipher extends BufferedBlockAlgorithm {
   constructor(xformMode, key, cfg) {
     super();
 
+    this._ENC_XFORM_MODE = 1;
+    this._DEC_XFORM_MODE = 2;
     this.keySize = 128 / 32;
     this.ivSize = 128 / 32;
 
@@ -79,6 +81,7 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    * @param {WordArray} key The key.
    * @param {Object} cfg (Optional) The configuration options to use for this operation.
+   * @param {Object} wasm The initialed wasm module
    *
    * @return {Cipher} A cipher instance.
    *
@@ -88,8 +91,8 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    *     const cipher = CryptoJS.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
    */
-  static createEncryptor(key, cfg) {
-    return new this(this._ENC_XFORM_MODE, key, cfg);
+  static createEncryptor(key, cfg, wasm) {
+    return new this(wasm, this._ENC_XFORM_MODE, key, cfg);
   }
 
   /**
@@ -132,12 +135,18 @@ export class Cipher extends BufferedBlockAlgorithm {
     };
 
     return {
+      async loadWasm() {
+        if (!this.wasm) {
+          this.wasm = await SubCipher.loadWasm();
+        }
+      },
+
       encrypt(message, key, cfg) {
-        return selectCipherStrategy(key).encrypt(SubCipher, message, key, cfg);
+        return selectCipherStrategy(key).encrypt(SubCipher, message, key, cfg, this.wasm);
       },
 
       decrypt(ciphertext, key, cfg) {
-        return selectCipherStrategy(key).decrypt(SubCipher, ciphertext, key, cfg);
+        return selectCipherStrategy(key).decrypt(SubCipher, ciphertext, key, cfg, this.wasm);
       }
     };
   }
@@ -603,6 +612,7 @@ export class SerializableCipher extends Base {
    * @param {WordArray|string} message The message to encrypt.
    * @param {WordArray} key The key.
    * @param {Object} cfg (Optional) The configuration options to use for this operation.
+   * @param {Object} wasm The initialed wasm module
    *
    * @return {CipherParams} A cipher params object.
    *
@@ -617,12 +627,12 @@ export class SerializableCipher extends Base {
    *     let ciphertextParams = CryptoJS.lib.SerializableCipher
    *       .encrypt(CryptoJS.algo.AES, message, key, { iv: iv, format: CryptoJS.format.OpenSSL });
    */
-  static encrypt(cipher, message, key, cfg) {
+  static encrypt(cipher, message, key, cfg, wasm) {
     // Apply config defaults
     const _cfg = Object.assign(new Base(), this.cfg, cfg);
 
     // Encrypt
-    const encryptor = cipher.createEncryptor(key, _cfg);
+    const encryptor = cipher.createEncryptor(key, _cfg, wasm);
     const ciphertext = encryptor.finalize(message);
 
     // Shortcut
@@ -789,7 +799,7 @@ export class PasswordBasedCipher extends SerializableCipher {
    *     let ciphertextParams = CryptoJS.lib.PasswordBasedCipher
    *       .encrypt(CryptoJS.algo.AES, message, 'password', { format: CryptoJS.format.OpenSSL });
    */
-  static encrypt(cipher, message, password, cfg) {
+  static encrypt(cipher, message, password, cfg, wasm) {
     // Apply config defaults
     const _cfg = Object.assign(new Base(), this.cfg, cfg);
 
@@ -801,7 +811,7 @@ export class PasswordBasedCipher extends SerializableCipher {
 
     // Encrypt
     const ciphertext = SerializableCipher.encrypt
-      .call(this, cipher, message, derivedParams.key, _cfg);
+      .call(this, cipher, message, derivedParams.key, _cfg, wasm);
 
     // Mix in derived params
     ciphertext.mixIn(derivedParams);

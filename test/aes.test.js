@@ -16,7 +16,8 @@ const DECRYPT_KEY_SIZE = [
 describe('algo-aes-test', () => {
   test.each(ENCRYPT_KEY_SIZE)(
     'testEncryptKeySize%i',
-    (a, b, c, expected) => {
+    async (a, b, c, expected) => {
+      await C.AES.loadWasm();
       expect(C.AES.encrypt(C.enc.Hex.parse(b), C.enc.Hex.parse(c), {
         mode: C.mode.ECB,
         padding: C.pad.NoPadding
