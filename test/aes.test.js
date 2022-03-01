@@ -1,6 +1,5 @@
 import C from '../src/index.js';
 
-
 const ENCRYPT_KEY_SIZE = [
   [128, '00112233445566778899aabbccddeeff', '000102030405060708090a0b0c0d0e0f', '69c4e0d86a7b0430d8cdb78070b4c55a'],
   [192, '00112233445566778899aabbccddeeff', '000102030405060708090a0b0c0d0e0f1011121314151617', 'dda97ca4864cdfe06eaf70a0ec0d7191'],
@@ -13,11 +12,14 @@ const DECRYPT_KEY_SIZE = [
   [256, '8ea2b7ca516745bfeafc49904b496089', '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f', '00112233445566778899aabbccddeeff']
 ];
 
+beforeAll(async () => {
+  await C.AES.loadWasm();
+});
+
 describe('algo-aes-test', () => {
   test.each(ENCRYPT_KEY_SIZE)(
     'testEncryptKeySize%i',
-    async (a, b, c, expected) => {
-      await C.AES.loadWasm();
+    (a, b, c, expected) => {
       expect(C.AES.encrypt(C.enc.Hex.parse(b), C.enc.Hex.parse(c), {
         mode: C.mode.ECB,
         padding: C.pad.NoPadding

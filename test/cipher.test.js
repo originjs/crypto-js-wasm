@@ -396,7 +396,7 @@ function extendWithCMAC(C) {
         super();
         // generate sub keys...
         this._aes = AES.createEncryptor(key, {
-          iv: new WordArray(),
+          iv: new WordArray([0,0,0,0], 16),
           padding: C.pad.NoPadding
         });
 
@@ -498,9 +498,9 @@ function extendWithCMAC(C) {
     };
 
     C.algo.OMAC1 = CMAC;
-    C.algo.OMAC2 = new CMAC({
-      _isTwo: true
-    });
+    // C.algo.OMAC2 = new CMAC({
+    //   _isTwo: true
+    // });
   }
 
   createExt(C);
@@ -509,8 +509,12 @@ function extendWithCMAC(C) {
 }
 
 describe('cipher-core-test', () => {
-  extendWithCMAC(C);
-  test('testCMAC', () => {
-    expect(C.CMAC('69c4e0d86a7b0430d8cdb78070b4c55a', 'Test message').toString()).toBe('35e1872b95ce5d99bb5dbbbbd79b9b9b');
+  /**
+   * This test has changed a lot from the original one
+   */
+  test('testCMAC', async () => {
+    await C.algo.AES.loadWasm();
+    extendWithCMAC(C);
+    expect(C.CMAC(C.enc.Hex.parse('69c4e0d86a7b0430d8cdb78070b4c55a'), 'Test message').toString()).toBe('e62120022bef76ba1f212aa6fd3c3148');
   });
 });

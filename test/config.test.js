@@ -1,9 +1,10 @@
 import C from '../src/index';
 
 let data = {};
-beforeAll(() => {
+beforeAll(async () => {
   data.saltA = C.enc.Hex.parse('AA00000000000000');
   data.saltB = C.enc.Hex.parse('BB00000000000000');
+  await C.AES.loadWasm();
 });
 
 describe('config-test', () => {

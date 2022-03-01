@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.AES.loadWasm();
+});
+
 describe('lib-passwordbasedcipher-test', () => {
   test('testEncrypt', () => {
     // Compute actual

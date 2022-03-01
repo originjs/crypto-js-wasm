@@ -1,9 +1,10 @@
 import C from '../src/index.js';
 
 let data = {};
-beforeAll(() => {
+beforeAll(async () => {
   data.key = C.enc.Hex.parse('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f');
   data.iv = C.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
+  await C.AES.loadWasm();
 });
 
 describe('algo-aes-profile', () => {

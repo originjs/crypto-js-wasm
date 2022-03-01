@@ -81,7 +81,6 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    * @param {WordArray} key The key.
    * @param {Object} cfg (Optional) The configuration options to use for this operation.
-   * @param {Object} wasm The initialed wasm module
    *
    * @return {Cipher} A cipher instance.
    *
@@ -91,8 +90,8 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    *     const cipher = CryptoJS.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
    */
-  static createEncryptor(key, cfg, wasm) {
-    return new this(wasm, this._ENC_XFORM_MODE, key, cfg);
+  static createEncryptor(key, cfg) {
+    return new this(this._ENC_XFORM_MODE, key, cfg);
   }
 
   /**
@@ -136,17 +135,17 @@ export class Cipher extends BufferedBlockAlgorithm {
 
     return {
       async loadWasm() {
-        if (!this.wasm) {
-          this.wasm = await SubCipher.loadWasm();
+        if (!SubCipher.wasm) {
+          await SubCipher.loadWasm();
         }
       },
 
       encrypt(message, key, cfg) {
-        return selectCipherStrategy(key).encrypt(SubCipher, message, key, cfg, this.wasm);
+        return selectCipherStrategy(key).encrypt(SubCipher, message, key, cfg);
       },
 
       decrypt(ciphertext, key, cfg) {
-        return selectCipherStrategy(key).decrypt(SubCipher, ciphertext, key, cfg, this.wasm);
+        return selectCipherStrategy(key).decrypt(SubCipher, ciphertext, key, cfg);
       }
     };
   }
