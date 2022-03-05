@@ -267,15 +267,14 @@ export class AESAlgo extends BlockCipher {
       }
       const dataArray = new Uint32Array(dataWords);
       const ivWords = this.cfg.iv ? this.cfg.iv.words : '';
+      const key = this._keyPriorReset;
+      const keyWords = key.words;
+      const keySize = key.sigBytes / 4;
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
-        aesWasm(AESAlgo.wasm).doEncrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule);
+        aesWasm(AESAlgo.wasm).doEncrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, keySize, keyWords);
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
-        if (this.cfg.mode.name == 'CFB' || this.cfg.mode.name == 'OFB' || this.cfg.mode.name == 'CTR') {
-          aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule);
-        } else {
-          aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._invKeySchedule);
-        }
+        aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, keySize, keyWords);
       }
       dataWords = Array.from(dataArray);
       // Remove processed words
