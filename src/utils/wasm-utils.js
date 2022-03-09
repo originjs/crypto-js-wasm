@@ -1,3 +1,4 @@
+import pako from 'pako';
 /**
  * Check if WebAssembly is supported or not
  *
@@ -10,21 +11,24 @@ export const wasmSupported = function () {
 /**
  * Decode Base64 encoded .wasm bytes
  *
- * @param base64Bytes Base64 encoded .wasm bytes
+ * @param compressedBase64Bytes Base64-encoded pako-compressed .wasm bytes
  * @return {Uint8Array|*} .wasm bytes, this is intended to be used by WebAssembly.instantiate
  */
-export const generateWasmBytes = function (base64Bytes) {
+export const generateWasmBytes = function (compressedBase64Bytes) {
   function charCodeAt (c) {
     return c.charCodeAt(0);
   }
 
+  let compressedBytes;
   if (typeof atob === 'function') {
     // Browser case
-    return new Uint8Array(atob(base64Bytes).split('').map(charCodeAt));
+    compressedBytes = new Uint8Array(atob(compressedBase64Bytes).split('').map(charCodeAt));
+  } else {
+    compressedBytes = (require('buffer').Buffer).from(compressedBase64Bytes, 'base64');
   }
 
-  // NodeJS case
-  return (require('buffer').Buffer).from(base64Bytes, 'base64');
+  let test = pako.inflate(compressedBytes);
+  return test;
 };
 
 /**
