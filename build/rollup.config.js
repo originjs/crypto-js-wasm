@@ -1,5 +1,6 @@
 const path = require('path');
 const pkg = require('../package.json');
+const babel = require('@rollup/plugin-babel');
 
 
 const banner = `/*
@@ -12,15 +13,21 @@ const banner = `/*
 */`;
 
 const uniqResolve = (p) => {
-    return path.resolve(__dirname, './', p);
-}
+  return path.resolve(__dirname, './', p);
+};
 
 module.exports = {
-    input: uniqResolve('../src/index.js'),
-    output: {
-        file: uniqResolve('../lib/index.js'),
-        format: 'umd',
-        name: 'CryptoJS',
-        banner
-    }
-}
+  input: uniqResolve('../src/index.js'),
+  output: {
+    file: uniqResolve('../lib/index.js'),
+    format: 'umd',
+    name: 'CryptoJS',
+    banner
+  },
+  plugins: [
+    babel.babel({
+      exclude: 'node_modules/**',
+      plugins: ['@babel/plugin-proposal-class-properties']
+    }),
+  ]
+};

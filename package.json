@@ -60,8 +60,10 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.6.3",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
+    "@rollup/plugin-babel": "^5.3.1",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "chalk": "^2.4.2",
