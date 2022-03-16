@@ -1,16 +1,28 @@
-import {
-  WordArray
-} from '../../core/core.js';
-
-import { Hasher } from '../../core/hasher';
-
-// Reusable object
-const W = [];
+import {WordArray} from '../../core/core';
+import {Hasher} from '../../core/hasher';
+import {wasmBytes} from './sha1-wasm';
+import {loadWasm} from '../../utils/wasm-utils';
+import {sha1Wasm} from './sha1_bg';
 
 /**
  * SHA-1 hash algorithm.
  */
 export class SHA1Algo extends Hasher {
+  static wasm = null;
+
+  static async loadWasm() {
+    if (SHA1Algo.wasm) {
+      return SHA1Algo.wasm;
+    }
+
+    SHA1Algo.wasm = await loadWasm(wasmBytes);
+    return SHA1Algo.wasm;
+  }
+
+  async loadWasm() {
+    return SHA1Algo.loadWasm();
+  }
+
   _doReset() {
     this._hash = new WordArray([
       0x67452301,
@@ -21,50 +33,42 @@ export class SHA1Algo extends Hasher {
     ]);
   }
 
-  _doProcessBlock(M, offset) {
-    // Shortcut
+  _process(doFlush) {
+    if (!SHA1Algo.wasm) {
+      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+    }
+    // Shortcuts
+    const data = this._data;
+    const dataWords = data.words;
+    const dataSigBytes = data.sigBytes;
+    const blockSize = this.blockSize;
+
     const H = this._hash.words;
+    const H_array = new Uint32Array(5);
+    H_array[0] = H[0];
+    H_array[1] = H[1];
+    H_array[2] = H[2];
+    H_array[3] = H[3];
+    H_array[4] = H[4];
 
-    // Working variables
-    let a = H[0];
-    let b = H[1];
-    let c = H[2];
-    let d = H[3];
-    let e = H[4];
+    const nWordsReady = sha1Wasm(SHA1Algo.wasm).doCrypt(doFlush ? 1 : 0, H_array, dataWords, dataSigBytes, blockSize, this._minBufferSize);
+    // Count bytes ready
+    const nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
 
-    // Computation
-    for (let i = 0; i < 80; i++) {
-      if (i < 16) {
-        W[i] = M[offset + i] | 0;
-      } else {
-        const n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
-        W[i] = (n << 1) | (n >>> 31);
-      }
+    H[0] = H_array[0];
+    H[1] = H_array[1];
+    H[2] = H_array[2];
+    H[3] = H_array[3];
+    H[4] = H_array[4];
 
-      let t = ((a << 5) | (a >>> 27)) + e + W[i];
-      if (i < 20) {
-        t += ((b & c) | (~b & d)) + 0x5a827999;
-      } else if (i < 40) {
-        t += (b ^ c ^ d) + 0x6ed9eba1;
-      } else if (i < 60) {
-        t += ((b & c) | (b & d) | (c & d)) - 0x70e44324;
-      } else /* if (i < 80) */ {
-        t += (b ^ c ^ d) - 0x359d3e2a;
-      }
-
-      e = d;
-      d = c;
-      c = (b << 30) | (b >>> 2);
-      b = a;
-      a = t;
+    let processedWords;
+    if (nWordsReady) {
+      processedWords = dataWords.splice(0, nWordsReady);
+      data.sigBytes -= nBytesReady;
     }
 
-    // Intermediate hash value
-    H[0] = (H[0] + a) | 0;
-    H[1] = (H[1] + b) | 0;
-    H[2] = (H[2] + c) | 0;
-    H[3] = (H[3] + d) | 0;
-    H[4] = (H[4] + e) | 0;
+    // Return processed words
+    return new WordArray(processedWords, nBytesReady);
   }
 
   _doFinalize() {

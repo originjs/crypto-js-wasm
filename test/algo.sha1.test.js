@@ -10,6 +10,10 @@ const VECTOR_CONFIG_TEST = [
   [7, '12345678901234567890123456789012345678901234567890123456789012345678901234567890', '50abf5706a150990a08b2c5ea40fa0e585554732']
 ];
 
+beforeAll(async () => {
+  await C.SHA1.loadWasm();
+});
+
 describe('algo-sha1-test', () => {
   test.each(VECTOR_CONFIG_TEST)(
     'testVector%i',

@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA1.loadWasm();
+});
+
 describe('algo-pbkdf2-profile', () => {
   test('profileKeySize256Iterations20', () => {
     new C.algo.PBKDF2({

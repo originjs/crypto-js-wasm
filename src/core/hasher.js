@@ -39,7 +39,14 @@ export class Hasher extends BufferedBlockAlgorithm {
      *     let SHA256 = CryptoJS.lib.Hasher._createHelper(CryptoJS.algo.SHA256);
      */
   static _createHelper(SubHasher) {
-    return (message, cfg) => new SubHasher(cfg).finalize(message);
+    let result = (message, cfg) => new SubHasher(cfg).finalize(message);
+    result.loadWasm = async () => {
+      if (!SubHasher.wasm) {
+        await SubHasher.loadWasm();
+      }
+    };
+
+    return result;
   }
 
   /**

@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA1.loadWasm();
+});
+
 describe('algo-pbkdf2-test', () => {
   test('testKeySize128', () => {
     expect(C.PBKDF2('password', 'ATHENA.MIT.EDUraeburn', {
