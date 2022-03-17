@@ -14,6 +14,10 @@ const DECRYPT_TEST_CONFIG = [
   [1, '166b40b44aba4bd6', '010101010101010101010101010101010101010101010101', '0000000000000001']
 ];
 
+beforeAll(async () => {
+  await C.TripleDES.loadWasm();
+});
+
 describe('algo-tripledes-test', () => {
   test.each(ENCRYPT_TEST_CONFIG)(
     'testEncrypt%i',

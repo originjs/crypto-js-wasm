@@ -18,6 +18,10 @@ const DECRYPT_TEST_CONFIG = [
   [6, 'a020003c5554f34c', '9696969696969696', '9696969696969696']
 ];
 
+beforeAll(async () => {
+  await C.DES.loadWasm();
+});
+
 describe('algo-des-test', () => {
   test.each(ENCRYPT_TEST_CONFIG)(
     'testEncrypt%i',

@@ -1,9 +1,10 @@
 import C from '../src/index';
 
 let data = {};
-beforeAll(() => {
+beforeAll(async () => {
   data.key = C.enc.Hex.parse('0001020304050607');
   data.iv = C.enc.Hex.parse('08090a0b0c0d0e0f');
+  await C.DES.loadWasm();
 });
 
 describe('algo-des-profile', () => {
