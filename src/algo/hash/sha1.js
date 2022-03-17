@@ -1,6 +1,6 @@
 import {WordArray} from '../../core/core';
 import {Hasher} from '../../core/hasher';
-import {wasmBytes} from './sha1-wasm';
+import {wasmBytes} from './sha1_wasm';
 import {loadWasm} from '../../utils/wasm-utils';
 import {sha1Wasm} from './sha1_bg';
 
