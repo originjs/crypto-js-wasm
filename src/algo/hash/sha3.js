@@ -1,72 +1,29 @@
-import {
-  WordArray
-} from '../../core/core.js';
-import { X64Word } from '../../core/x64-core.js';
-import { Hasher } from '../../core/hasher';
-
-// Constants tables
-const RHO_OFFSETS = [];
-const PI_INDEXES = [];
-const ROUND_CONSTANTS = [];
-
-// Compute Constants
-// Compute rho offset constants
-let _x = 1;
-let _y = 0;
-for (let t = 0; t < 24; t++) {
-  RHO_OFFSETS[_x + 5 * _y] = ((t + 1) * (t + 2) / 2) % 64;
-
-  const newX = _y % 5;
-  const newY = (2 * _x + 3 * _y) % 5;
-  _x = newX;
-  _y = newY;
-}
-
-// Compute pi index constants
-for (let x = 0; x < 5; x++) {
-  for (let y = 0; y < 5; y++) {
-    PI_INDEXES[x + 5 * y] = y + ((2 * x + 3 * y) % 5) * 5;
-  }
-}
-
-// Compute round constants
-let LFSR = 0x01;
-for (let i = 0; i < 24; i++) {
-  let roundConstantMsw = 0;
-  let roundConstantLsw = 0;
-
-  for (let j = 0; j < 7; j++) {
-    if (LFSR & 0x01) {
-      const bitPosition = (1 << j) - 1;
-      if (bitPosition < 32) {
-        roundConstantLsw ^= 1 << bitPosition;
-      } else /* if (bitPosition >= 32) */ {
-        roundConstantMsw ^= 1 << (bitPosition - 32);
-      }
-    }
-
-    // Compute next LFSR
-    if (LFSR & 0x80) {
-      // Primitive polynomial over GF(2): x^8 + x^6 + x^5 + x^4 + 1
-      LFSR = (LFSR << 1) ^ 0x71;
-    } else {
-      LFSR <<= 1;
-    }
-  }
-
-  ROUND_CONSTANTS[i] = new X64Word(roundConstantMsw, roundConstantLsw);
-}
-
-// Reusable objects for temporary values
-const T = [];
-for (let i = 0; i < 25; i++) {
-  T[i] = new X64Word();
-}
+import {WordArray} from '../../core/core.js';
+import {X64Word} from '../../core/x64-core.js';
+import {Hasher} from '../../core/hasher';
+import {wasmBytes} from './sha3_wasm';
+import {sha3Wasm} from './sha3_bg';
+import {loadWasm} from '../../utils/wasm-utils';
 
 /**
  * SHA-3 hash algorithm.
  */
 export class SHA3Algo extends Hasher {
+  static wasm = null;
+
+  static async loadWasm() {
+    if (SHA3Algo.wasm) {
+      return SHA3Algo.wasm;
+    }
+
+    SHA3Algo.wasm = await loadWasm(wasmBytes);
+    return SHA3Algo.wasm;
+  }
+
+  async loadWasm() {
+    return SHA3Algo.loadWasm();
+  }
+
   constructor(cfg) {
     /**
      * Configuration options.
@@ -77,7 +34,7 @@ export class SHA3Algo extends Hasher {
      *   Default: 512
      */
     super(Object.assign(
-      { outputLength: 512 },
+      {outputLength: 512},
       cfg
     ));
   }
@@ -92,118 +49,40 @@ export class SHA3Algo extends Hasher {
     this.blockSize = (1600 - 2 * this.cfg.outputLength) / 32;
   }
 
-  _doProcessBlock(M, offset) {
+  _process(doFlush) {
+    if (!SHA3Algo.wasm) {
+      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+    }
     // Shortcuts
-    const state = this._state;
-    const nBlockSizeLanes = this.blockSize / 2;
+    const data = this._data;
+    const dataWords = data.words;
+    const dataSigBytes = data.sigBytes;
+    const blockSize = this.blockSize;
 
-    // Absorb
-    for (let i = 0; i < nBlockSizeLanes; i++) {
-      // Shortcuts
-      let M2i = M[offset + 2 * i];
-      let M2i1 = M[offset + 2 * i + 1];
+    const stateData = new Uint32Array(50);
 
-      // Swap endian
-      M2i = (((M2i << 8) | (M2i >>> 24)) & 0x00ff00ff)
-        | (((M2i << 24) | (M2i >>> 8)) & 0xff00ff00);
-      M2i1 = (((M2i1 << 8) | (M2i1 >>> 24)) & 0x00ff00ff)
-        | (((M2i1 << 24) | (M2i1 >>> 8)) & 0xff00ff00);
+    for (let i = 0; i < dataWords.length;i++) {
+      if (!dataWords[i]) {
+        dataWords[i] = 0;
+      }
+    }
+    const nWordsReady = sha3Wasm(SHA3Algo.wasm).doCrypt(doFlush ? 1 : 0, dataWords, dataSigBytes, blockSize, stateData, this._minBufferSize);
+    // Count bytes ready
+    const nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
 
-      // Absorb message into state
-      const lane = state[i];
-      lane.high ^= M2i1;
-      lane.low ^= M2i;
+    for (let i = 0; i < 25; i++) {
+      this._state[i].high = stateData[i * 2];
+      this._state[i].low = stateData[i * 2 + 1];
     }
 
-    // Rounds
-    for (let round = 0; round < 24; round++) {
-      // Theta
-      for (let x = 0; x < 5; x++) {
-        // Mix column lanes
-        let tMsw = 0;
-        let tLsw = 0;
-        for (let y = 0; y < 5; y++) {
-          const lane = state[x + 5 * y];
-          tMsw ^= lane.high;
-          tLsw ^= lane.low;
-        }
-
-        // Temporary values
-        const Tx = T[x];
-        Tx.high = tMsw;
-        Tx.low = tLsw;
-      }
-      for (let x = 0; x < 5; x++) {
-        // Shortcuts
-        const Tx4 = T[(x + 4) % 5];
-        const Tx1 = T[(x + 1) % 5];
-        const Tx1Msw = Tx1.high;
-        const Tx1Lsw = Tx1.low;
-
-        // Mix surrounding columns
-        const tMsw = Tx4.high ^ ((Tx1Msw << 1) | (Tx1Lsw >>> 31));
-        const tLsw = Tx4.low ^ ((Tx1Lsw << 1) | (Tx1Msw >>> 31));
-        for (let y = 0; y < 5; y++) {
-          const lane = state[x + 5 * y];
-          lane.high ^= tMsw;
-          lane.low ^= tLsw;
-        }
-      }
-
-      // Rho Pi
-      for (let laneIndex = 1; laneIndex < 25; laneIndex++) {
-        let tMsw;
-        let tLsw;
-
-        // Shortcuts
-        const lane = state[laneIndex];
-        const laneMsw = lane.high;
-        const laneLsw = lane.low;
-        const rhoOffset = RHO_OFFSETS[laneIndex];
-
-        // Rotate lanes
-        if (rhoOffset < 32) {
-          tMsw = (laneMsw << rhoOffset) | (laneLsw >>> (32 - rhoOffset));
-          tLsw = (laneLsw << rhoOffset) | (laneMsw >>> (32 - rhoOffset));
-        } else /* if (rhoOffset >= 32) */ {
-          tMsw = (laneLsw << (rhoOffset - 32)) | (laneMsw >>> (64 - rhoOffset));
-          tLsw = (laneMsw << (rhoOffset - 32)) | (laneLsw >>> (64 - rhoOffset));
-        }
-
-        // Transpose lanes
-        const TPiLane = T[PI_INDEXES[laneIndex]];
-        TPiLane.high = tMsw;
-        TPiLane.low = tLsw;
-      }
-
-      // Rho pi at x = y = 0
-      const T0 = T[0];
-      const state0 = state[0];
-      T0.high = state0.high;
-      T0.low = state0.low;
-
-      // Chi
-      for (let x = 0; x < 5; x++) {
-        for (let y = 0; y < 5; y++) {
-          // Shortcuts
-          const laneIndex = x + 5 * y;
-          const lane = state[laneIndex];
-          const TLane = T[laneIndex];
-          const Tx1Lane = T[((x + 1) % 5) + 5 * y];
-          const Tx2Lane = T[((x + 2) % 5) + 5 * y];
-
-          // Mix rows
-          lane.high = TLane.high ^ (~Tx1Lane.high & Tx2Lane.high);
-          lane.low = TLane.low ^ (~Tx1Lane.low & Tx2Lane.low);
-        }
-      }
-
-      // Iota
-      const lane = state[0];
-      const roundConstant = ROUND_CONSTANTS[round];
-      lane.high ^= roundConstant.high;
-      lane.low ^= roundConstant.low;
+    let processedWords;
+    if (nWordsReady) {
+      processedWords = dataWords.splice(0, nWordsReady);
+      data.sigBytes -= nBytesReady;
     }
+
+    // Return processed words
+    return new WordArray(processedWords, nBytesReady);
   }
 
   _doFinalize() {
