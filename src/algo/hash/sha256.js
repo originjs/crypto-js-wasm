@@ -32,7 +32,7 @@ export class SHA256Algo extends Hasher {
 
   _process(doFlush) {
     if (!SHA256Algo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'SHA256Algo.loadWasm\' should be called first');
     }
     // Shortcuts
     const data = this._data;

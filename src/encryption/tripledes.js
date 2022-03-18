@@ -123,7 +123,7 @@ export class DESAlgo extends BlockCipher {
 
   _process(doFlush) {
     if (!DESAlgo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'DESAlgo.loadWasm\' should be called first');
     }
     let processedWords;
 
@@ -224,7 +224,7 @@ export class TripleDESAlgo extends BlockCipher {
 
   _process(doFlush) {
     if (!DESAlgo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'TripleDESAlgo.loadWasm\' should be called first');
     }
     let processedWords;
 

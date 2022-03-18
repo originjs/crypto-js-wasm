@@ -35,7 +35,7 @@ export class SHA1Algo extends Hasher {
 
   _process(doFlush) {
     if (!SHA1Algo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'SHA1Algo.loadWasm\' should be called first');
     }
     // Shortcuts
     const data = this._data;

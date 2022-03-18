@@ -45,7 +45,7 @@ export class SHA512Algo extends Hasher {
 
   _process(doFlush) {
     if (!SHA512Algo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'SHA512Algo.loadWasm\' should be called first');
     }
     let processedWords;
 

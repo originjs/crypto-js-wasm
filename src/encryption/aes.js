@@ -54,7 +54,7 @@ export class AESAlgo extends BlockCipher {
   // eslint-disable-next-line no-dupe-class-members
   _process(doFlush) {
     if (!AESAlgo.wasm) {
-      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+      throw new Error('WASM is not loaded yet. \'AESAlgo.loadWasm\' should be called first');
     }
     let processedWords;
 
