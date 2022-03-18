@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA384.loadWasm();
+});
+
 const VECTOR_CONFIG_TEST = [
   [1, '', '38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b'],
   [2, 'The quick brown fox jumps over the lazy dog', 'ca737f1014a48f4c0b6dd43cb177b0afd9e5169367544c494011e3317dbf9a509cb1e5dc1e85a941bbee3d7f2afbc9b1'],

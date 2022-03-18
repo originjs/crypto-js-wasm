@@ -1,13 +1,18 @@
-import {
-  X64Word,
-  X64WordArray
-} from '../../core/x64-core.js';
-import { SHA512Algo } from './sha512.js';
+import {X64Word, X64WordArray} from '../../core/x64-core.js';
+import {SHA512Algo} from './sha512.js';
 
 /**
  * SHA-384 hash algorithm.
  */
 export class SHA384Algo extends SHA512Algo {
+  static async loadWasm() {
+    return SHA512Algo.loadWasm();
+  }
+
+  async loadWasm() {
+    return SHA384Algo.loadWasm();
+  }
+
   _doReset() {
     this._hash = new X64WordArray([
       new X64Word(0xcbbb9d5d, 0xc1059ed8),

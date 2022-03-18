@@ -6,6 +6,10 @@ const VECTOR_CONFIG_TEST = [
   [3, 'The quick brown fox jumps over the lazy dog.', '91ea1245f20d46ae9a037a989f54f1f790f0a47607eeb8a14d12890cea77a1bbc6c7ed9cf205e67b7f2b8fd4c7dfd3a7a8617e45f3c463d481c7e586c39ac1ed']
 ];
 
+beforeAll(async () => {
+  await C.SHA512.loadWasm();
+});
+
 describe('algo-sha512-test', () => {
   test.each(VECTOR_CONFIG_TEST)(
     'testVector%i',

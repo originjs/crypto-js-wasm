@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA512.loadWasm();
+});
+
 describe('algo-sha512-profile', () => {
   test('profileSinglePartMessage', () => {
     let singlePartMessage = '';
