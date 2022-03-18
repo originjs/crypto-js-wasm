@@ -2,6 +2,7 @@ import C from '../src/index';
 
 beforeAll(async () => {
   await C.AES.loadWasm();
+  await C.lib.PasswordBasedCipher.loadWasm();
 });
 
 describe('lib-passwordbasedcipher-test', () => {

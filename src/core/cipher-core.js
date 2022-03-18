@@ -13,6 +13,7 @@ import {
 } from '../encryption/evpkdf.js';
 import { isString } from '../utils';
 import { Pkcs7 } from '../pad/pad-pkcs7';
+import {MD5Algo} from '../algo/hash/md5';
 
 
 /**
@@ -137,6 +138,11 @@ export class Cipher extends BufferedBlockAlgorithm {
       async loadWasm() {
         if (!SubCipher.wasm) {
           await SubCipher.loadWasm();
+        }
+
+        // the default hasher for most algorithms is md5, so we should load it here
+        if (!MD5Algo.wasm) {
+          await MD5Algo.loadWasm();
         }
       },
 
@@ -727,6 +733,11 @@ SerializableCipher.cfg = Object.assign(
  * OpenSSL key derivation function.
  */
 export const OpenSSLKdf = {
+  async loadWasm() {
+    // the default hasher for OpenSSLKdf is MD5
+    return MD5Algo.loadWasm();
+  },
+
   /**
    * Derives a key and IV from a password.
    *
@@ -779,6 +790,15 @@ export const OpenSSLKdf = {
  * and returns ciphertext as a serializable cipher params object.
  */
 export class PasswordBasedCipher extends SerializableCipher {
+  static async loadWasm() {
+    // the default hasher for kdf is MD5
+    return MD5Algo.loadWasm();
+  }
+
+  async loadWasm() {
+    return PasswordBasedCipher.loadWasm();
+  }
+
   /**
    * Encrypts a message using a password.
    *

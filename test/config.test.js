@@ -6,10 +6,9 @@ beforeAll(async () => {
   data.saltB = C.enc.Hex.parse('BB00000000000000');
   await C.AES.loadWasm();
   await C.SHA1.loadWasm();
-  await C.SHA224.loadWasm();
   await C.SHA256.loadWasm();
-  await C.SHA384.loadWasm();
   await C.SHA512.loadWasm();
+  await C.MD5.loadWasm();
 });
 
 describe('config-test', () => {

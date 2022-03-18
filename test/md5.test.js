@@ -10,6 +10,10 @@ const VECTOR_TEST_CONFIG = [
   [7, '12345678901234567890123456789012345678901234567890123456789012345678901234567890', '57edf4a22be3c955ac49da2e2107b67a']
 ];
 
+beforeAll(async () => {
+  await C.MD5.loadWasm();
+});
+
 const CLONE_TEST_CONFIG = [
   ['a', 'a'],
   ['b', 'ab'],

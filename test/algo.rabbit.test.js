@@ -4,6 +4,11 @@ beforeAll(async () => {
   await C.SHA256.loadWasm();
 });
 
+beforeAll(async () => {
+  // TODO: this should be put in C.Rabbit.loadWasm later
+  await C.MD5.loadWasm();
+});
+
 
 describe('algo-rabbit-test', () => {
   test('testVector1', () => {

@@ -1,5 +1,10 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  // the default hasher for kdf.OpenSSL is md5
+  await C.kdf.OpenSSL.loadWasm();
+});
+
 describe('kdf-openssl-test', () => {
   test('testVector', () => {
     let derivedParams = C.kdf.OpenSSL.execute('password', 256 / 32, 128 / 32, C.enc.Hex.parse('0a9d8620cf7219f1'));

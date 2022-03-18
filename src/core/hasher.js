@@ -63,7 +63,14 @@ export class Hasher extends BufferedBlockAlgorithm {
      *     let HmacSHA256 = CryptoJS.lib.Hasher._createHmacHelper(CryptoJS.algo.SHA256);
      */
   static _createHmacHelper(SubHasher) {
-    return (message, key) => new HMAC(SubHasher, key).finalize(message);
+    let result = (message, key) => new HMAC(SubHasher, key).finalize(message);
+    result.loadWasm = async () => {
+      if (!SubHasher.wasm) {
+        await SubHasher.loadWasm();
+      }
+    };
+
+    return result;
   }
 
   /**

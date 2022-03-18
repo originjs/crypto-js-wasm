@@ -9,6 +9,14 @@ import { MD5Algo } from '../algo/hash/md5.js';
  * www.openssl.org/docs/crypto/EVP_BytesToKey.html
  */
 export class EvpKDFAlgo extends Base {
+  static async loadWasm() {
+    return MD5Algo.loadWasm();
+  }
+
+  async loadWasm() {
+    return EvpKDFAlgo.loadWasm();
+  }
+
   /**
    * Initializes a newly created key derivation function.
    *
@@ -109,3 +117,8 @@ export class EvpKDFAlgo extends Base {
  *     let key = CryptoJS.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
  */
 export const EvpKDF = (password, salt, cfg) => new EvpKDFAlgo(cfg).compute(password, salt);
+
+EvpKDF.loadWasm = async function() {
+  return EvpKDFAlgo.loadWasm();
+};
+

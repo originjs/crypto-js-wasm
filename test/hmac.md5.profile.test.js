@@ -5,6 +5,10 @@ beforeAll(() => {
   data.key =  C.lib.WordArray.random(128/8);
 });
 
+beforeAll(async () => {
+  await C.MD5.loadWasm();
+});
+
 describe('algo-hmac-md5-profile', () => {
   test('profileSinglePartMessage', () => {
     let singlePartMessage = '';

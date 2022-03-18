@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.HmacMD5.loadWasm();
+});
+
 describe('algo-hmac-md5-test', () => {
   test('testVector1', () => {
     expect(C.HmacMD5('Hi There', C.enc.Hex.parse('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b')).toString()).toBe('9294727a3638bb1c13f48ef8158bfc9d');

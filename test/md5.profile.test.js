@@ -4,6 +4,11 @@ const WORD_ARRAY_TEST = {
   'sigBytes': 16,
   'words': [1410418970, 1874077036, 1337395728, -598079323]
 };
+
+beforeAll(async () => {
+  await C.MD5.loadWasm();
+});
+
 describe('algo-md5-profile', () => {
   test('profileSinglePartMessage', () => {
     let singlePartMessage = '';

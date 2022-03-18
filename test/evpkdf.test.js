@@ -1,5 +1,10 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  // the default hasher for EvpKDF is md5
+  await C.EvpKDF.loadWasm();
+});
+
 describe('algo-evpkdf-test', () => {
   test('testVector', () => {
     expect(C.EvpKDF('password', 'saltsalt', { keySize: (256+128)/32 }).toString()).toBe('fdbdf3419fff98bdb0241390f62a9db35f4aba29d77566377997314ebfc709f20b5ca7b1081f94b1ac12e3c8ba87d05a');
