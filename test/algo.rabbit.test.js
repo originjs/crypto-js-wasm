@@ -1,5 +1,10 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA256.loadWasm();
+});
+
+
 describe('algo-rabbit-test', () => {
   test('testVector1', () => {
     expect(C.Rabbit.encrypt(C.enc.Hex.parse('00000000000000000000000000000000'), C.enc.Hex.parse('00000000000000000000000000000000')).ciphertext.toString())

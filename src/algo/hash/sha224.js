@@ -5,6 +5,14 @@ import { SHA256Algo } from './sha256.js';
  * SHA-224 hash algorithm.
  */
 export class SHA224Algo extends SHA256Algo {
+  static async loadWasm() {
+    return SHA256Algo.loadWasm();
+  }
+
+  async loadWasm() {
+    return SHA224Algo.loadWasm();
+  }
+
   _doReset() {
     this._hash = new WordArray([
       0xc1059ed8,

@@ -1,7 +1,8 @@
 import C from '../src/index';
 
 let data = {};
-beforeAll(() => {
+beforeAll(async () => {
+  await C.SHA256.loadWasm();
   data.saltA = C.enc.Hex.parse('AA00000000000000');
 });
 

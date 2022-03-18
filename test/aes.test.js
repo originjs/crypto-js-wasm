@@ -14,6 +14,7 @@ const DECRYPT_KEY_SIZE = [
 
 beforeAll(async () => {
   await C.AES.loadWasm();
+  await C.SHA256.loadWasm();
 });
 
 describe('algo-aes-test', () => {

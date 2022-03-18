@@ -1,5 +1,9 @@
 import C from '../src/index';
 
+beforeAll(async () => {
+  await C.SHA256.loadWasm();
+});
+
 describe('algo-hmac-sha256-test', () => {
   test('testVector1', () => {
     expect(C.HmacSHA256('Hi There', C.enc.Hex.parse('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b')).toString()).toBe('492ce020fe2534a5789dc3848806c78f4f6711397f08e7e7a12ca5a4483c8aa6');

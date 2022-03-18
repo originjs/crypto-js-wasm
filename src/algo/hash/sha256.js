@@ -1,112 +1,67 @@
-import {
-  WordArray
-} from '../../core/core.js';
-import { Hasher } from '../../core/hasher';
+import {WordArray} from '../../core/core.js';
+import {Hasher} from '../../core/hasher';
+import {loadWasm} from '../../utils/wasm-utils';
+import {wasmBytes} from './sha256_wasm';
+import {sha256Wasm} from './sha256_bg';
 
 // Initialization and round constants tables
-const H = [];
-const K = [];
-
-// Compute constants
-const isPrime = (n) => {
-  const sqrtN = Math.sqrt(n);
-  for (let factor = 2; factor <= sqrtN; factor++) {
-    if (!(n % factor)) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-const getFractionalBits = n => ((n - (n | 0)) * 0x100000000) | 0;
-
-let n = 2;
-let nPrime = 0;
-while (nPrime < 64) {
-  if (isPrime(n)) {
-    if (nPrime < 8) {
-      H[nPrime] = getFractionalBits(Math.pow(n, 1 / 2));
-    }
-    K[nPrime] = getFractionalBits(Math.pow(n, 1 / 3));
-
-    nPrime++;
-  }
-
-  n++;
-}
-
-// Reusable object
-const W = [];
+const H = [1779033703, -1150833019, 1013904242, -1521486534, 1359893119, -1694144372, 528734635, 1541459225];
 
 /**
  * SHA-256 hash algorithm.
  */
 export class SHA256Algo extends Hasher {
+  static wasm = null;
+
+  static async loadWasm() {
+    if (SHA256Algo.wasm) {
+      return SHA256Algo.wasm;
+    }
+
+    SHA256Algo.wasm = await loadWasm(wasmBytes);
+    return SHA256Algo.wasm;
+  }
+
+  async loadWasm() {
+    return SHA256Algo.loadWasm();
+  }
+
   _doReset() {
     this._hash = new WordArray(H.slice(0));
   }
 
-  _doProcessBlock(M, offset) {
-    // Shortcut
+  _process(doFlush) {
+    if (!SHA256Algo.wasm) {
+      throw new Error('WASM is not loaded yet. \'loadWasm\' should be called first');
+    }
+    // Shortcuts
+    const data = this._data;
+    const dataWords = data.words;
+    const dataSigBytes = data.sigBytes;
+    const blockSize = this.blockSize;
+
     const H = this._hash.words;
-
-    // Working variables
-    let a = H[0];
-    let b = H[1];
-    let c = H[2];
-    let d = H[3];
-    let e = H[4];
-    let f = H[5];
-    let g = H[6];
-    let h = H[7];
-
-    // Computation
-    for (let i = 0; i < 64; i++) {
-      if (i < 16) {
-        W[i] = M[offset + i] | 0;
-      } else {
-        const gamma0x = W[i - 15];
-        const gamma0 = ((gamma0x << 25) | (gamma0x >>> 7))
-          ^ ((gamma0x << 14) | (gamma0x >>> 18))
-          ^ (gamma0x >>> 3);
-
-        const gamma1x = W[i - 2];
-        const gamma1 = ((gamma1x << 15) | (gamma1x >>> 17))
-          ^ ((gamma1x << 13) | (gamma1x >>> 19))
-          ^ (gamma1x >>> 10);
-
-        W[i] = gamma0 + W[i - 7] + gamma1 + W[i - 16];
-      }
-
-      const ch = (e & f) ^ (~e & g);
-      const maj = (a & b) ^ (a & c) ^ (b & c);
-
-      const sigma0 = ((a << 30) | (a >>> 2)) ^ ((a << 19) | (a >>> 13)) ^ ((a << 10) | (a >>> 22));
-      const sigma1 = ((e << 26) | (e >>> 6)) ^ ((e << 21) | (e >>> 11)) ^ ((e << 7) | (e >>> 25));
-
-      const t1 = h + sigma1 + ch + K[i] + W[i];
-      const t2 = sigma0 + maj;
-
-      h = g;
-      g = f;
-      f = e;
-      e = (d + t1) | 0;
-      d = c;
-      c = b;
-      b = a;
-      a = (t1 + t2) | 0;
+    const H_array = new Uint32Array(8);
+    for (let i = 0; i < 8; i++) {
+      H_array[i] = H[i];
     }
 
-    // Intermediate hash value
-    H[0] = (H[0] + a) | 0;
-    H[1] = (H[1] + b) | 0;
-    H[2] = (H[2] + c) | 0;
-    H[3] = (H[3] + d) | 0;
-    H[4] = (H[4] + e) | 0;
-    H[5] = (H[5] + f) | 0;
-    H[6] = (H[6] + g) | 0;
-    H[7] = (H[7] + h) | 0;
+    const nWordsReady = sha256Wasm(SHA256Algo.wasm).doCrypt(doFlush ? 1 : 0, dataWords, dataSigBytes, blockSize, H_array, this._minBufferSize);
+    // Count bytes ready
+    const nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
+
+    for (let i = 0; i < 8; i++) {
+      H[i] = H_array[i];
+    }
+
+    let processedWords;
+    if (nWordsReady) {
+      processedWords = dataWords.splice(0, nWordsReady);
+      data.sigBytes -= nBytesReady;
+    }
+
+    // Return processed words
+    return new WordArray(processedWords, nBytesReady);
   }
 
   _doFinalize() {

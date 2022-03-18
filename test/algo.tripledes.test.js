@@ -15,6 +15,7 @@ const DECRYPT_TEST_CONFIG = [
 ];
 
 beforeAll(async () => {
+  await C.SHA256.loadWasm();
   await C.TripleDES.loadWasm();
 });
 

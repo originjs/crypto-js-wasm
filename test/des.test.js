@@ -20,6 +20,7 @@ const DECRYPT_TEST_CONFIG = [
 
 beforeAll(async () => {
   await C.DES.loadWasm();
+  await C.SHA256.loadWasm();
 });
 
 describe('algo-des-test', () => {
