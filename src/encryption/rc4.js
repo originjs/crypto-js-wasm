@@ -1,6 +1,8 @@
-import {
-  StreamCipher
-} from '../core/cipher-core.js';
+import {WordArray} from '../core/core.js';
+import {StreamCipher} from '../core/cipher-core.js';
+import {rc4Wasm} from './rc4_bg';
+import {wasmBytes} from './rc4_wasm';
+import {loadWasm} from '../utils/wasm-utils';
 
 function generateKeystreamWord() {
   // Shortcuts
@@ -40,6 +42,21 @@ export class RC4Algo extends StreamCipher {
     this.ivSize = 0;
   }
 
+  static wasm = null;
+
+  static async loadWasm() {
+    if (RC4Algo.wasm) {
+      return RC4Algo.wasm;
+    }
+
+    RC4Algo.wasm = await loadWasm(wasmBytes);
+    return RC4Algo.wasm;
+  }
+
+  async loadWasm() {
+    return RC4Algo.loadWasm();
+  }
+
   _doReset() {
     // Shortcuts
     const key = this._key;
@@ -71,10 +88,64 @@ export class RC4Algo extends StreamCipher {
     this._i = this._j;
   }
 
-  _doProcessBlock(M, offset) {
-    const _M = M;
+  _process(doFlush) {
+    if (!RC4Algo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RC4Algo.loadWasm\' should be called first');
+    }
+    let processedWords;
 
-    _M[offset] ^= generateKeystreamWord.call(this);
+    // Shortcuts
+    const data = this._data;
+    let dataWords = data.words;
+    const dataSigBytes = data.sigBytes;
+    const blockSize = this.blockSize;
+    const blockSizeBytes = blockSize * 4;
+
+    // Count blocks ready
+    let nBlocksReady = dataSigBytes / blockSizeBytes;
+    if (doFlush) {
+      // Round up to include partial blocks
+      nBlocksReady = Math.ceil(nBlocksReady);
+    } else {
+      // Round down to include only full blocks,
+      // less the number of blocks that must remain in the buffer
+      nBlocksReady = Math.max((nBlocksReady | 0) - this._minBufferSize, 0);
+    }
+
+    // Count words ready
+    const nWordsReady = nBlocksReady * blockSize;
+
+    // Count bytes ready
+    const nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
+
+    // Process blocks
+    if (nWordsReady) {
+      if (dataWords.length < nWordsReady) {
+        for (let i = dataWords.length; i < nWordsReady; i++) {
+          dataWords[i] = 0;
+        }
+      }
+      const dataArray = new Uint32Array(dataWords);
+      let S = this._S;
+      S[256] = this._i;
+      S[257] = this._j;
+      const S_Array = new Uint32Array(S);
+      // Perform concrete-algorithm logic
+      rc4Wasm(RC4Algo.wasm).doProcess(nWordsReady, blockSize, dataArray, S_Array);
+      dataWords = Array.from(dataArray);
+      S = Array.from(S_Array);
+      this._S = S.slice(0, 256);
+      this._i = S[256];
+      this._j = S[257];
+      // Remove processed words
+      processedWords = dataWords.splice(0, nWordsReady);
+      // write data back to this._data
+      this._data.words = dataWords;
+      data.sigBytes -= nBytesReady;
+    }
+
+    // Return processed words
+    return new WordArray(processedWords, nBytesReady);
   }
 }
 
@@ -100,7 +171,9 @@ export class RC4DropAlgo extends RC4Algo {
      *
      * @property {number} drop The number of keystream words to drop. Default 192
      */
-    Object.assign(this.cfg, { drop: 192 });
+    if (!this.cfg.drop) {
+      Object.assign(this.cfg, { drop: 192 });
+    }
   }
 
   _doReset() {

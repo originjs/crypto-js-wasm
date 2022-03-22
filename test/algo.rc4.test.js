@@ -2,6 +2,7 @@ import C from '../src/index';
 
 beforeAll(async () => {
   await C.SHA256.loadWasm();
+  await C.RC4.loadWasm();
 });
 
 beforeAll(async () => {

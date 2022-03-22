@@ -1,8 +1,10 @@
 import C from '../src/index';
 
 const data = {};
-beforeAll(() => {
+beforeAll(async () => {
   data.key = C.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
+  await C.MD5.loadWasm();
+  await C.RC4.loadWasm();
 });
 
 describe('algo-rc4-profile', () => {
