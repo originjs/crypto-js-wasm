@@ -18,25 +18,31 @@ export function rabbitWasm(wasm) {
   /**
   * @param {number} nWordsReady
   * @param {number} blockSize
-  * @param {Uint32Array} keyWords
-  * @param {Uint32Array} iv
   * @param {Uint32Array} dataWords
+  * @param {Uint32Array} X
+  * @param {Uint32Array} C
+  * @param {number} b
+  * @returns {number}
   */
-  function doProcess(nWordsReady, blockSize, keyWords, iv, dataWords) {
+  function doProcess(nWordsReady, blockSize, dataWords, X, C, b) {
     try {
-      var ptr0 = passArray32ToWasm0(keyWords, wasm.__wbindgen_malloc);
+      var ptr0 = passArray32ToWasm0(dataWords, wasm.__wbindgen_malloc);
       var len0 = WASM_VECTOR_LEN;
-      var ptr1 = passArray32ToWasm0(iv, wasm.__wbindgen_malloc);
+      var ptr1 = passArray32ToWasm0(X, wasm.__wbindgen_malloc);
       var len1 = WASM_VECTOR_LEN;
-      var ptr2 = passArray32ToWasm0(dataWords, wasm.__wbindgen_malloc);
+      var ptr2 = passArray32ToWasm0(C, wasm.__wbindgen_malloc);
       var len2 = WASM_VECTOR_LEN;
-      wasm.doProcess(nWordsReady, blockSize, ptr0, len0, ptr1, len1, ptr2, len2);
+      var ret = wasm.doProcess(nWordsReady, blockSize, ptr0, len0, ptr1, len1, ptr2, len2, b);
+      return ret >>> 0;
     } finally {
-      dataWords.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
+      dataWords.set(getUint32Memory0().subarray(ptr0 / 4, ptr0 / 4 + len0));
+      wasm.__wbindgen_free(ptr0, len0 * 4);
+      X.set(getUint32Memory0().subarray(ptr1 / 4, ptr1 / 4 + len1));
+      wasm.__wbindgen_free(ptr1, len1 * 4);
+      C.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
       wasm.__wbindgen_free(ptr2, len2 * 4);
     }
   }
-  
 
   return {
     doProcess: doProcess
