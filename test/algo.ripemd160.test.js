@@ -6,6 +6,10 @@ const VERTOR_TEST_CONFIG = [
   [3, '', '9c1185a5c5e9fc54612808977ee8f548b2258d31']
 ];
 
+beforeAll(async () => {
+  await C.RIPEMD160.loadWasm();
+});
+
 describe('algo-ripemd160-test', () => {
   test.each(VERTOR_TEST_CONFIG)(
     'testVector%i',
