@@ -6,6 +6,11 @@ beforeAll(async () => {
   data.saltA = C.enc.Hex.parse('AA00000000000000');
 });
 
+beforeAll(async () => {
+  await C.Blowfish.loadWasm();
+  await C.SHA256.loadWasm();
+});
+
 describe('algo-blowfish-test', () => {
   test('testEncrypt', () => {
     let encryptedA = C.Blowfish.encrypt('Test',

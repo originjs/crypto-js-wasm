@@ -1,9 +1,10 @@
-import {
-  StreamCipher
-} from '../core/cipher-core.js';
+import {WordArray} from '../core/core.js';
+import {StreamCipher} from '../core/cipher-core.js';
+import {rabbitWasm} from './rabbit_bg';
+import {wasmBytes} from './rabbit_wasm';
+import {loadWasm} from '../utils/wasm-utils';
 
 // Reusable objects
-const S = [];
 const C_ = [];
 const G = [];
 
@@ -68,6 +69,21 @@ export class RabbitLegacyAlgo extends StreamCipher {
 
     this.blockSize = 128 / 32;
     this.ivSize = 64 / 32;
+  }
+
+  static wasm = null;
+
+  static async loadWasm() {
+    if (RabbitLegacyAlgo.wasm) {
+      return RabbitLegacyAlgo.wasm;
+    }
+
+    RabbitLegacyAlgo.wasm = await loadWasm(wasmBytes);
+    return RabbitLegacyAlgo.wasm;
+  }
+
+  async loadWasm() {
+    return RabbitLegacyAlgo.loadWasm();
   }
 
   _doReset() {
@@ -138,29 +154,63 @@ export class RabbitLegacyAlgo extends StreamCipher {
     }
   }
 
-  _doProcessBlock(M, offset) {
-    const _M = M;
-
-    // Shortcut
-    const X = this._X;
-
-    // Iterate the system
-    nextState.call(this);
-
-    // Generate four keystream words
-    S[0] = X[0] ^ (X[5] >>> 16) ^ (X[3] << 16);
-    S[1] = X[2] ^ (X[7] >>> 16) ^ (X[5] << 16);
-    S[2] = X[4] ^ (X[1] >>> 16) ^ (X[7] << 16);
-    S[3] = X[6] ^ (X[3] >>> 16) ^ (X[1] << 16);
-
-    for (let i = 0; i < 4; i++) {
-      // Swap endian
-      S[i] = (((S[i] << 8) | (S[i] >>> 24)) & 0x00ff00ff)
-        | (((S[i] << 24) | (S[i] >>> 8)) & 0xff00ff00);
-
-      // Encrypt
-      _M[offset + i] ^= S[i];
+  _process(doFlush) {
+    if (!RabbitLegacyAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RabbitLegacyAlgo.loadWasm\' should be called first');
     }
+    let processedWords;
+
+    // Shortcuts
+    const data = this._data;
+    let dataWords = data.words;
+    const dataSigBytes = data.sigBytes;
+    const blockSize = this.blockSize;
+    const blockSizeBytes = blockSize * 4;
+    const X = this._X;
+    const C = this._C;
+    const b = this._b;
+
+    // Count blocks ready
+    let nBlocksReady = dataSigBytes / blockSizeBytes;
+    if (doFlush) {
+      // Round up to include partial blocks
+      nBlocksReady = Math.ceil(nBlocksReady);
+    } else {
+      // Round down to include only full blocks,
+      // less the number of blocks that must remain in the buffer
+      nBlocksReady = Math.max((nBlocksReady | 0) - this._minBufferSize, 0);
+    }
+
+    // Count words ready
+    const nWordsReady = nBlocksReady * blockSize;
+
+    // Count bytes ready
+    const nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
+
+    // Process blocks
+    if (nWordsReady) {
+      if (dataWords.length < nWordsReady) {
+        for (let i = dataWords.length; i < nWordsReady; i++) {
+          dataWords[i] = 0;
+        }
+      }
+      const dataArray = new Uint32Array(dataWords);
+      const X_Array = new Uint32Array(X);
+      const C_Array = new Uint32Array(C);
+      // Perform concrete-algorithm logic
+      this._b = rabbitWasm(RabbitLegacyAlgo.wasm).doProcess(nWordsReady, blockSize, dataArray, X_Array, C_Array, b);
+      dataWords = Array.from(dataArray);
+      this._X = Array.from(X_Array);
+      this._C = Array.from(C_Array);
+      // Remove processed words
+      processedWords = dataWords.splice(0, nWordsReady);
+      // write data back to this._data
+      this._data.words = dataWords;
+      data.sigBytes -= nBytesReady;
+    }
+
+    // Return processed words
+    return new WordArray(processedWords, nBytesReady);
   }
 }
 
