@@ -29,8 +29,6 @@ export function ripemd160Wasm(wasm) {
       var len1 = WASM_VECTOR_LEN;
       wasm.doProcess(nWordsReady, blockSize, ptr0, len0, ptr1, len1);
     } finally {
-      dataWords.set(getUint32Memory0().subarray(ptr0 / 4, ptr0 / 4 + len0));
-      wasm.__wbindgen_free(ptr0, len0 * 4);
       H.set(getUint32Memory0().subarray(ptr1 / 4, ptr1 / 4 + len1));
       wasm.__wbindgen_free(ptr1, len1 * 4);
     }

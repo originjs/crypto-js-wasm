@@ -89,11 +89,9 @@ export class RIPEMD160Algo extends Hasher {
           dataWords[i] = 0;
         }
       }
-      const dataArray = new Uint32Array(dataWords);
       const H_Array = new Uint32Array(H);
       // Perform concrete-algorithm logic
-      ripemd160Wasm(RIPEMD160Algo.wasm).doProcess(nWordsReady, blockSize, dataArray, H_Array);
-      dataWords = Array.from(dataArray);
+      ripemd160Wasm(RIPEMD160Algo.wasm).doProcess(nWordsReady, blockSize, dataWords, H_Array);
       this._hash.words = Array.from(H_Array);
       // Remove processed words
       processedWords = dataWords.splice(0, nWordsReady);
