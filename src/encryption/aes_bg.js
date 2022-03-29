@@ -1,6 +1,5 @@
 export function aesWasm(wasm) {
   let cachegetUint32Memory0 = null;
-
   function getUint32Memory0() {
     if (cachegetUint32Memory0 === null || cachegetUint32Memory0.buffer !== wasm.memory.buffer) {
       cachegetUint32Memory0 = new Uint32Array(wasm.memory.buffer);
@@ -18,7 +17,6 @@ export function aesWasm(wasm) {
   }
 
   let cachegetInt32Memory0 = null;
-
   function getInt32Memory0() {
     if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
       cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
@@ -29,12 +27,11 @@ export function aesWasm(wasm) {
   function getArrayU32FromWasm0(ptr, len) {
     return getUint32Memory0().subarray(ptr / 4, ptr / 4 + len);
   }
-
   /**
-   * @param {number} keySize
-   * @param {Uint32Array} keyWords
-   * @returns {Uint32Array}
-   */
+  * @param {number} keySize
+  * @param {Uint32Array} keyWords
+  * @returns {Uint32Array}
+  */
   function getKeySchedule(keySize, keyWords) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -52,10 +49,10 @@ export function aesWasm(wasm) {
   }
 
   /**
-   * @param {number} keySize
-   * @param {Uint32Array} keyWords
-   * @returns {Uint32Array}
-   */
+  * @param {number} keySize
+  * @param {Uint32Array} keyWords
+  * @returns {Uint32Array}
+  */
   function getInvKeySchedule(keySize, keyWords) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -73,7 +70,6 @@ export function aesWasm(wasm) {
   }
 
   let cachegetUint8Memory0 = null;
-
   function getUint8Memory0() {
     if (cachegetUint8Memory0 === null || cachegetUint8Memory0.buffer !== wasm.memory.buffer) {
       cachegetUint8Memory0 = new Uint8Array(wasm.memory.buffer);
@@ -135,18 +131,19 @@ export function aesWasm(wasm) {
     WASM_VECTOR_LEN = offset;
     return ptr;
   }
-
   /**
-   * @param {string} mode
-   * @param {number} nRounds
-   * @param {number} nWordsReady
-   * @param {number} blockSize
-   * @param {Uint32Array} iv
-   * @param {Uint32Array} dataWords
-   * @param {Uint32Array} keySchedule
-   */
+  * @param {string} mode
+  * @param {number} nRounds
+  * @param {number} nWordsReady
+  * @param {number} blockSize
+  * @param {Uint32Array} iv
+  * @param {Uint32Array} dataWords
+  * @param {Uint32Array} keySchedule
+  * @returns {Uint32Array}
+  */
   function doEncrypt(mode, nRounds, nWordsReady, blockSize, iv, dataWords, keySchedule) {
     try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
       var ptr1 = passArray32ToWasm0(iv, wasm.__wbindgen_malloc);
@@ -155,25 +152,33 @@ export function aesWasm(wasm) {
       var len2 = WASM_VECTOR_LEN;
       var ptr3 = passArray32ToWasm0(keySchedule, wasm.__wbindgen_malloc);
       var len3 = WASM_VECTOR_LEN;
-      wasm.doEncrypt(ptr0, len0, nRounds, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3);
+      wasm.doEncrypt(retptr, ptr0, len0, nRounds, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var v4 = getArrayU32FromWasm0(r0, r1).slice();
+      wasm.__wbindgen_free(r0, r1 * 4);
+      return v4;
     } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
       dataWords.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
       wasm.__wbindgen_free(ptr2, len2 * 4);
     }
   }
 
   /**
-   * @param {string} mode
-   * @param {number} nRounds
-   * @param {number} nWordsReady
-   * @param {number} blockSize
-   * @param {Uint32Array} iv
-   * @param {Uint32Array} dataWords
-   * @param {Uint32Array} keySchedule
-   * @param {Uint32Array} invKeySchedule
-   */
+  * @param {string} mode
+  * @param {number} nRounds
+  * @param {number} nWordsReady
+  * @param {number} blockSize
+  * @param {Uint32Array} iv
+  * @param {Uint32Array} dataWords
+  * @param {Uint32Array} keySchedule
+  * @param {Uint32Array} invKeySchedule
+  * @returns {Uint32Array}
+  */
   function doDecrypt(mode, nRounds, nWordsReady, blockSize, iv, dataWords, keySchedule, invKeySchedule) {
     try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
       var ptr1 = passArray32ToWasm0(iv, wasm.__wbindgen_malloc);
@@ -184,8 +189,14 @@ export function aesWasm(wasm) {
       var len3 = WASM_VECTOR_LEN;
       var ptr4 = passArray32ToWasm0(invKeySchedule, wasm.__wbindgen_malloc);
       var len4 = WASM_VECTOR_LEN;
-      wasm.doDecrypt(ptr0, len0, nRounds, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      wasm.doDecrypt(retptr, ptr0, len0, nRounds, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var v5 = getArrayU32FromWasm0(r0, r1).slice();
+      wasm.__wbindgen_free(r0, r1 * 4);
+      return v5;
     } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
       dataWords.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
       wasm.__wbindgen_free(ptr2, len2 * 4);
     }

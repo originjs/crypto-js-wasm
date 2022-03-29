@@ -95,9 +95,17 @@ export class AESAlgo extends BlockCipher {
       const ivWords = this.cfg.iv ? this.cfg.iv.words : '';
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
-        aesWasm(AESAlgo.wasm).doEncrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = aesWasm(AESAlgo.wasm).doEncrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._keySchedule);
+        } else {
+          this.modeProcessBlock = aesWasm(AESAlgo.wasm).doEncrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule);
+        }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
-        aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule, this._invKeySchedule);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._keySchedule, this._invKeySchedule);
+        } else {
+          this.modeProcessBlock = aesWasm(AESAlgo.wasm).doDecrypt(this.cfg.mode.name, this._nRounds, nWordsReady, blockSize, ivWords, dataArray, this._keySchedule, this._invKeySchedule);
+        }
       }
       dataWords = Array.from(dataArray);
       // Remove processed words

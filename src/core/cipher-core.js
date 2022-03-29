@@ -435,6 +435,7 @@ export class BlockCipher extends Cipher {
       // Keep at least one block in the buffer for unpadding
       this._minBufferSize = 1;
     }
+    this.modeProcessBlock = undefined;
 
     this._mode = modeCreator.call(mode, this, iv && iv.words);
     this._mode.__creator = modeCreator;
