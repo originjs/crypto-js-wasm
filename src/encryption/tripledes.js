@@ -157,9 +157,17 @@ export class DESAlgo extends BlockCipher {
       const ivWords = this.cfg.iv ? this.cfg.iv.words : '';
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
-        desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
+        } else {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+        }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
-        desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
+        } else {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+        }
       }
       dataWords = Array.from(dataArray);
       // Remove processed words
@@ -270,9 +278,17 @@ export class TripleDESAlgo extends BlockCipher {
       const ivWords = this.cfg.iv ? this.cfg.iv.words : '';
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
-        desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
+        } else {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+        }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
-        desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
+        } else {
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+        }
       }
       dataWords = Array.from(dataArray);
       // Remove processed words
