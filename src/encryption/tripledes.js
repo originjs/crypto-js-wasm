@@ -153,6 +153,11 @@ export class DESAlgo extends BlockCipher {
 
     // Process blocks
     if (nWordsReady) {
+      if (dataWords.length < nWordsReady) {
+        for (let i = dataWords.length; i < nWordsReady; i++) {
+          dataWords[i] = 0;
+        }
+      }
       const dataArray = new Uint32Array(dataWords);
       const ivWords = this.cfg.iv ? this.cfg.iv.words : '';
       // Perform concrete-algorithm logic
