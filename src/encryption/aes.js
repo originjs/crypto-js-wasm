@@ -84,11 +84,9 @@ export class AESAlgo extends BlockCipher {
 
     // Process blocks
     if (nWordsReady) {
-      // dataArray.length should be n * 4
-      if (dataWords.length % 4 != 0) {
-        let count = 4 - dataWords.length % 4;
-        while (count-- > 0) {
-          dataWords.push(0);
+      if (dataWords.length < nWordsReady) {
+        for (let i = dataWords.length; i < nWordsReady; i++) {
+          dataWords[i] = 0;
         }
       }
       const dataArray = new Uint32Array(dataWords);
@@ -110,7 +108,7 @@ export class AESAlgo extends BlockCipher {
       dataWords = Array.from(dataArray);
       // Remove processed words
       processedWords = dataWords.splice(0, nWordsReady);
-
+      data.words = dataWords;
       data.sigBytes -= nBytesReady;
     }
 
