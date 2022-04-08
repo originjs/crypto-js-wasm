@@ -95,11 +95,9 @@ export class BlowfishAlgo extends BlockCipher {
 
     // Process blocks
     if (nWordsReady) {
-      // dataArray.length should be n * 4
-      if (dataWords.length % 4 != 0) {
-        let count = 4 - dataWords.length % 4;
-        while (count-- > 0) {
-          dataWords.push(0);
+      if (dataWords.length < nWordsReady) {
+        for (let i = dataWords.length; i < nWordsReady; i++) {
+          dataWords[i] = 0;
         }
       }
       const dataArray = new Uint32Array(dataWords);
@@ -110,14 +108,22 @@ export class BlowfishAlgo extends BlockCipher {
       }
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
-        blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
+        } else {
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+        }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
-        blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+        if (this.modeProcessBlock != undefined) {
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
+        } else {
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+        }
       }
       dataWords = Array.from(dataArray);
       // Remove processed words
       processedWords = dataWords.splice(0, nWordsReady);
-
+      data.words = dataWords;
       data.sigBytes -= nBytesReady;
     }
 

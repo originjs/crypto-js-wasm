@@ -118,9 +118,11 @@ export function blowfishWasm(wasm) {
   * @param {Uint32Array} dataWords
   * @param {Uint32Array} P
   * @param {Uint32Array} S
+  * @returns {Uint32Array}
   */
   function doEncrypt(mode, nWordsReady, blockSize, iv, dataWords, P, S) {
     try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
       var ptr1 = passArray32ToWasm0(iv, wasm.__wbindgen_malloc);
@@ -131,8 +133,14 @@ export function blowfishWasm(wasm) {
       var len3 = WASM_VECTOR_LEN;
       var ptr4 = passArray32ToWasm0(S, wasm.__wbindgen_malloc);
       var len4 = WASM_VECTOR_LEN;
-      wasm.doEncrypt(ptr0, len0, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      wasm.doEncrypt(retptr, ptr0, len0, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var v5 = getArrayU32FromWasm0(r0, r1).slice();
+      wasm.__wbindgen_free(r0, r1 * 4);
+      return v5;
     } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
       dataWords.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
       wasm.__wbindgen_free(ptr2, len2 * 4);
     }
@@ -146,9 +154,11 @@ export function blowfishWasm(wasm) {
   * @param {Uint32Array} dataWords
   * @param {Uint32Array} P
   * @param {Uint32Array} S
+  * @returns {Uint32Array}
   */
   function doDecrypt(mode, nWordsReady, blockSize, iv, dataWords, P, S) {
     try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
       var ptr1 = passArray32ToWasm0(iv, wasm.__wbindgen_malloc);
@@ -159,8 +169,14 @@ export function blowfishWasm(wasm) {
       var len3 = WASM_VECTOR_LEN;
       var ptr4 = passArray32ToWasm0(S, wasm.__wbindgen_malloc);
       var len4 = WASM_VECTOR_LEN;
-      wasm.doDecrypt(ptr0, len0, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      wasm.doDecrypt(retptr, ptr0, len0, nWordsReady, blockSize, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var v5 = getArrayU32FromWasm0(r0, r1).slice();
+      wasm.__wbindgen_free(r0, r1 * 4);
+      return v5;
     } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
       dataWords.set(getUint32Memory0().subarray(ptr2 / 4, ptr2 / 4 + len2));
       wasm.__wbindgen_free(ptr2, len2 * 4);
     }
