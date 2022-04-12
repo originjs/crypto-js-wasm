@@ -61,6 +61,11 @@ export class SHA3Algo extends Hasher {
 
     const stateData = new Uint32Array(50);
 
+    for (let i = 0; i < 25; i++) {
+      stateData[i * 2] = this._state[i].high;
+      stateData[i * 2 + 1] = this._state[i].low;
+    }
+
     for (let i = 0; i < dataWords.length;i++) {
       if (!dataWords[i]) {
         dataWords[i] = 0;
