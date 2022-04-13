@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "add": "^2.0.6",
+    "crypto-js": "^4.1.1",
     "global": "^4.4.0",
     "pako": "^2.0.4"
   }
