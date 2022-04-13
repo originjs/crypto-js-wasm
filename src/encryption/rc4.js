@@ -35,6 +35,14 @@ function generateKeystreamWord() {
  * RC4 stream cipher algorithm.
  */
 export class RC4Algo extends StreamCipher {
+  static get keySize() {
+    return 256 / 32;
+  }
+
+  static get ivSize() {
+    return 0;
+  }
+
   constructor(...args) {
     super(...args);
 

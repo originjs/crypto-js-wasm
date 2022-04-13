@@ -64,6 +64,14 @@ function nextState() {
  * but it does affect its compatibility with other implementations.
  */
 export class RabbitLegacyAlgo extends StreamCipher {
+  static get blockSize() {
+    return 128 / 32;
+  }
+
+  static get ivSize() {
+    return 64 / 32;
+  }
+
   constructor(...args) {
     super(...args);
 

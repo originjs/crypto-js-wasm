@@ -60,6 +60,14 @@ function nextState() {
  * Rabbit stream cipher algorithm
  */
 export class RabbitAlgo extends StreamCipher {
+  static get blockSize() {
+    return 128 / 32;
+  }
+
+  static get ivSize() {
+    return 64 / 32;
+  }
+
   constructor(...args) {
     super(...args);
 
