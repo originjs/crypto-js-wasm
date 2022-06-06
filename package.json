@@ -1,8 +1,8 @@
 {
-  "name": "crypto-js",
-  "version": "3.1.9",
-  "description": "JavaScript library of crypto standards.",
-  "main": "index.js",
+  "name": "crypto-js-wasm",
+  "version": "1.0.0-beta0",
+  "description": "An alternate to crypto-js implemented with WebAssembly and ESM",
+  "main": "src/index.js",
   "scripts": {
     "build": "npm run clean && node build/build.js",
     "clean": "rimraf lib",
@@ -23,15 +23,14 @@
     }
   },
   "author": {
-    "name": "Evan Vosberg",
-    "url": "http://github.com/evanvosberg"
+    "name": "peteralfredlee"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/brix/crypto-js.git"
+    "url": "https://github.com/originjs/crypto-js-wasm"
   },
   "bugs": {
-    "url": "http://github.com/brix/crypto-js/issues"
+    "url": "https://github.com/originjs/crypto-js-wasm/issues"
   },
   "jest": {
     "jestRegex": "(/test/.*\\.(test|spec)\\.js)$"
@@ -40,6 +39,8 @@
   "keywords": [
     "security",
     "crypto",
+    "WebAssembly",
+    "WASM",
     "Hash",
     "MD5",
     "SHA1",
