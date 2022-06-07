@@ -46,28 +46,61 @@ export const Base64 = {
     wordArray.clamp();
 
     // Convert
-    const base64Chars = [];
-    for (let i = 0; i < sigBytes; i += 3) {
-      const byte1 = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-      const byte2 = (words[(i + 1) >>> 2] >>> (24 - ((i + 1) % 4) * 8)) & 0xff;
-      const byte3 = (words[(i + 2) >>> 2] >>> (24 - ((i + 2) % 4) * 8)) & 0xff;
+    let base64 = '';
 
-      const triplet = (byte1 << 16) | (byte2 << 8) | byte3;
+    // the following implementation is referred from https://gist.github.com/jonleighton/958841
+    const byteRemainder = sigBytes % 3;
+    const mainLength = sigBytes - byteRemainder;
 
-      for (let j = 0; (j < 4) && (i + j * 0.75 < sigBytes); j++) {
-        base64Chars.push(map.charAt((triplet >>> (6 * (3 - j))) & 0x3f));
-      }
+    let a, b, c, d;
+    let chunk;
+
+    // Main loop deals with bytes in chunks of 3
+    for (let i = 0; i < mainLength; i = i + 3) {
+      const byte1 = this.getByteByIndex(words, i);
+      const byte2 = this.getByteByIndex(words, i + 1);
+      const byte3 = this.getByteByIndex(words, i + 2);
+
+      // Combine the three bytes into a single integer
+      chunk = (byte1 << 16) | (byte2 << 8) | byte3;
+
+      // Use bitmasks to extract 6-bit segments from the triplet
+      a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+      b = (chunk & 258048) >> 12; // 258048   = (2^6 - 1) << 12
+      c = (chunk & 4032) >> 6; // 4032     = (2^6 - 1) << 6
+      d = chunk & 63;               // 63       = 2^6 - 1
+
+      // Convert the raw binary segments to the appropriate ASCII encoding
+      base64 += map[a] + map[b] + map[c] + map[d];
     }
 
-    // Add padding
-    const paddingChar = map.charAt(64);
-    if (paddingChar) {
-      while (base64Chars.length % 4) {
-        base64Chars.push(paddingChar);
-      }
+    // Deal with the remaining bytes and padding
+    if (byteRemainder == 1) {
+      chunk = this.getByteByIndex(words, mainLength);
+
+      a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
+
+      // Set the 4 least significant bits to zero
+      b = (chunk & 3) << 4; // 3   = 2^2 - 1
+
+      base64 += map[a] + map[b] + '==';
+    } else if (byteRemainder == 2) {
+      chunk = (this.getByteByIndex(words, mainLength) << 8) | this.getByteByIndex(words, mainLength + 1);
+
+      a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
+      b = (chunk & 1008) >> 4; // 1008  = (2^6 - 1) << 4
+
+      // Set the 2 least significant bits to zero
+      c = (chunk & 15) << 2; // 15    = 2^4 - 1
+
+      base64 += map[a] + map[b] + map[c] + '=';
     }
 
-    return base64Chars.join('');
+    return base64;
+  },
+
+  getByteByIndex(words, index) {
+    return (words[index >>> 2] >>> (24 - (index % 4) * 8)) & 0xff;
   },
 
   /**

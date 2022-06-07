@@ -68,6 +68,7 @@
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "chalk": "^2.4.2",
+    "crypto-js": "^4.1.1",
     "eslint": "^6.5.1",
     "husky": "^3.0.8",
     "jest": "^27.5.1",
@@ -81,7 +82,6 @@
   },
   "dependencies": {
     "add": "^2.0.6",
-    "crypto-js": "^4.1.1",
     "global": "^4.4.0",
     "pako": "^2.0.4"
   }
