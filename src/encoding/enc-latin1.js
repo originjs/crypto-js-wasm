@@ -25,17 +25,17 @@ export const Latin1 = {
       words,
       sigBytes
     } = wordArray;
-  
+
     // Convert
     const latin1Chars = [];
     for (let i = 0; i < sigBytes; i++) {
       const bite = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
       latin1Chars.push(String.fromCharCode(bite));
     }
-  
+
     return latin1Chars.join('');
   },
-  
+
   /**
      * Converts a Latin1 string to a word array.
      *
@@ -52,13 +52,22 @@ export const Latin1 = {
   parse(latin1Str) {
     // Shortcut
     const latin1StrLength = latin1Str.length;
-  
+
     // Convert
     const words = [];
-    for (let i = 0; i < latin1StrLength; i++) {
+    let word = 0;
+    // const words = new Array(latin1StrLength >>> 2);
+    for (let i = 0; i < latin1StrLength - latin1StrLength % 4; i++) {
+      word |= (latin1Str.charCodeAt(i) & 0xff) << (24 - (i % 4) * 8);
+      if (i % 4 == 3) {
+        words[i >>> 2] = word;
+        word = 0;
+      }
+    }
+    for (let i = latin1StrLength - latin1StrLength % 4; i < latin1StrLength;i++) {
       words[i >>> 2] |= (latin1Str.charCodeAt(i) & 0xff) << (24 - (i % 4) * 8);
     }
-  
+
     return new WordArray(words, latin1StrLength);
   }
 };
