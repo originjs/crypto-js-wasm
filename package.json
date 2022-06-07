@@ -33,9 +33,6 @@
   "bugs": {
     "url": "https://github.com/originjs/crypto-js-wasm/issues"
   },
-  "jest": {
-    "jestRegex": "(/test/.*\\.(test|spec)\\.js)$"
-  },
   "license": "MIT",
   "keywords": [
     "security",

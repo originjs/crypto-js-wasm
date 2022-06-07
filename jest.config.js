@@ -24,7 +24,7 @@ module.exports = {
   // collectCoverageFrom: null,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -132,7 +132,7 @@ module.exports = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  testEnvironment: 'node',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -152,7 +152,7 @@ module.exports = {
   // ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
-  // testRegex: [],
+  testRegex: ['(/test/.*\\.(test|spec)\\.js)$']
 
   // This option allows the use of a custom results processor
   // testResultsProcessor: null,
