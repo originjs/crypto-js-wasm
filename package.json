@@ -2,7 +2,8 @@
   "name": "crypto-js-wasm",
   "version": "1.0.0-beta0",
   "description": "An alternate to crypto-js implemented with WebAssembly and ESM",
-  "main": "src/index.js",
+  "main": "lib/index.js",
+  "files": ["lib"],
   "scripts": {
     "build": "npm run clean && node build/build.js",
     "clean": "rimraf lib",
