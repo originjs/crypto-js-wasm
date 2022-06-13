@@ -27,8 +27,7 @@ export const generateWasmBytes = function (compressedBase64Bytes) {
     compressedBytes = (require('buffer').Buffer).from(compressedBase64Bytes, 'base64');
   }
 
-  let test = pako.inflate(compressedBytes);
-  return test;
+  return pako.inflate(compressedBytes);
 };
 
 /**
