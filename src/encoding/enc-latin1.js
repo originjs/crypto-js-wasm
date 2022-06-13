@@ -27,13 +27,13 @@ export const Latin1 = {
     } = wordArray;
 
     // Convert
-    const latin1Chars = [];
+    let latin1Chars = '';
     for (let i = 0; i < sigBytes; i++) {
-      const bite = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-      latin1Chars.push(String.fromCharCode(bite));
+      const byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+      latin1Chars += String.fromCharCode(byte);
     }
 
-    return latin1Chars.join('');
+    return latin1Chars;
   },
 
   /**
