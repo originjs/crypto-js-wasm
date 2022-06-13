@@ -1,0 +1,13 @@
+{
+  "name": "crypto-js-wasm-rust",
+  "version": "1.0.0",
+  "description": "The rust repos require rust toolchains(cargo, rustup, rustc, etc.). You can find the latest rust toolchains [here](https://www.rust-lang.org/tools/install). Besides the rust toolchains, we also need the [wasm-pack](https://github.com/rustwasm/wasm-pack) to compile our rust code into wasm.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "pako": "^2.0.4"
+  }
+}
