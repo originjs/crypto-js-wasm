@@ -5,8 +5,6 @@ beforeAll(async () => {
 });
 
 beforeAll(async () => {
-  // TODO: this should be put in C.Rabbit.loadWasm later
-  await C.MD5.loadWasm();
   await C.Rabbit.loadWasm();
 });
 

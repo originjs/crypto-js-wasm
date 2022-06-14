@@ -5,11 +5,6 @@ beforeAll(async () => {
   await C.RC4.loadWasm();
 });
 
-beforeAll(async () => {
-  // TODO: this should be put in C.RC4.loadWasm later
-  await C.MD5.loadWasm();
-});
-
 describe('rc4', () => {
   test('testVector1', () => {
     expect(C.RC4.encrypt(C.enc.Hex.parse('0000000000000000'), C.enc.Hex.parse('0123456789abcdef')).ciphertext.toString())
