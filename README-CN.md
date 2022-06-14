@@ -100,20 +100,20 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 
 *Chrome 102.0.5005.63:*
 
-![benchmark_chrome](/home/peterlee/code/crypto-js-wasm-originjs/crypto-js-wasm/benchmark/benchmark_chrome.png)
+![benchmark_chrome](benchmark/benchmark_chrome.png)
 
 
 
 Firefox 101.0:
 
-![benchmark_firefox](/home/peterlee/code/crypto-js-wasm-originjs/crypto-js-wasm/benchmark/benchmark_firefox.png)
+![benchmark_firefox](benchmark/benchmark_firefox.png)
 
 
 
 ## 开发
 
 ```bash
-# 安装以来
+# 安装
 pnpm install
 
 # 生产构建
