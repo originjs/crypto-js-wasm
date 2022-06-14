@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/originjs/crypto-js-wasm/issues"
   },
-  "license": "MIT",
+  "license": "MulanPSL2",
   "keywords": [
     "security",
     "crypto",
