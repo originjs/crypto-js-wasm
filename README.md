@@ -1,238 +1,126 @@
-# crypto-js
+# crypto-js-wasm
 
-JavaScript library of crypto standards.
+[English](README.md) | [中文](README-CN.md)
 
-## Node.js (Install)
+---
 
-Requirements:
+`crypto-js-wasm` is a javascript library of crypto standards. Inspired by [crypto-js](https://github.com/brix/crypto-js), but now powered by [WebAssembly](https://webassembly.org/).
 
-- Node.js
-- npm (Node.js package manager)
+- **Safe**: The process of encryption is fully **enclosed** and **invisible** thanks to WebAssembly.
+- **Efficient**: Up to 16x **faster** than crypto-js (see [Benchmark](https://originjs.org/WASM-benchmark/#/)).
+- **Versatile**: **15+** crypto standards supported, including MD5, SHA-x, AES, RC4, etc.
+- **ESM**: Crypto standards can be imported as **ES modules**.
+
+
+
+## Getting started
 
 ```bash
-npm install crypto-js
+npm install originjs@crypto-js-wasm
 ```
 
-### Usage
-
-Including all libraries, for access to extra methods:
-
-```javascript
-import CryptoJS from 'crypto-js';
-const rst = CryptoJS.MD5("Message").toString();
-```
-
-## Client (browser)
-
-Requirements:
-
-- Node.js
-- Bower (package manager for frontend)
+or
 
 ```bash
-bower install crypto-js
+pnpm install originjs@crypto-js-wasm
 ```
 
-### Usage
+or
 
-Modular include:
+```bash
+yarn add originjs@crypto-js-wasm
+```
+
+
+
+## Usage
+
+Note that the async function `loadWasm()` should be called once (and once only!) for each algorithm that will be used, unless `loadAllWasm()` is called at the very beginning.
+
+
 
 ```javascript
-require.config({
-    packages: [
-        {
-            name: 'crypto-js',
-            location: 'path-to/bower_components/crypto-js',
-            main: 'index'
-        }
-    ]
-});
+import CryptoJSW from 'crypto-js-wasm';
 
-require(["crypto-js/aes", "crypto-js/sha256"], function (AES, SHA256) {
-    console.log(SHA256("Message"));
-});
+// (Optional) load all wasm files
+await CryptoJSW.loadAllWasm();
+
+// Async/Await syntax
+await CryptoJSW.MD5.loadWasm();
+const rstMD5 = CryptoJSW.MD5('message').toString();
+console.log(rstMD5);
+
+// Promise syntax
+CryptoJSW.SHA256.loadWasm().then(() => {
+    const rstSHA256 = CryptoJSW.SHA256('message').toString();
+    console.log(rstSHA256);
+})
 ```
 
-Including all libraries, for access to extra methods:
 
-```javascript
-// Above-mentioned will work or use this simple form
-require.config({
-    paths: {
-        'crypto-js': 'path-to/bower_components/crypto-js/crypto-js'
-    }
-});
 
-require(["crypto-js"], function (CryptoJS) {
-    console.log(CryptoJS.HmacSHA1("Message", "Key"));
-});
+**Available standards**
+
+- MD5 / HmacMD5
+- SHA1 / HmacSHA1
+- SHA224 / HmacSHA224
+- SHA256 / HmacSHA256
+- SHA384 / HmacSHA384
+- SHA512 / HmacSHA512
+- SHA3 / HmacSHA3
+- RIPEMD160 / HmacRIPEMD160
+- PBKDF2
+- EvpKDF
+
+<br>
+
+- AES
+- Blowfish
+- DES
+- TripleDES
+- Rabbit
+- RabbitLegacy
+- RC4
+- RC4Drop
+
+
+
+**Coming next**
+
+- RSA
+
+
+
+## Benchmark
+
+The benchmark below is run on a desktop PC (i5-4590, 16 GB RAM, Windows 10 Version 21H2 (OSBuild 19044, 1466)).
+
+
+
+*Chrome 102.0.5005.63:*
+
+![benchmark_chrome](benchmark/benchmark_chrome.png)
+
+
+
+Firefox 101.0:
+
+![benchmark_firefox](benchmark/benchmark_firefox.png)
+
+
+
+## Development
+
+```bash
+# install dependencies
+pnpm install
+
+# build for production
+pnpm run build
+
+# run all tests
+pnpm run test
+
+# run all tests with coverage
+pnpm run coverage
 ```
-
-### Usage without RequireJS
-
-```html
-<script type="text/javascript" src="path-to/bower_components/crypto-js/crypto-js.js"></script>
-<script type="text/javascript">
-    var encrypted = CryptoJS.AES(...);
-    var encrypted = CryptoJS.SHA256(...);
-</script>
-```
-
-## API
-
-See: https://cryptojs.gitbook.io/docs/
-
-### AES Encryption
-
-#### Plain text encryption
-
-```javascript
-var CryptoJS = require("crypto-js");
-
-// Encrypt
-var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123').toString();
-
-// Decrypt
-var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-var originalText = bytes.toString(CryptoJS.enc.Utf8);
-
-console.log(originalText); // 'my message'
-```
-
-#### Object encryption
-
-```javascript
-var CryptoJS = require("crypto-js");
-
-var data = [{id: 1}, {id: 2}]
-
-// Encrypt
-var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(data), 'secret key 123').toString();
-
-// Decrypt
-var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-
-console.log(decryptedData); // [{id: 1}, {id: 2}]
-```
-
-### List of modules
-
-
-- ```crypto-js/core```
-- ```crypto-js/x64-core```
-- ```crypto-js/lib-typedarrays```
-
----
-
-- ```crypto-js/md5```
-- ```crypto-js/sha1```
-- ```crypto-js/sha256```
-- ```crypto-js/sha224```
-- ```crypto-js/sha512```
-- ```crypto-js/sha384```
-- ```crypto-js/sha3```
-- ```crypto-js/ripemd160```
-
----
-
-- ```crypto-js/hmac-md5```
-- ```crypto-js/hmac-sha1```
-- ```crypto-js/hmac-sha256```
-- ```crypto-js/hmac-sha224```
-- ```crypto-js/hmac-sha512```
-- ```crypto-js/hmac-sha384```
-- ```crypto-js/hmac-sha3```
-- ```crypto-js/hmac-ripemd160```
-
----
-
-- ```crypto-js/pbkdf2```
-
----
-
-- ```crypto-js/aes```
-- ```crypto-js/tripledes```
-- ```crypto-js/rc4```
-- ```crypto-js/rabbit```
-- ```crypto-js/rabbit-legacy```
-- ```crypto-js/evpkdf```
-
----
-
-- ```crypto-js/format-openssl```
-- ```crypto-js/format-hex```
-
----
-
-- ```crypto-js/enc-latin1```
-- ```crypto-js/enc-utf8```
-- ```crypto-js/enc-hex```
-- ```crypto-js/enc-utf16```
-- ```crypto-js/enc-base64```
-
----
-
-- ```crypto-js/mode-cfb```
-- ```crypto-js/mode-ctr```
-- ```crypto-js/mode-ctr-gladman```
-- ```crypto-js/mode-ofb```
-- ```crypto-js/mode-ecb```
-
----
-
-- ```crypto-js/pad-pkcs7```
-- ```crypto-js/pad-ansix923```
-- ```crypto-js/pad-iso10126```
-- ```crypto-js/pad-iso97971```
-- ```crypto-js/pad-zeropadding```
-- ```crypto-js/pad-nopadding```
-
-
-## Release notes
-
-### 4.1.1
-
-Fix module order in bundled release.
-
-Include the browser field in the released package.json.
-
-### 4.1.0
-
-Added url safe variant of base64 encoding. [357](https://github.com/brix/crypto-js/pull/357)
-
-Avoid webpack to add crypto-browser package. [364](https://github.com/brix/crypto-js/pull/364)
-
-### 4.0.0
-
-This is an update including breaking changes for some environments.
-
-In this version `Math.random()` has been replaced by the random methods of the native crypto module.
-
-For this reason CryptoJS might not run in some JavaScript environments without native crypto module. Such as IE 10 or before or React Native.
-
-### 3.3.0
-
-Rollback, `3.3.0` is the same as `3.1.9-1`.
-
-The move of using native secure crypto module will be shifted to a new `4.x.x` version. As it is a breaking change the impact is too big for a minor release.
-
-### 3.2.1
-
-The usage of the native crypto module has been fixed. The import and access of the native crypto module has been improved.
-
-### 3.2.0
-
-In this version `Math.random()` has been replaced by the random methods of the native crypto module.
-
-For this reason CryptoJS might does not run in some JavaScript environments without native crypto module. Such as IE 10 or before.
-
-If it's absolute required to run CryptoJS in such an environment, stay with `3.1.x` version. Encrypting and decrypting stays compatible. But keep in mind `3.1.x` versions still use `Math.random()` which is cryptographically not secure, as it's not random enough. 
-
-This version came along with `CRITICAL` `BUG`. 
-
-DO NOT USE THIS VERSION! Please, go for a newer version!
-
-### 3.1.x
-
-The `3.1.x` are based on the original CryptoJS, wrapped in CommonJS modules.
