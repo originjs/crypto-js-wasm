@@ -8,6 +8,7 @@
 
 - **Safe**: The process of encryption is fully **enclosed** and **invisible** thanks to WebAssembly.
 - **Efficient**: Up to 16x **faster** than crypto-js (see [Benchmark](https://originjs.org/WASM-benchmark/#/)).
+- **Browser & Nodejs**: Support both `browser` and `nodejs`.
 - **Versatile**: **15+** crypto standards supported, including MD5, SHA-x, AES, RC4, etc.
 - **ESM**: Crypto standards can be imported as **ES modules**.
 
@@ -124,3 +125,23 @@ pnpm run test
 # run all tests with coverage
 pnpm run coverage
 ```
+
+
+
+#### Why do we need a async loadWasm call?
+
+This is because the WebAssembly binary needs to be load by `WebAssembly.instantiate`, and it is async. 
+
+The async `WebAssembly.instantiate` is recommended instead of its sync variant `WebAssembly.instance`, and in many cases the `WebAssembly.instance` can not load WebAssembly binary whose size is not small enough.
+
+
+
+#### Why do we store wasm binaries in base64-encoded chars?
+
+This is because  `crypto-js-wasm` may be used in `browser` or `nodejs`. This is relative elegant implementation comparing with `wasm loader` in `browser`(powered by webpack, vite or something else) or `fs` in `nodejs`.
+
+
+
+## License
+
+Distributed under the [Mulan Permissive Software License](LICENSE)
