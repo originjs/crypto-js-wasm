@@ -4,8 +4,6 @@ const data = {};
 
 beforeAll(async () => {
   data.key = C.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
-  // TODO: this should be put in C.Rabbit.loadWasm later
-  await C.MD5.loadWasm();
   await C.Rabbit.loadWasm();
 });
 

@@ -65,6 +65,7 @@ import { Iso97971 } from './pad/pad-iso97971.js';
 import { NoPadding } from './pad/pad-nopadding.js';
 import { ZeroPadding } from './pad/pad-zeropadding.js';
 import { HexFormatter } from './format/format-hex.js';
+import { loadAllWasm } from './utils/wasm-utils';
 
 export default {
   lib: {
@@ -146,6 +147,8 @@ export default {
   kdf: {
     OpenSSL: OpenSSLKdf
   },
+
+  loadAllWasm,
 
   MD5,
   HmacMD5,

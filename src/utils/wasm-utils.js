@@ -1,4 +1,6 @@
 import pako from 'pako';
+import index from '../index';
+
 /**
  * Check if WebAssembly is supported or not
  *
@@ -45,4 +47,15 @@ export const loadWasm = async function(wasmBytes, imports) {
 
   var loadResult = await WebAssembly.instantiate(wasmBytes, imports);
   return loadResult.instance.exports;
+};
+
+export const loadAllWasm = async function() {
+  await Promise.allSettled(
+    Object.values(index.algo).map(algo => {
+      if (!algo.loadWasm) {
+        return;
+      }
+      return algo.loadWasm();
+    })
+  );
 };
