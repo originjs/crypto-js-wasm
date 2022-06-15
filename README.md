@@ -11,7 +11,7 @@
 - **Compatible**: Has the same API with crypto-js
 - **Browser & Nodejs**: Support both `browser` and `nodejs`
 - **Versatile**: **15+** crypto standards supported, including MD5, SHA-x, AES, RC4, etc
-- **ESM**: Crypto standards can be imported as **ES modules**
+- **ESM**: Written in ESM, build as UMD for compatibility
 
 
 
