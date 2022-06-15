@@ -6,30 +6,31 @@
 
 `crypto-js-wasm` is a javascript library of crypto standards. Inspired by [crypto-js](https://github.com/brix/crypto-js), but now powered by [WebAssembly](https://webassembly.org/).
 
-- **Safe**: The process of encryption is fully **enclosed** and **invisible** thanks to WebAssembly.
-- **Efficient**: Up to 16x **faster** than crypto-js (see [Benchmark](https://originjs.org/WASM-benchmark/#/)).
-- **Browser & Nodejs**: Support both `browser` and `nodejs`.
-- **Versatile**: **15+** crypto standards supported, including MD5, SHA-x, AES, RC4, etc.
-- **ESM**: Crypto standards can be imported as **ES modules**.
+- **Safe**: The process of encryption is fully **enclosed** and **invisible** thanks to WebAssembly
+- **Efficient**: Up to 16x **faster** than crypto-js (see [Benchmark](https://originjs.org/WASM-benchmark/#/))
+- **Compatible**: Has the same API with crypto-js
+- **Browser & Nodejs**: Support both `browser` and `nodejs`
+- **Versatile**: **15+** crypto standards supported, including MD5, SHA-x, AES, RC4, etc
+- **ESM**: Crypto standards can be imported as **ES modules**
 
 
 
 ## Getting started
 
 ```bash
-npm install originjs@crypto-js-wasm
+npm install @originjs/crypto-js-wasm
 ```
 
 or
 
 ```bash
-pnpm install originjs@crypto-js-wasm
+pnpm install @originjs/crypto-js-wasm
 ```
 
 or
 
 ```bash
-yarn add originjs@crypto-js-wasm
+yarn add @originjs/crypto-js-wasm
 ```
 
 

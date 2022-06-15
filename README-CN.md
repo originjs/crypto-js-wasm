@@ -4,32 +4,33 @@
 
 ---
 
-`crypto-js-wasm` 是基于 JavaScript 和 [WebAssembly](https://webassembly.org/) 的哈西与加密算法库，其灵感来自于[crypto-js](https://github.com/brix/crypto-js)。
+`crypto-js-wasm` 是基于 JavaScript 和 [WebAssembly](https://webassembly.org/) 的哈希与加密算法库，其灵感来自于[crypto-js](https://github.com/brix/crypto-js)。
 
-- **安全**: 得益于 WebAssembly ，crypto-js-wasm的计算过程是**不可见、不可中断**的。
-- **高效**: 相比于crypto-js，计算效率最高提升了16倍(见 [Benchmark](https://originjs.org/WASM-benchmark/#/))。
-- **浏览器 & Nodejs**: 同时支持 `浏览器` 和 `nodejs`.
-- **全能**: 支持**15+** 以上的哈西和加密算法，包括常用的 MD5、 SHA-x、 AES、RC4等。
-- **ESM**: 基于ES模块语法编写，支持一部运行
+- **安全**: 得益于 WebAssembly ，crypto-js-wasm的计算过程是**不可见、不可中断**的
+- **高效**: 相比于crypto-js，计算效率最高提升了16倍(见 [Benchmark](https://originjs.org/WASM-benchmark/#/))
+- **兼容crypto-js**: 与crypto-js的API完全相同
+- **浏览器 & Nodejs**: 同时支持 `浏览器` 和 `nodejs`
+- **全能**: 支持**15+** 以上的哈希和加密算法，包括常用的 MD5、 SHA-x、 AES、RC4等
+- **ESM**: 基于ES模块语法编写，支持异步运行
 
 
 
 ## 安装
 
 ```bash
-npm install originjs@crypto-js-wasm
+npm install @originjs/crypto-js-wasm
 ```
 
 或
 
 ```bash
-pnpm install originjs@crypto-js-wasm
+pnpm install @originjs/crypto-js-wasm
 ```
 
 或
 
 ```bash
-yarn add originjs@crypto-js-wasm
+yarn add @originjs/crypto-js-wasm
 ```
 
 
@@ -94,7 +95,7 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 
 ## Benchmark
 
-该 benchmark 结果运行自一台台式机 (i5-4590, 16 GB RAM, Windows 10 Version 21H2 (OSBuild 19044, 1466))。
+以下 benchmark 结果运行自一台台式机 (i5-4590, 16 GB RAM, Windows 10 Version 21H2 (OSBuild 19044, 1466))。
 
 
 
