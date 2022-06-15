@@ -39,8 +39,6 @@ yarn add @originjs/crypto-js-wasm
 
 在使用各算法前需调用一次对应的`loadWasm()`，或调用`loadAllWasm()`以加载所有算法的WebAssembly文件。
 
-
-
 ```javascript
 import CryptoJSW from 'crypto-js-wasm';
 
@@ -58,6 +56,10 @@ CryptoJSW.SHA256.loadWasm().then(() => {
     console.log(rstSHA256);
 })
 ```
+
+需要注意的是，`HMAC` 没有`loadWasm`，因为如果要使用`HMAC`，必须指定哈希（例如`HmacSHA1`）。
+
+同时， `pbkdf2` 中的 `loadWasm` 实现是调用了 `SHA1.loadWasm` ，这是因为 `SHA1` 是 `pbkdf2` 的默认哈希算法。 如果指定了另一个哈希算法，则应分别调用该哈希算法对应的 `loadWasm`。 `evpkdf`/`MD5` 的情况与之类似， `MD5` 是 `evpkdf` 的默认哈希算法。
 
 
 

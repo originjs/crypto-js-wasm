@@ -1,7 +1,7 @@
 import C from '../src/index';
 
 beforeAll(async () => {
-  await C.SHA256.loadWasm();
+  await C.HmacSHA256.loadWasm();
 });
 
 describe('algo-hmac-sha256-test', () => {

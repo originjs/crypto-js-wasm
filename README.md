@@ -39,8 +39,6 @@ yarn add @originjs/crypto-js-wasm
 
 Note that the async function `loadWasm()` should be called once (and once only!) for each algorithm that will be used, unless `loadAllWasm()` is called at the very beginning.
 
-
-
 ```javascript
 import CryptoJSW from 'crypto-js-wasm';
 
@@ -58,6 +56,10 @@ CryptoJSW.SHA256.loadWasm().then(() => {
     console.log(rstSHA256);
 })
 ```
+
+Please note that `HMAC` does not have a `loadWasm`, as a hasher must be specified if you want to use `HMAC` (i.e. `HmacSHA1`).
+
+And the `loadWasm` in `pbkdf2` only calls `SHA1.loadWasm` as `SHA1` is the default hasher of `pbkdf2`. If you specified another hasher, the corresponding `loadWasm` of the hasher should be called repectly. Same case in `evpkdf`/`MD5` as `MD5` is the default hasher of `evpkdf`.
 
 
 

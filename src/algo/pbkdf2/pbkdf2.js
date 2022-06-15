@@ -43,6 +43,20 @@ export class PBKDF2Algo extends Base {
   }
 
   /**
+   * SHA1 is the default hasher of pbkdf2.
+   * With another hasher configured, user should call the corresponding loadWasm of the configured hasher.
+   *
+   * @returns {Promise<null>}
+   */
+  static async loadWasm() {
+    return SHA1Algo.loadWasm();
+  }
+
+  async loadWasm() {
+    return PBKDF2Algo.loadWasm();
+  }
+
+  /**
    * Computes the Password-Based Key Derivation Function 2.
    *
    * @param {WordArray|string} password The password.
