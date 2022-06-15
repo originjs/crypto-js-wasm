@@ -104,16 +104,22 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 
 
 
-Firefox 101.0:
+*Firefox 101.0:*
 
 ![benchmark_firefox](benchmark/benchmark_firefox.png)
+
+
+
+*Nodejs v16.6.4:*
+
+![nodejs](benchmark/benchmark_nodejs.png)
 
 
 
 ## 开发
 
 ```bash
-# 安装
+# 安装依赖
 pnpm install
 
 # 生产构建

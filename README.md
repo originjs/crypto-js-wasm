@@ -104,9 +104,15 @@ The benchmark below is run on a desktop PC (i5-4590, 16 GB RAM, Windows 10 Versi
 
 
 
-Firefox 101.0:
+*Firefox 101.0:*
 
 ![benchmark_firefox](benchmark/benchmark_firefox.png)
+
+
+
+*Nodejs v16.6.4:*
+
+![nodejs](benchmark/benchmark_nodejs.png)
 
 
 
