@@ -227,7 +227,7 @@ export class RabbitLegacyAlgo extends StreamCipher {
  *
  * @example
  *
- *     var ciphertext = CryptoJS.RabbitLegacy.encrypt(message, key, cfg);
- *     var plaintext  = CryptoJS.RabbitLegacy.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.RabbitLegacy.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.RabbitLegacy.decrypt(ciphertext, key, cfg);
  */
 export const RabbitLegacy = StreamCipher._createHelper(RabbitLegacyAlgo);

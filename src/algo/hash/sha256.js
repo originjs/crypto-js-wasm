@@ -104,8 +104,8 @@ export class SHA256Algo extends Hasher {
  *
  * @example
  *
- *     var hash = CryptoJS.SHA256('message');
- *     var hash = CryptoJS.SHA256(wordArray);
+ *     const hash = CryptoJSW.SHA256('message');
+ *     const hash = CryptoJSW.SHA256(wordArray);
  */
 export const SHA256 = Hasher._createHelper(SHA256Algo);
 
@@ -121,6 +121,6 @@ export const SHA256 = Hasher._createHelper(SHA256Algo);
  *
  * @example
  *
- *     var hmac = CryptoJS.HmacSHA256(message, key);
+ *     const hmac = CryptoJSW.HmacSHA256(message, key);
  */
 export const HmacSHA256 = Hasher._createHmacHelper(SHA256Algo);

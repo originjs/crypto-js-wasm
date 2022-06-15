@@ -178,7 +178,7 @@ export class RabbitAlgo extends StreamCipher {
     const blockSizeBytes = blockSize * 4;
     const X = this._X;
     const C = this._C;
-    const b = this._b;  
+    const b = this._b;
 
     // Count blocks ready
     let nBlocksReady = dataSigBytes / blockSizeBytes;
@@ -229,7 +229,7 @@ export class RabbitAlgo extends StreamCipher {
  *
  * @example
  *
- *     var ciphertext = CryptoJS.Rabbit.encrypt(message, key, cfg);
- *     var plaintext  = CryptoJS.Rabbit.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.Rabbit.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.Rabbit.decrypt(ciphertext, key, cfg);
  */
 export const Rabbit = StreamCipher._createHelper(RabbitAlgo);

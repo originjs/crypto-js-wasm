@@ -17,7 +17,7 @@ export const Hex = {
      *
      * @example
      *
-     *     let hexString = CryptoJS.enc.Hex.stringify(wordArray);
+     *     const hexString = CryptoJSW.enc.Hex.stringify(wordArray);
      */
   stringify(wordArray) {
     // Shortcuts
@@ -25,7 +25,7 @@ export const Hex = {
       words,
       sigBytes
     } = wordArray;
-  
+
     // Convert
     const hexChars = [];
     for (let i = 0; i < sigBytes; i++) {
@@ -33,10 +33,10 @@ export const Hex = {
       hexChars.push((bite >>> 4).toString(16));
       hexChars.push((bite & 0x0f).toString(16));
     }
-  
+
     return hexChars.join('');
   },
-  
+
   /**
      * Converts a hex string to a word array.
      *
@@ -48,18 +48,18 @@ export const Hex = {
      *
      * @example
      *
-     *     let wordArray = CryptoJS.enc.Hex.parse(hexString);
+     *     const wordArray = CryptoJSW.enc.Hex.parse(hexString);
      */
   parse(hexStr) {
     // Shortcut
     const hexStrLength = hexStr.length;
-  
+
     // Convert
     const words = [];
     for (let i = 0; i < hexStrLength; i += 2) {
       words[i >>> 3] |= parseInt(hexStr.substr(i, 2), 16) << (24 - (i % 8) * 4);
     }
-  
+
     return new WordArray(words, hexStrLength / 2);
   }
 };

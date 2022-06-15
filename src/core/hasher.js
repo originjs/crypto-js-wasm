@@ -36,7 +36,7 @@ export class Hasher extends BufferedBlockAlgorithm {
      *
      * @example
      *
-     *     let SHA256 = CryptoJS.lib.Hasher._createHelper(CryptoJS.algo.SHA256);
+     *     let SHA256 = CryptoJSW.lib.Hasher._createHelper(CryptoJSW.algo.SHA256);
      */
   static _createHelper(SubHasher) {
     let result = (message, cfg) => new SubHasher(cfg).finalize(message);
@@ -60,7 +60,7 @@ export class Hasher extends BufferedBlockAlgorithm {
      *
      * @example
      *
-     *     let HmacSHA256 = CryptoJS.lib.Hasher._createHmacHelper(CryptoJS.algo.SHA256);
+     *     const HmacSHA256 = CryptoJSW.lib.Hasher._createHmacHelper(CryptoJSW.algo.SHA256);
      */
   static _createHmacHelper(SubHasher) {
     let result = (message, key) => new HMAC(SubHasher, key).finalize(message);

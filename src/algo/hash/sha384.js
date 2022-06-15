@@ -46,8 +46,8 @@ export class SHA384Algo extends SHA512Algo {
  *
  * @example
  *
- *     var hash = CryptoJS.SHA384('message');
- *     var hash = CryptoJS.SHA384(wordArray);
+ *     const hash = CryptoJSW.SHA384('message');
+ *     const hash = CryptoJSW.SHA384(wordArray);
  */
 export const SHA384 = SHA512Algo._createHelper(SHA384Algo);
 
@@ -63,6 +63,6 @@ export const SHA384 = SHA512Algo._createHelper(SHA384Algo);
  *
  * @example
  *
- *     var hmac = CryptoJS.HmacSHA384(message, key);
+ *     const hmac = CryptoJSW.HmacSHA384(message, key);
  */
 export const HmacSHA384 = SHA512Algo._createHmacHelper(SHA384Algo);

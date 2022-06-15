@@ -32,7 +32,7 @@ export const Base64 = {
    *
    * @example
    *
-   *     const base64String = CryptoJS.enc.Base64.stringify(wordArray);
+   *     const base64String = CryptoJSW.enc.Base64.stringify(wordArray);
    */
   stringify(wordArray) {
     // Shortcuts
@@ -114,7 +114,7 @@ export const Base64 = {
    *
    * @example
    *
-   *     const wordArray = CryptoJS.enc.Base64.parse(base64String);
+   *     const wordArray = CryptoJSW.enc.Base64.parse(base64String);
    */
   parse(base64Str) {
     // Shortcuts

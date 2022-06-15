@@ -17,7 +17,7 @@ export const Latin1 = {
      *
      * @example
      *
-     *     let latin1String = CryptoJS.enc.Latin1.stringify(wordArray);
+     *     const latin1String = CryptoJSW.enc.Latin1.stringify(wordArray);
      */
   stringify(wordArray) {
     // Shortcuts
@@ -47,7 +47,7 @@ export const Latin1 = {
      *
      * @example
      *
-     *     let wordArray = CryptoJS.enc.Latin1.parse(latin1String);
+     *     const wordArray = CryptoJSW.enc.Latin1.parse(latin1String);
      */
   parse(latin1Str) {
     // Shortcut

@@ -14,7 +14,7 @@ export const Pkcs7 = {
    *
    * @example
    *
-   *     CryptoJS.pad.Pkcs7.pad(wordArray, 4);
+   *     CryptoJSW.pad.Pkcs7.pad(wordArray, 4);
    */
   pad(data, blockSize) {
     // Shortcut
@@ -49,7 +49,7 @@ export const Pkcs7 = {
    *
    * @example
    *
-   *     CryptoJS.pad.Pkcs7.unpad(wordArray);
+   *     CryptoJSW.pad.Pkcs7.unpad(wordArray);
    */
   unpad(data) {
     const _data = data;

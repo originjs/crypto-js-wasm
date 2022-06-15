@@ -160,8 +160,8 @@ export class RIPEMD160Algo extends Hasher {
  *
  * @example
  *
- *     var hash = CryptoJS.RIPEMD160('message');
- *     var hash = CryptoJS.RIPEMD160(wordArray);
+ *     const hash = CryptoJSW.RIPEMD160('message');
+ *     const hash = CryptoJSW.RIPEMD160(wordArray);
  */
 export const RIPEMD160 = Hasher._createHelper(RIPEMD160Algo);
 
@@ -177,6 +177,6 @@ export const RIPEMD160 = Hasher._createHelper(RIPEMD160Algo);
  *
  * @example
  *
- *     var hmac = CryptoJS.HmacRIPEMD160(message, key);
+ *     const hmac = CryptoJSW.HmacRIPEMD160(message, key);
  */
 export const HmacRIPEMD160 = Hasher._createHmacHelper(RIPEMD160Algo);

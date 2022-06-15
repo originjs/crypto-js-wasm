@@ -30,14 +30,14 @@ export class X64Word extends Base {
 /**
  * An array of 64-bit words.
  *
- * @property {Array} words The array of CryptoJS.x64.Word objects.
+ * @property {Array} words The array of CryptoJSW.x64.Word objects.
  * @property {number} sigBytes The number of significant bytes in this word array.
  */
 export class X64WordArray extends Base {
   /**
    * Initializes a newly created word array.
    *
-   * @param {Array} words (Optional) An array of CryptoJS.x64.Word objects.
+   * @param {Array} words (Optional) An array of CryptoJSW.x64.Word objects.
    * @param {number} sigBytes (Optional) The number of significant bytes in the words.
    *
    * @example
@@ -64,7 +64,7 @@ export class X64WordArray extends Base {
   /**
    * Converts this 64-bit word array to a 32-bit word array.
    *
-   * @return {CryptoJS.lib.WordArray} This word array's data as a 32-bit word array.
+   * @return {CryptoJSW.lib.WordArray} This word array's data as a 32-bit word array.
    *
    * @example
    *

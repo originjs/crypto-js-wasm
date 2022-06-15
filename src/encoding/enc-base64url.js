@@ -34,7 +34,7 @@ export const Base64url = {
      *
      * @example
      *
-     *     var base64String = CryptoJS.enc.Base64url.stringify(wordArray);
+     *     const base64String = CryptoJSW.enc.Base64url.stringify(wordArray);
      */
   stringify(wordArray, urlSafe) {
     if (urlSafe === undefined) {
@@ -86,7 +86,7 @@ export const Base64url = {
      *
      * @example
      *
-     *     var wordArray = CryptoJS.enc.Base64url.parse(base64String);
+     *     const wordArray = CryptoJSW.enc.Base64url.parse(base64String);
      */
   parse(base64Str, urlSafe) {
     if (urlSafe === undefined) {

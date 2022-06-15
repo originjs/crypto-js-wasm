@@ -172,7 +172,7 @@ export class WordArray extends Base {
    *
    * @example
    *
-   *     let wordArray = CryptoJS.lib.WordArray.random(16);
+   *     const wordArray = CryptoJSW.lib.WordArray.random(16);
    */
   static random(nBytes) {
     const words = [];
@@ -187,15 +187,15 @@ export class WordArray extends Base {
   /**
    * Converts this word array to a string.
    *
-   * @param {Encoder} encoder (Optional) The encoding strategy to use. Default: CryptoJS.enc.Hex
+   * @param {Encoder} encoder (Optional) The encoding strategy to use. Default: CryptoJSW.enc.Hex
    *
    * @return {string} The stringified word array.
    *
    * @example
    *
-   *     let string = wordArray + '';
-   *     let string = wordArray.toString();
-   *     let string = wordArray.toString(CryptoJS.enc.Utf8);
+   *     const string = wordArray + '';
+   *     const string = wordArray.toString();
+   *     const string = wordArray.toString(CryptoJSW.enc.Utf8);
    */
   toString(encoder = Hex) {
     return encoder.stringify(this);

@@ -162,8 +162,8 @@ export class RC4Algo extends StreamCipher {
  *
  * @example
  *
- *     var ciphertext = CryptoJS.RC4.encrypt(message, key, cfg);
- *     var plaintext  = CryptoJS.RC4.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.RC4.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.RC4.decrypt(ciphertext, key, cfg);
  */
 export const RC4 = StreamCipher._createHelper(RC4Algo);
 
@@ -199,7 +199,7 @@ export class RC4DropAlgo extends RC4Algo {
  *
  * @example
  *
- *     var ciphertext = CryptoJS.RC4Drop.encrypt(message, key, cfg);
- *     var plaintext  = CryptoJS.RC4Drop.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.RC4Drop.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.RC4Drop.decrypt(ciphertext, key, cfg);
  */
 export const RC4Drop = StreamCipher._createHelper(RC4DropAlgo);

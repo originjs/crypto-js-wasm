@@ -15,7 +15,7 @@ export const Utf8 = {
      *
      * @example
      *
-     *     let utf8String = CryptoJS.enc.Utf8.stringify(wordArray);
+     *     const utf8String = CryptoJSW.enc.Utf8.stringify(wordArray);
      */
   stringify(wordArray) {
     try {
@@ -36,7 +36,7 @@ export const Utf8 = {
      *
      * @example
      *
-     *     let wordArray = CryptoJS.enc.Utf8.parse(utf8String);
+     *     const wordArray = CryptoJSW.enc.Utf8.parse(utf8String);
      */
   parse(utf8Str) {
     return Latin1.parse(unescape(encodeURIComponent(utf8Str)));

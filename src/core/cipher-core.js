@@ -51,7 +51,7 @@ export class Cipher extends BufferedBlockAlgorithm {
    * @example
    *
    *     const cipher = new Cipher(
-   *       CryptoJS.algo.AES._ENC_XFORM_MODE, keyWordArray, { iv: ivWordArray }
+   *       CryptoJSW.algo.AES._ENC_XFORM_MODE, keyWordArray, { iv: ivWordArray }
    *     );
    */
   constructor(xformMode, key, cfg) {
@@ -89,7 +89,7 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    * @example
    *
-   *     const cipher = CryptoJS.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
+   *     const cipher = CryptoJSW.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
    */
   static createEncryptor(key, cfg) {
     return new this(this._ENC_XFORM_MODE, key, cfg);
@@ -107,7 +107,7 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    * @example
    *
-   *     const cipher = CryptoJS.algo.AES.createDecryptor(keyWordArray, { iv: ivWordArray });
+   *     const cipher = CryptoJSW.algo.AES.createDecryptor(keyWordArray, { iv: ivWordArray });
    */
   static createDecryptor(key, cfg) {
     return new this(this._DEC_XFORM_MODE, key, cfg);
@@ -124,7 +124,7 @@ export class Cipher extends BufferedBlockAlgorithm {
    *
    * @example
    *
-   *     const AES = CryptoJS.lib.Cipher._createHelper(CryptoJS.algo.AES);
+   *     const AES = CryptoJSW.lib.Cipher._createHelper(CryptoJSW.algo.AES);
    */
   static _createHelper(SubCipher) {
     const selectCipherStrategy = (key) => {
@@ -271,7 +271,7 @@ export class BlockCipherMode extends Base {
    *
    * @example
    *
-   *     const mode = CryptoJS.mode.CBC.createEncryptor(cipher, iv.words);
+   *     const mode = CryptoJSW.mode.CBC.createEncryptor(cipher, iv.words);
    */
   static createEncryptor(cipher, iv) {
     return new this.Encryptor(cipher, iv);
@@ -287,7 +287,7 @@ export class BlockCipherMode extends Base {
    *
    * @example
    *
-   *     const mode = CryptoJS.mode.CBC.createDecryptor(cipher, iv.words);
+   *     const mode = CryptoJSW.mode.CBC.createDecryptor(cipher, iv.words);
    */
   static createDecryptor(cipher, iv) {
     return new this.Decryptor(cipher, iv);
@@ -499,11 +499,11 @@ export class CipherParams extends Base {
    *         key: keyWordArray,
    *         iv: ivWordArray,
    *         salt: saltWordArray,
-   *         algorithm: CryptoJS.algo.AES,
-   *         mode: CryptoJS.mode.CBC,
-   *         padding: CryptoJS.pad.PKCS7,
+   *         algorithm: CryptoJSW.algo.AES,
+   *         mode: CryptoJSW.mode.CBC,
+   *         padding: CryptoJSW.pad.PKCS7,
    *         blockSize: 4,
-   *         formatter: CryptoJS.format.OpenSSL
+   *         formatter: CryptoJSW.format.OpenSSL
    *     });
    */
   constructor(cipherParams) {
@@ -525,7 +525,7 @@ export class CipherParams extends Base {
    *
    *     let string = cipherParams + '';
    *     let string = cipherParams.toString();
-   *     let string = cipherParams.toString(CryptoJS.format.OpenSSL);
+   *     let string = cipherParams.toString(CryptoJSW.format.OpenSSL);
    */
   toString(formatter) {
     return (formatter || this.formatter).stringify(this);
@@ -547,7 +547,7 @@ export const OpenSSLFormatter = {
    *
    * @example
    *
-   *     let openSSLString = CryptoJS.format.OpenSSL.stringify(cipherParams);
+   *     let openSSLString = CryptoJSW.format.OpenSSL.stringify(cipherParams);
    */
   stringify(cipherParams) {
     let wordArray;
@@ -579,7 +579,7 @@ export const OpenSSLFormatter = {
    *
    * @example
    *
-   *     let cipherParams = CryptoJS.format.OpenSSL.parse(openSSLString);
+   *     let cipherParams = CryptoJSW.format.OpenSSL.parse(openSSLString);
    */
   parse(openSSLStr) {
     let salt;
@@ -626,12 +626,12 @@ export class SerializableCipher extends Base {
    *
    * @example
    *
-   *     let ciphertextParams = CryptoJS.lib.SerializableCipher
-   *       .encrypt(CryptoJS.algo.AES, message, key);
-   *     let ciphertextParams = CryptoJS.lib.SerializableCipher
-   *       .encrypt(CryptoJS.algo.AES, message, key, { iv: iv });
-   *     let ciphertextParams = CryptoJS.lib.SerializableCipher
-   *       .encrypt(CryptoJS.algo.AES, message, key, { iv: iv, format: CryptoJS.format.OpenSSL });
+   *     let ciphertextParams = CryptoJSW.lib.SerializableCipher
+   *       .encrypt(CryptoJSW.algo.AES, message, key);
+   *     let ciphertextParams = CryptoJSW.lib.SerializableCipher
+   *       .encrypt(CryptoJSW.algo.AES, message, key, { iv: iv });
+   *     let ciphertextParams = CryptoJSW.lib.SerializableCipher
+   *       .encrypt(CryptoJSW.algo.AES, message, key, { iv: iv, format: CryptoJSW.format.OpenSSL });
    */
   static encrypt(cipher, message, key, cfg, wasm) {
     // Apply config defaults
@@ -671,12 +671,12 @@ export class SerializableCipher extends Base {
    *
    * @example
    *
-   *     let plaintext = CryptoJS.lib.SerializableCipher
-   *       .decrypt(CryptoJS.algo.AES, formattedCiphertext, key,
-   *         { iv: iv, format: CryptoJS.format.OpenSSL });
-   *     let plaintext = CryptoJS.lib.SerializableCipher
-   *       .decrypt(CryptoJS.algo.AES, ciphertextParams, key,
-   *         { iv: iv, format: CryptoJS.format.OpenSSL });
+   *     let plaintext = CryptoJSW.lib.SerializableCipher
+   *       .decrypt(CryptoJSW.algo.AES, formattedCiphertext, key,
+   *         { iv: iv, format: CryptoJSW.format.OpenSSL });
+   *     let plaintext = CryptoJSW.lib.SerializableCipher
+   *       .decrypt(CryptoJSW.algo.AES, ciphertextParams, key,
+   *         { iv: iv, format: CryptoJSW.format.OpenSSL });
    */
   static decrypt(cipher, ciphertext, key, cfg) {
     let _ciphertext = ciphertext;
@@ -706,7 +706,7 @@ export class SerializableCipher extends Base {
    *
    * @example
    *
-   *     let ciphertextParams = CryptoJS.lib.SerializableCipher
+   *     let ciphertextParams = CryptoJSW.lib.SerializableCipher
    *       ._parse(ciphertextStringOrParams, format);
    */
   static _parse(ciphertext, format) {
@@ -754,8 +754,8 @@ export const OpenSSLKdf = {
    *
    * @example
    *
-   *     let derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32);
-   *     let derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32, 'saltsalt');
+   *     let derivedParams = CryptoJSW.kdf.OpenSSL.execute('Password', 256/32, 128/32);
+   *     let derivedParams = CryptoJSW.kdf.OpenSSL.execute('Password', 256/32, 128/32, 'saltsalt');
    */
   execute(password, keySize, ivSize, salt, hasher) {
     let _salt = salt;
@@ -814,10 +814,10 @@ export class PasswordBasedCipher extends SerializableCipher {
    *
    * @example
    *
-   *     let ciphertextParams = CryptoJS.lib.PasswordBasedCipher
-   *       .encrypt(CryptoJS.algo.AES, message, 'password');
-   *     let ciphertextParams = CryptoJS.lib.PasswordBasedCipher
-   *       .encrypt(CryptoJS.algo.AES, message, 'password', { format: CryptoJS.format.OpenSSL });
+   *     let ciphertextParams = CryptoJSW.lib.PasswordBasedCipher
+   *       .encrypt(CryptoJSW.algo.AES, message, 'password');
+   *     let ciphertextParams = CryptoJSW.lib.PasswordBasedCipher
+   *       .encrypt(CryptoJSW.algo.AES, message, 'password', { format: CryptoJSW.format.OpenSSL });
    */
   static encrypt(cipher, message, password, cfg, wasm) {
     // Apply config defaults
@@ -853,12 +853,12 @@ export class PasswordBasedCipher extends SerializableCipher {
    *
    * @example
    *
-   *     let plaintext = CryptoJS.lib.PasswordBasedCipher
-   *       .decrypt(CryptoJS.algo.AES, formattedCiphertext, 'password',
-   *         { format: CryptoJS.format.OpenSSL });
-   *     let plaintext = CryptoJS.lib.PasswordBasedCipher
-   *       .decrypt(CryptoJS.algo.AES, ciphertextParams, 'password',
-   *         { format: CryptoJS.format.OpenSSL });
+   *     let plaintext = CryptoJSW.lib.PasswordBasedCipher
+   *       .decrypt(CryptoJSW.algo.AES, formattedCiphertext, 'password',
+   *         { format: CryptoJSW.format.OpenSSL });
+   *     let plaintext = CryptoJSW.lib.PasswordBasedCipher
+   *       .decrypt(CryptoJSW.algo.AES, ciphertextParams, 'password',
+   *         { format: CryptoJSW.format.OpenSSL });
    */
   static decrypt(cipher, ciphertext, password, cfg) {
     let _ciphertext = ciphertext;

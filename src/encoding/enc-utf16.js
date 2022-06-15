@@ -19,7 +19,7 @@ export const Utf16BE = {
    *
    * @example
    *
-   *     const utf16String = CryptoJS.enc.Utf16.stringify(wordArray);
+   *     const utf16String = CryptoJSW.enc.Utf16.stringify(wordArray);
    */
   stringify(wordArray) {
     // Shortcuts
@@ -46,7 +46,7 @@ export const Utf16BE = {
    *
    * @example
    *
-   *     const wordArray = CryptoJS.enc.Utf16.parse(utf16String);
+   *     const wordArray = CryptoJSW.enc.Utf16.parse(utf16String);
    */
   parse(utf16Str) {
     // Shortcut
@@ -78,7 +78,7 @@ export const Utf16LE = {
    *
    * @example
    *
-   *     const utf16Str = CryptoJS.enc.Utf16LE.stringify(wordArray);
+   *     const utf16Str = CryptoJSW.enc.Utf16LE.stringify(wordArray);
    */
   stringify(wordArray) {
     // Shortcuts
@@ -105,7 +105,7 @@ export const Utf16LE = {
    *
    * @example
    *
-   *     const wordArray = CryptoJS.enc.Utf16LE.parse(utf16Str);
+   *     const wordArray = CryptoJSW.enc.Utf16LE.parse(utf16Str);
    */
   parse(utf16Str) {
     // Shortcut

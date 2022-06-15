@@ -112,9 +112,9 @@ export class EvpKDFAlgo extends Base {
  *
  * @example
  *
- *     let key = CryptoJS.EvpKDF(password, salt);
- *     let key = CryptoJS.EvpKDF(password, salt, { keySize: 8 });
- *     let key = CryptoJS.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
+ *     const key = CryptoJSW.EvpKDF(password, salt);
+ *     const key = CryptoJSW.EvpKDF(password, salt, { keySize: 8 });
+ *     const key = CryptoJSW.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
  */
 export const EvpKDF = (password, salt, cfg) => new EvpKDFAlgo(cfg).compute(password, salt);
 

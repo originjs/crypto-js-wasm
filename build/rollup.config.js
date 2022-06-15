@@ -21,7 +21,7 @@ module.exports = {
   output: {
     file: uniqResolve('../lib/index.js'),
     format: 'umd',
-    name: 'CryptoJS',
+    name: 'CryptoJSWasm',
     banner
   },
   plugins: [

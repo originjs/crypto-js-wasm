@@ -192,8 +192,8 @@ export class DESAlgo extends BlockCipher {
  *
  * @example
  *
- *     const ciphertext = CryptoJS.DES.encrypt(message, key, cfg);
- *     const plaintext  = CryptoJS.DES.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.DES.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.DES.decrypt(ciphertext, key, cfg);
  */
 export const DES = BlockCipher._createHelper(DESAlgo);
 
@@ -313,7 +313,7 @@ export class TripleDESAlgo extends BlockCipher {
  *
  * @example
  *
- *     const ciphertext = CryptoJS.TripleDES.encrypt(message, key, cfg);
- *     const plaintext  = CryptoJS.TripleDES.decrypt(ciphertext, key, cfg);
+ *     const ciphertext = CryptoJSW.TripleDES.encrypt(message, key, cfg);
+ *     const plaintext  = CryptoJSW.TripleDES.decrypt(ciphertext, key, cfg);
  */
 export const TripleDES = BlockCipher._createHelper(TripleDESAlgo);

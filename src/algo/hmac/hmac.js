@@ -15,7 +15,7 @@ export class HMAC extends Base {
    *
    * @example
    *
-   *     let hmacHasher = new HMAC(CryptoJS.algo.SHA256, key);
+   *     const hmacHasher = new HMAC(CryptoJSW.algo.SHA256, key);
    */
   constructor(SubHasher, key) {
     super();

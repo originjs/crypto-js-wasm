@@ -157,8 +157,8 @@ export class SHA3Algo extends Hasher {
  *
  * @example
  *
- *     var hash = CryptoJS.SHA3('message');
- *     var hash = CryptoJS.SHA3(wordArray);
+ *     const hash = CryptoJSW.SHA3('message');
+ *     const hash = CryptoJSW.SHA3(wordArray);
  */
 export const SHA3 = Hasher._createHelper(SHA3Algo);
 
@@ -174,6 +174,6 @@ export const SHA3 = Hasher._createHelper(SHA3Algo);
  *
  * @example
  *
- *     var hmac = CryptoJS.HmacSHA3(message, key);
+ *     const hmac = CryptoJSW.HmacSHA3(message, key);
  */
 export const HmacSHA3 = Hasher._createHmacHelper(SHA3Algo);
