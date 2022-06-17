@@ -1,6 +1,6 @@
 {
   "name": "@originjs/crypto-js-wasm",
-  "version": "1.0.0-beta0",
+  "version": "1.0.0",
   "description": "An alternate to crypto-js implemented with WebAssembly and ESM",
   "main": "lib/index.js",
   "files": ["lib"],
