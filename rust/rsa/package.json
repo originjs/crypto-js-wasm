@@ -1,0 +1,19 @@
+{
+  "name": "rust-rsa-wasmpack",
+  "version": "1.0.0",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev:browser": "http-server pkgs -c-1 -o",
+    "dev:node": "node js/rsa.js",
+    "test:rust": "cargo test",
+    "test:js": "cd js && pnpm install && pnpm test"
+  },
+  "devDependencies": {
+    "shelljs": "^0.8.5",
+    "http-server": "^14.1.1"
+  },
+  "author": "Carrick"
+}
