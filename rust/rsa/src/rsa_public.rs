@@ -32,7 +32,7 @@ impl RsaPublic {
     pub fn encrypt(&self, msg: &[u8], padding_scheme: &str) -> Vec<u8> {
         // default padding scheme: OAEP with sha256
         let padding = match padding_scheme {
-            "PKCS1V15Encrypt" => PaddingScheme::new_pkcs1v15_encrypt(),
+            "PKCS1V15" => PaddingScheme::new_pkcs1v15_encrypt(),
             "OAEP" => PaddingScheme::new_oaep::<sha2::Sha256>(),
             _ => PaddingScheme::new_oaep::<sha2::Sha256>(),
         };
@@ -49,7 +49,7 @@ impl RsaPublic {
         let padding = match padding_str {
             // use sha256 as default hasher for pkcs1v15
             // TODO: add mapping for hash function. The input of hash here is to check the digest length
-            "PKCS1V15Sign" => PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA3_256)),
+            "PKCS1V15" => PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA3_256)),
             "PSS" => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len()),
             _ => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len())
         };

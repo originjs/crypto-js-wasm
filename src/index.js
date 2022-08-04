@@ -53,7 +53,7 @@ import {
   RC4DropAlgo,
   RC4Drop
 } from './encryption/rc4.js';
-import { RSAAlgo, RSAPromise } from './encryption/rsa.js';
+import { RSAAlgo, RSA } from './encryption/rsa.js';
 
 import { CFB } from './mode/mode-cfb.js';
 import { CTR } from './mode/mode-ctr.js';
@@ -181,5 +181,5 @@ export default {
   RabbitLegacy,
   RC4,
   RC4Drop,
-  RSAPromise
+  RSA
 };

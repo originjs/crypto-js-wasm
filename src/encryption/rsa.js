@@ -1,16 +1,53 @@
 import { init, RsaPrivate, RsaPublic } from './rsa_bg.js';
 
+const DEFAULT_RSA_KEY_SIZE = 1024;
+const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
+const DEFAULT_RSA_SIGN_PADDING = 'PSS';
+const RSA_PRIVATE_KEY_START = '-----BEGIN PRIVATE KEY-----';
+const RSA_PUBLIC_KEY_START = '-----BEGIN PUBLIC KEY-----';
+
 // TODO: should extend AsymmetricCipher(class not created yet)
 export class RSAAlgo {
-  // TODO: add code for loading wasm
   static wasm = null;
+  static keyFilePathOrKeySize = null;
+  static isPublicKey = false;
+  static keyChanged = false;
+
+  /**
+   * Update the key of RSA. The input can be a path to the private/public key file, or the key size in bits
+   *
+   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
+   * @param isPublicKey true if the input key file is a public key file
+   */
+  static updateRsaKey(keyFilePathOrKeySize = 1024, isPublicKey = false) {
+    if (keyFilePathOrKeySize === null || keyFilePathOrKeySize === undefined) {
+      keyFilePathOrKeySize = 1024;
+    }
+
+    if (typeof keyFilePathOrKeySize !== 'number' && typeof keyFilePathOrKeySize !== 'string') {
+      throw new Error('The input keyFilePathOrKeySize should be a number or string');
+    }
+
+    if (keyFilePathOrKeySize === RSAAlgo.keyFilePathOrKeySize && isPublicKey == RSAAlgo.isPublicKey) {
+      // do not update keys if nothing changed
+      return;
+    }
+    RSAAlgo.keyFilePathOrKeySize = keyFilePathOrKeySize;
+    RSAAlgo.isPublicKey = isPublicKey;
+    RSAAlgo.keyChanged = true;
+  }
+
+  updateRsaKey(keyFilePathOrKeySize, isPublicKey) {
+    RSAAlgo.updateRsaKey(keyFilePathOrKeySize, isPublicKey);
+  }
 
   static async loadWasm() {
     if (RSAAlgo.wasm) {
       return RSAAlgo.wasm;
     }
 
-    RSAAlgo.wasm = await init();
+    await init();
+    RSAAlgo.wasm = true;
     return RSAAlgo.wasm;
   }
 
@@ -19,100 +56,220 @@ export class RSAAlgo {
   }
 
   /**
-   * Instantiate a new object with given key file
-   * @param path the input key file path
-   * @param isPubIn true if the input key file is a public key file
-   * @returns {RSAAlgo} a new instance of RSAAlgo
+   * Constructor of RSAAlgo
+   *
+   * @param keyFilePathOrKeySize {string | number | null} the key file path or key size in bytes, set as 1024 bits as default
+   * @param cfg {object} the config for rsa
    */
-  static async fromKeyFile(path, isPubIn = false) {
-    if (RSAAlgo.wasm === null) {
-      await init();
-      RSAAlgo.wasm = true;
+  constructor(keyFilePathOrKeySize, cfg) {
+    RSAAlgo.updateRsaKey(keyFilePathOrKeySize);
+    this.updateConfig(cfg);
+  }
+
+  /**
+   * Update the config for rsa. The configs of RSA are:
+   * encryptPadding: encrypt padding mode, values may be 'OAEP'(default)/'PKCS1V15'
+   * signPadding: sign padding mode, value may be 'PSS'(default)/'PKCS1V15'
+   *
+   * @param cfg {object} the config for rsa
+   */
+  updateConfig(cfg) {
+    this.updateEncryptPadding(DEFAULT_RSA_ENCRYPT_PADDING);
+    this.updateSignPadding(DEFAULT_RSA_SIGN_PADDING);
+    if (cfg !== undefined) {
+      if (cfg.encryptPadding !== undefined) {
+        this.updateEncryptPadding(cfg.encryptPadding);
+      }
+
+      if (cfg.signPadding !== undefined) {
+        this.updateEncryptPadding(cfg.signPadding);
+      }
+    }
+  }
+
+  /**
+   * init keys from key file or key size
+   */
+  initKeys() {
+    if (!RSAAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
 
-    const { fs } = await import('fs');
+    // only update keys if key has been changed, and private/public key is specified
+    if (!RSAAlgo.keyChanged && (this.RsaPrivate !== null || this.RsaPublic != null)) {
+      return;
+    }
 
+    if (RSAAlgo.keyFilePathOrKeySize === undefined) {
+      this.initFromKeySize(DEFAULT_RSA_KEY_SIZE);
+      RSAAlgo.keyChanged = false;
+      return;
+    }
+
+    if (typeof RSAAlgo.keyFilePathOrKeySize === 'number') {
+      this.initFromKeySize(RSAAlgo.keyFilePathOrKeySize);
+      RSAAlgo.keyChanged = false;
+      return;
+    }
+
+    if (typeof RSAAlgo.keyFilePathOrKeySize === 'string') {
+      if (this.isRsaKeyContent(RSAAlgo.keyFilePathOrKeySize)) {
+        this.initFromKeyContent(RSAAlgo.keyFilePathOrKeySize, RSAAlgo.isPublicKey);
+      } else {
+        this.initFromKeyFile(RSAAlgo.keyFilePathOrKeySize, RSAAlgo.isPublicKey);
+      }
+      RSAAlgo.keyChanged = false;
+      return;
+    }
+
+    // set the key size to 1024 by default
+    this.initFromKeySize(DEFAULT_RSA_KEY_SIZE);
+    RSAAlgo.keyChanged = false;
+  }
+
+  /**
+   * Return true if the given string is a rsa key content
+   *
+   * @param content the input content
+   * @returns {boolean} true if the given string is a rsa key content
+   */
+  isRsaKeyContent(content) {
+    if (content.startsWith(RSA_PRIVATE_KEY_START) || content.startsWith(RSA_PUBLIC_KEY_START)) {
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Init rsa keys with given key content
+   *
+   * @param keyContent the input key content
+   * @param isPublicKey true if the input content is a public content
+   */
+  initFromKeyContent(keyContent, isPublicKey = false) {
+    isPublicKey
+      ? this.init(null, new RsaPublic(keyContent))
+      : this.init(new RsaPrivate(null, keyContent));
+  }
+
+  /**
+   * Init rsa keys with given key file
+   * @param path the input key file path
+   * @param isPublicKey true if the input key file is a public key file
+   */
+  initFromKeyFile(path, isPublicKey = false) {
+    this.errorIfInBrowser();
+    if (!RSAAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
+    }
+
+    const fs = require('fs');
+
+    if (!fs.existsSync(path)) {
+      throw new Error('Can not find the key file in path :\n' + path);
+    }
     const keyContent = fs.readFileSync(path, {
       encoding: 'utf-8',
       flag: 'r'
     });
-    return isPubIn
-      ? new this(null, new RsaPublic(keyContent))
-      : new this(new RsaPrivate(null, keyContent));
+    this.initFromKeyContent(keyContent, isPublicKey);
   }
 
   /**
-   * Instantiate a new object with given key size
+   * Init rsa keys with given key size
    * @param bits key size in bytes
-   * @returns {RSAAlgo} a new instance of RSAAlgo
    */
-  static async fromKeySize(bits) {
-    if (RSAAlgo.wasm === null) {
-      await init();
-      RSAAlgo.wasm = true;
+  initFromKeySize(bits) {
+    if (!RSAAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
 
-    return new this(new RsaPrivate(bits));
+    this.init(new RsaPrivate(bits));
   }
 
-  constructor(privateKey, publicKey) {
-    if (publicKey === undefined) {
-      if (privateKey === undefined) {
+  updateEncryptPadding(encryptPadding) {
+    this.encryptPadding = encryptPadding;
+  }
+
+  updateSignPadding(signPadding) {
+    this.signPadding = signPadding;
+  }
+
+  init(privateKey, publicKey) {
+    if (!RSAAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
+    }
+
+    if (publicKey === undefined || privateKey === null) {
+      if (privateKey === undefined || privateKey === null) {
         // create a new 1024 bit RSA key pair if no parameter is specified
-        privateKey = new RsaPrivate(1024);
+        privateKey = new RsaPrivate(DEFAULT_RSA_KEY_SIZE);
       }
       publicKey = new RsaPublic(privateKey.getPublicKeyPem());
     }
-    this.RsaPrivate = privateKey ?? null;
+    this.RsaPrivate = privateKey;
     this.RsaPublic = publicKey;
   }
 
   /**
    * Encrypt the given message
    * @param {string | Uint8Array} msg the original message
-   * @param {string} padding the padding scheme for rsa encryption
    * @returns {Uint8Array} the encrypted message
    */
-  encrypt(msg, padding = 'OAEP') {
-    return this.RsaPublic.encrypt(this.strToBytes(msg), padding);
+  encrypt(msg) {
+    this.initKeys();
+
+    return this.RsaPublic.encrypt(this.strToBytes(msg), this.encryptPadding);
   }
 
   /**
    * Decrypt the given message
    * @param {Uint8Array} msgEncrypted the encrypted message
-   * @param {string} padding the padding scheme for rsa encryption
    * @returns {Uint8Array} the decrypted message
    */
-  decrypt(msgEncrypted, padding = 'OAEP') {
+  decrypt(msgEncrypted) {
     this.errorIfNoPrivateInstance();
-    return this.RsaPrivate.decrypt(msgEncrypted, padding);
+    this.initKeys();
+
+    let result;
+    try {
+      result = this.RsaPrivate.decrypt(msgEncrypted, this.encryptPadding);
+    } catch (e) {
+      console.error('Error occurred when decrypting : ', e);
+      return null;
+    }
+    return result;
   }
 
   // TODO: only support Uint8Array for now. Consider adding support for string(base64)
   /**
    * RSA sign
-   * @param {string | Uint8Array} dig the digest of the message
-   * @param {string} padding the padding scheme for rsa encryption
+   * @param {string | Uint8Array} digest the digest of the message
    * @returns {Uint8Array} the rsa signature
    */
-  sign(dig, padding = 'PSS') {
+  sign(digest) {
     this.errorIfNoPrivateInstance();
-    return this.RsaPrivate.sign(dig, padding);
+    this.initKeys();
+
+    return this.RsaPrivate.sign(digest, this.signPadding);
   }
 
   /**
    * Verify the given RSA signature
-   * @param {Uint8Array} dig the digest of the message
-   * @param {Uint8Array} sig the signature signed using private key
-   * @param {string} padding the padding scheme for rsa encryption
+   * @param {Uint8Array} digest the digest of the message
+   * @param {Uint8Array} signature the signature signed using private key
    * @returns {boolean} true if signature is valid
    */
-  verify(dig, sig, padding = 'PSS') {
-    return this.RsaPublic.verify(dig, sig, padding);
+  verify(digest, signature) {
+    this.initKeys();
+
+    return this.RsaPublic.verify(digest, signature, this.signPadding);
   }
 
   async generateKeyFile(keyType = 'pairs', fileFmt = 'pem', fileName = 'key', dir = './keys') {
+    this.initKeys();
     this.errorIfInBrowser();
+
     switch (keyType) {
     case 'pairs':
       this.generateKeyFile('private', fileFmt, fileName, dir);
@@ -152,7 +309,6 @@ export class RSAAlgo {
       if (err) {
         throw err;
       }
-      console.log(`Successfully generated private key file at ${keyPath}`);
     });
   }
 
@@ -162,6 +318,7 @@ export class RSAAlgo {
    */
   // TODO: unused
   getKeyType() {
+    this.initKeys();
     return RsaPrivate ? 'private' : 'public';
   }
 
@@ -172,8 +329,10 @@ export class RSAAlgo {
    * @returns {*}
    */
   getKeyContent(keyType, keyFmt = 'pem') {
+    this.errorIfNoPrivateInstance();
+    this.initKeys();
+
     if (keyType == 'private') {
-      this.errorIfNoPrivateInstance();
       return this.RsaPrivate.getPrivateKeyContent(keyFmt);
     }
 
@@ -202,8 +361,8 @@ export class RSAAlgo {
    * Throws if private key is not instantiated
    */
   errorIfNoPrivateInstance() {
-    if (this.RsaPrivate === null) {
-      throw TypeError('Private key has not benn instantiated');
+    if (this.RsaPrivate === null || this.RsaPublic === null) {
+      throw TypeError('Private key or public key has not benn instantiated');
     }
   }
 
@@ -233,4 +392,51 @@ export class RSAAlgo {
  *  const sig = RSA.sign(dig);
  *  const isVerified = RSA.verify(dig, sig);
  */
-export const RSAPromise = RSAAlgo.fromKeySize(1024);
+export const RSA = {
+  // TODO: extract this into a helper class
+  rsa : new RSAAlgo(),
+
+  async loadWasm() {
+    RSAAlgo.loadWasm();
+  },
+
+  updateRsaKey(keyFilePathOrKeySize, isPublicKey) {
+    this.rsa.updateRsaKey(keyFilePathOrKeySize, isPublicKey);
+  },
+
+  encrypt(message, key, isPublicKey, cfg) {
+    this.updateRsaKey(key);
+    this.rsa.updateConfig(cfg);
+    return this.rsa.encrypt(message);
+  },
+
+  decrypt(ciphertext, key, isPublicKey, cfg) {
+    this.updateRsaKey(key);
+    this.rsa.updateConfig(cfg);
+    return this.rsa.decrypt(ciphertext);
+  },
+
+  sign(digest, key, isPublicKey, cfg) {
+    this.updateRsaKey(key);
+    this.rsa.updateConfig(cfg);
+    return this.rsa.sign(digest);
+  },
+
+  verify(digest, signature, key, isPublicKey, cfg) {
+    this.updateRsaKey(key);
+    this.rsa.updateConfig(cfg);
+    return this.rsa.verify(digest, signature);
+  },
+
+  async generateKeyFile(keyType, fileFm, fileName, dir) {
+    return this.rsa.generateKeyFile(keyType, fileFm, fileName, dir);
+  },
+
+  getKeyType() {
+    return this.rsa.getKeyType();
+  },
+
+  getKeyContent(keyType, keyFmt) {
+    return this.rsa.getKeyContent(keyType, keyFmt);
+  }
+};

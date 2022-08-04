@@ -3,14 +3,10 @@ import { init as nodejsInit, RsaPrivate as nodejsRsaPrivate, RsaPublic as nodejs
 
 let init, RsaPrivate, RsaPublic;
 if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-  console.log('Browser detected');
-
   init = browserInit;
   RsaPrivate = browserRsaPrivate;
   RsaPublic = browserRsaPublic;
 } else if (typeof process !== 'undefined' && process.versions != null && process.versions.node != null) {
-  console.log('Nodejs detected');
-
   init = nodejsInit;
   RsaPrivate = nodejsRsaPrivate;
   RsaPublic = nodejsRsaPublic;
