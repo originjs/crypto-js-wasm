@@ -1,4 +1,4 @@
-import { init, RsaPrivate, RsaPublic } from './rsa_bg.js';
+import { init, RsaPrivate, RsaPublic, } from './rsa_bg.js';
 
 const DEFAULT_RSA_KEY_SIZE = 1024;
 const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
@@ -170,7 +170,7 @@ export class RSAAlgo {
     }
     const keyContent = fs.readFileSync(path, {
       encoding: 'utf-8',
-      flag: 'r'
+      flag: 'r',
     });
     this.initFromKeyContent(keyContent, isPublicKey);
   }
@@ -297,7 +297,7 @@ export class RSAAlgo {
       keyContent = Uint8Array.from(keyContent);
     }
 
-    const { fs } = await import('fs');
+    const { fs, } = await import('fs');
 
     // create dir if not existed
     if (!fs.existsSync(dir)) {
@@ -397,7 +397,7 @@ export const RSA = {
   rsa : new RSAAlgo(),
 
   async loadWasm() {
-    RSAAlgo.loadWasm();
+    await RSAAlgo.loadWasm();
   },
 
   updateRsaKey(keyFilePathOrKeySize, isPublicKey) {
@@ -438,5 +438,5 @@ export const RSA = {
 
   getKeyContent(keyType, keyFmt) {
     return this.rsa.getKeyContent(keyType, keyFmt);
-  }
+  },
 };
