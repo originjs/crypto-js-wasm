@@ -1,15 +1,14 @@
 const path = require('path');
 const pkg = require('../package.json');
 const babel = require('@rollup/plugin-babel');
-
+const commonjs = require('@rollup/plugin-commonjs');
 
 const banner = `/*
     @license
-    crypto-js v${pkg.version}
-    (c) 2009-2013 Jeff Most
-    (c) 2013-${new Date().getFullYear()} ${pkg.author.name}
+    crypto-js-wasm v${pkg.version}
+    (c) 2022-${new Date().getFullYear()} ${pkg.author.name}
     ${pkg.repository.url}
-    Released under the MIT License.
+    Released under the MulanPSL2 License.
 */`;
 
 const uniqResolve = (p) => {
@@ -29,5 +28,6 @@ module.exports = {
       exclude: 'node_modules/**',
       plugins: ['@babel/plugin-proposal-class-properties']
     }),
+    commonjs(),
   ]
 };

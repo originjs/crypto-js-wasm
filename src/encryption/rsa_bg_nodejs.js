@@ -1,10 +1,10 @@
-import { wasmBytes } from './rsa_wasm_nodejs';
+const { wasmBytes, } = require('./rsa_wasm_nodejs');
 
 let imports = {};
 imports['__wbindgen_placeholder__'] = module.exports;
 let wasm;
 let globalThis;
-const { TextDecoder, TextEncoder } = require('util');
+const { TextDecoder, TextEncoder, } = require('util');
 
 const heap = new Array(32).fill(undefined);
 
@@ -26,7 +26,7 @@ function takeObject(idx) {
   return ret;
 }
 
-let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
+let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true, });
 
 cachedTextDecoder.decode();
 
@@ -130,7 +130,7 @@ const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
     view.set(buf);
     return {
       read: arg.length,
-      written: buf.length
+      written: buf.length,
     };
   });
 

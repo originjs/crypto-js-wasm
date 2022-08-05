@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "An alternative to crypto-js implemented with WebAssembly and ESM",
   "main": "lib/index.js",
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "npm run clean && node build/build.js",
     "clean": "rimraf lib",
@@ -59,22 +61,23 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.6.3",
+    "@babel/eslint-parser": "^7.18.9",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
     "@rollup/plugin-babel": "^5.3.1",
-    "babel-eslint": "^10.0.3",
+    "@rollup/plugin-commonjs": "^22.0.2",
     "babel-jest": "^24.9.0",
     "chalk": "^2.4.2",
     "crypto-js": "^4.1.1",
-    "eslint": "^6.5.1",
+    "eslint": "^8.21.0",
     "husky": "^3.0.8",
     "jest": "^27.5.1",
     "lint-staged": "^9.4.2",
     "ora": "^4.0.2",
     "pre-commit": "^1.2.2",
     "rimraf": "^3.0.0",
-    "rollup": "1.22.0",
+    "rollup": "^2.77.2",
     "terser": "^4.3.8",
     "zlib": "^1.0.5"
   },
