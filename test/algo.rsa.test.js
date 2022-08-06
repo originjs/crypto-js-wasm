@@ -28,37 +28,44 @@ describe('algo-rsa-test', () => {
   test('encryptAndDecryptWithPKCS1V15', async () => {
     const msg = 'testMessage';
     const privateKey = C.RSA.getKeyContent('private', 'pem');
-    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'PKCS1V15'});
-    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'PKCS1V15'});
+    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'PKCS1V15',});
+    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'PKCS1V15',});
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
   test('encryptAndDecryptWithOAEP', async () => {
     const msg = 'testMessage';
     const privateKey = C.RSA.getKeyContent('private', 'pem');
-    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'OAEP'});
-    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'OAEP'});
+    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'OAEP',});
+    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'OAEP',});
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
   test('encryptAndDecryptWithErrorPadding', async () => {
     const msg = 'testMessage';
     const privateKey = C.RSA.getKeyContent('private', 'pem');
-    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'ErrorPadding'});
-    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'ErrorPadding'});
+    const encrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'ErrorPadding',});
+    const decrypted = C.RSA.decrypt(encrypted, privateKey, false, {encryptPadding: 'ErrorPadding',});
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
   test('encryptWithPKCS1V15AndOAEP', async () => {
+    // error is expected, ignore console error print
+    const consoleErrorFun = console.error;
+    console.error = () => {};
+
     const msg = 'testMessage';
     const privateKey = C.RSA.getKeyContent('private', 'pem');
-    const PKCSEncrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'PKCS1V15'});
-    const OAEPDecrypted = C.RSA.decrypt(PKCSEncrypted, privateKey, false, {encryptPadding: 'OAEP'});
+    const PKCSEncrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'PKCS1V15',});
+    const OAEPDecrypted = C.RSA.decrypt(PKCSEncrypted, privateKey, false, {encryptPadding: 'OAEP',});
     expect(OAEPDecrypted).toBeNull();
 
-    const OAEPEncrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'OAEP'});
-    const PKCSDecrypted = C.RSA.decrypt(OAEPEncrypted, privateKey, false, {encryptPadding: 'PKCS1V15'});
+    const OAEPEncrypted = C.RSA.encrypt(msg, privateKey, false, {encryptPadding: 'OAEP',});
+    const PKCSDecrypted = C.RSA.decrypt(OAEPEncrypted, privateKey, false, {encryptPadding: 'PKCS1V15',});
     expect(PKCSDecrypted).toBeNull();
+
+    // recover console error print
+    console.error = consoleErrorFun;
   });
 
   // TODO: add tests for sign, verify, generateKeyFile and getKeyType
