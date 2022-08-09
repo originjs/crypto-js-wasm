@@ -17,6 +17,7 @@ module.exports = {
     'ecmaFeatures': {
       'impliedStrict': true,
     },
+    'requireConfigFile': false,
   },
   'rules': {
     'quotes': ['warn', 'single',],
