@@ -17,11 +17,9 @@ const bgSnippet1 = `import { wasmBytes } from './rsa_wasm';
 let wasm;
 let globalThis;\n`;
 const bgSnippet2 = `async function init() {
-  const wasmModule = new WebAssembly.Module(wasmBytes);
-  await WebAssembly.instantiate(wasmModule, getImports()).then((wasmInstance) => {
-    wasm = wasmInstance.exports;
+  await WebAssembly.instantiate(wasmBytes, getImports()).then((wasmInstance) => {
+    wasm = wasmInstance.instance.exports;
   });
-
   cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
   cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
 }
