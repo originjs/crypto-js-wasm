@@ -84,6 +84,10 @@ export class RSAAlgo {
       if (cfg.signPadding !== undefined) {
         this.updateEncryptPadding(cfg.signPadding);
       }
+
+      if (cfg.key !== undefined) {
+        this.updateRsaKey(cfg.key, cfg.isPublicKey);
+      }
     }
   }
 
@@ -407,26 +411,22 @@ export const RSA = {
     this.rsa.updateRsaKey(keyFilePathOrKeySize, isPublicKey);
   },
 
-  encrypt(message, key, isPublicKey, cfg) {
-    this.updateRsaKey(key);
+  encrypt(message, cfg) {
     this.rsa.updateConfig(cfg);
     return this.rsa.encrypt(message);
   },
 
-  decrypt(ciphertext, key, isPublicKey, cfg) {
-    this.updateRsaKey(key);
+  decrypt(ciphertext, cfg) {
     this.rsa.updateConfig(cfg);
     return this.rsa.decrypt(ciphertext);
   },
 
-  sign(digest, key, isPublicKey, cfg) {
-    this.updateRsaKey(key);
+  sign(digest, cfg) {
     this.rsa.updateConfig(cfg);
     return this.rsa.sign(digest);
   },
 
-  verify(digest, signature, key, isPublicKey, cfg) {
-    this.updateRsaKey(key);
+  verify(digest, signature, cfg) {
     this.rsa.updateConfig(cfg);
     return this.rsa.verify(digest, signature);
   },
