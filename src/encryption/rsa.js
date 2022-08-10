@@ -248,10 +248,9 @@ export class RSAAlgo {
    * @returns {Uint8Array} the rsa signature
    */
   sign(digest) {
-    this.errorIfNoPrivateInstance();
     this.initKeys();
 
-    return this.RsaPrivate.sign(digest, this.signPadding);
+    return this.RsaPrivate.sign(this.strToBytes(digest), this.signPadding);
   }
 
   /**
@@ -398,6 +397,10 @@ export const RSA = {
 
   async loadWasm() {
     await RSAAlgo.loadWasm();
+  },
+
+  updateConfig(cfg) {
+    this.rsa.updateConfig(cfg);
   },
 
   updateRsaKey(keyFilePathOrKeySize, isPublicKey) {
