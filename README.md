@@ -137,7 +137,7 @@ pnpm run coverage
 
 
 
-#### Why do we need a async loadWasm call?
+#### Why do we need an async loadWasm call?
 
 This is because the WebAssembly binary needs to be load by `WebAssembly.instantiate`, and it is async. 
 
