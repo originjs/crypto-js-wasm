@@ -233,43 +233,49 @@ export class RsaPrivate {
   /**
    * @param {Uint8Array} ciphertext
    * @param {string} padding_scheme
+   * @param {string} hash_function
    * @returns {Uint8Array}
    */
-  decrypt(ciphertext, padding_scheme) {
+  decrypt(ciphertext, padding_scheme, hash_function) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       const ptr0 = passArray8ToWasm0(ciphertext, wasm.__wbindgen_malloc);
       const len0 = WASM_VECTOR_LEN;
       const ptr1 = passStringToWasm0(padding_scheme, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       const len1 = WASM_VECTOR_LEN;
-      wasm.rsaprivate_decrypt(retptr, this.ptr, ptr0, len0, ptr1, len1);
+      const ptr2 = passStringToWasm0(hash_function, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      const len2 = WASM_VECTOR_LEN;
+      wasm.rsaprivate_decrypt(retptr, this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
-      var v2 = getArrayU8FromWasm0(r0, r1).slice();
+      var v3 = getArrayU8FromWasm0(r0, r1).slice();
       wasm.__wbindgen_free(r0, r1 * 1);
-      return v2;
+      return v3;
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
   /**
    * @param {Uint8Array} digest
-   * @param {string} padding_str
+   * @param {string} padding_scheme
+   * @param {string} hash_function
    * @returns {Uint8Array}
    */
-  sign(digest, padding_str) {
+  sign(digest, padding_scheme, hash_function) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       const ptr0 = passArray8ToWasm0(digest, wasm.__wbindgen_malloc);
       const len0 = WASM_VECTOR_LEN;
-      const ptr1 = passStringToWasm0(padding_str, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      const ptr1 = passStringToWasm0(padding_scheme, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       const len1 = WASM_VECTOR_LEN;
-      wasm.rsaprivate_sign(retptr, this.ptr, ptr0, len0, ptr1, len1);
+      const ptr2 = passStringToWasm0(hash_function, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      const len2 = WASM_VECTOR_LEN;
+      wasm.rsaprivate_sign(retptr, this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
-      var v2 = getArrayU8FromWasm0(r0, r1).slice();
+      var v3 = getArrayU8FromWasm0(r0, r1).slice();
       wasm.__wbindgen_free(r0, r1 * 1);
-      return v2;
+      return v3;
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -334,21 +340,24 @@ export class RsaPublic {
   /**
    * @param {Uint8Array} msg
    * @param {string} padding_scheme
+   * @param {string} hash_function
    * @returns {Uint8Array}
    */
-  encrypt(msg, padding_scheme) {
+  encrypt(msg, padding_scheme, hash_function) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       const ptr0 = passArray8ToWasm0(msg, wasm.__wbindgen_malloc);
       const len0 = WASM_VECTOR_LEN;
       const ptr1 = passStringToWasm0(padding_scheme, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       const len1 = WASM_VECTOR_LEN;
-      wasm.rsapublic_encrypt(retptr, this.ptr, ptr0, len0, ptr1, len1);
+      const ptr2 = passStringToWasm0(hash_function, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      const len2 = WASM_VECTOR_LEN;
+      wasm.rsapublic_encrypt(retptr, this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
-      var v2 = getArrayU8FromWasm0(r0, r1).slice();
+      var v3 = getArrayU8FromWasm0(r0, r1).slice();
       wasm.__wbindgen_free(r0, r1 * 1);
-      return v2;
+      return v3;
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -356,17 +365,20 @@ export class RsaPublic {
   /**
    * @param {Uint8Array} digest
    * @param {Uint8Array} sig
-   * @param {string} padding_str
+   * @param {string} padding_scheme
+   * @param {string} hash_function
    * @returns {boolean}
    */
-  verify(digest, sig, padding_str) {
+  verify(digest, sig, padding_scheme, hash_function) {
     const ptr0 = passArray8ToWasm0(digest, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passArray8ToWasm0(sig, wasm.__wbindgen_malloc);
     const len1 = WASM_VECTOR_LEN;
-    const ptr2 = passStringToWasm0(padding_str, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const ptr2 = passStringToWasm0(padding_scheme, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len2 = WASM_VECTOR_LEN;
-    const ret = wasm.rsapublic_verify(this.ptr, ptr0, len0, ptr1, len1, ptr2, len2);
+    const ptr3 = passStringToWasm0(hash_function, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len3 = WASM_VECTOR_LEN;
+    const ret = wasm.rsapublic_verify(this.ptr, ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3);
     return ret !== 0;
   }
   /**

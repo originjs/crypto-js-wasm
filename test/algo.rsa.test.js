@@ -1,9 +1,7 @@
 import C from '../src/index';
 
 beforeAll(async () => {
-  await C.algo.RSA.loadWasm();
-  await C.SHA512.loadWasm();
-  await C.SHA256.loadWasm();
+  await C.loadAllWasm();
 });
 
 describe('algo-rsa-test', () => {
@@ -41,11 +39,18 @@ describe('algo-rsa-test', () => {
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
-  test('encryptAndDecryptWithErrorPadding', () => {
+  test('encryptWithErrorPadding', () => {
+    // error is expected, ignore console error print
+    const consoleErrorFun = console.error;
+    console.error = () => {};
+
     const msg = 'testMessage';
-    const encrypted = C.RSA.encrypt(msg, {encryptPadding: 'ErrorPadding',});
-    const decrypted = C.RSA.decrypt(encrypted, {encryptPadding: 'ErrorPadding',});
-    expect(new TextDecoder().decode(decrypted)).toBe(msg);
+    expect(() => {
+      C.RSA.encrypt(msg, {encryptPadding: 'ErrorPadding',});
+    }).toThrow();
+
+    // recover console error print
+    console.error = consoleErrorFun;
   });
 
   test('encryptWithPKCS1V15AndOAEP', () => {
@@ -66,32 +71,102 @@ describe('algo-rsa-test', () => {
     console.error = consoleErrorFun;
   });
 
+  test('signDigestOfMd5WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'MD5',});
+    C.RSA.updateConfig({signPadding: 'PKCS1V15',});
+    const signature = C.RSA.sign(digest);
+    // const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha1WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA1',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha224WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA224',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
   test('signDigestOfSha256WithPKCS1V15', () => {
     const message = 'test message';
-    const digestWords = C.SHA256(message);
-    const digestUint32Array = new Uint32Array(digestWords.words);
-    const digest = new Uint8Array(digestUint32Array.buffer);
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA256',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha384WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA384',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha512WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA512',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfRIPEMD160WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'RIPEMD160',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PKCS1V15',});
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfMd5WithPSS', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'MD5',});
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
-  test('signDigestOfSha256WithPSS', () => {
+  test('signDigestOfSha1WithPSS', () => {
     const message = 'test message';
-    const digestWords = C.SHA256(message);
-    const digestUint32Array = new Uint32Array(digestWords.words);
-    const digest = new Uint8Array(digestUint32Array.buffer);
-    C.RSA.updateConfig({signPadding: 'PSS',});
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA1',});
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
-  test('signDigestOfSha3WithPSS', () => {
-    // failint
+  test('signDigestOfSha224WithPSS', () => {
     const message = 'test message';
-    const digestWords = C.SHA512(message);
-    const digestUint32Array = new Uint32Array(digestWords.words);
-    const digest = new Uint8Array(digestUint32Array.buffer);
-    C.RSA.updateConfig({signPadding: 'PSS',});
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA224',});
+    const signature = C.RSA.sign(digest);
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha256WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA256',});
+    const signature = C.RSA.sign(digest);
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha384WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA384',});
+    const signature = C.RSA.sign(digest);
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfSha512WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'SHA512',});
+    const signature = C.RSA.sign(digest);
+    expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('signDigestOfRIPEMD160WithPKCS1V15', () => {
+    const message = 'test message';
+    const digest = C.RSA.digest(message, {hashAlgo: 'RIPEMD160',});
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });

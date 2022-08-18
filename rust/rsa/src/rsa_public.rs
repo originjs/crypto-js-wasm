@@ -28,15 +28,8 @@ impl RsaPublic {
         }
     }
 
-    // TODO: add custom digest algo support for OAEP; now default is Sha256
-    pub fn encrypt(&self, msg: &[u8], padding_scheme: &str) -> Vec<u8> {
-        // default padding scheme: OAEP with sha256
-        let padding = match padding_scheme {
-            "PKCS1V15" => PaddingScheme::new_pkcs1v15_encrypt(),
-            "OAEP" => PaddingScheme::new_oaep::<sha2::Sha256>(),
-            _ => PaddingScheme::new_oaep::<sha2::Sha256>(),
-        };
-
+    pub fn encrypt(&self, msg: &[u8], padding_scheme: &str, hash_function: &str) -> Vec<u8> {
+        let padding = utils::padding_util("encrypt", padding_scheme, hash_function, b"");
         let mut rng = rand::thread_rng();
 
         self.pub_instance
@@ -45,14 +38,9 @@ impl RsaPublic {
     }
 
     // TODO add custom hasher input
-    pub fn verify(&self, digest: &[u8], sig: Vec<u8>, padding_str: &str) -> bool {
-        let padding = match padding_str {
-            // use sha256 as default hasher for pkcs1v15
-            // TODO: add mapping for hash function. The input of hash here is to check the digest length
-            "PKCS1V15" => PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA3_256)),
-            "PSS" => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len()),
-            _ => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len())
-        };
+    pub fn verify(&self, digest: &[u8], sig: Vec<u8>, padding_scheme: &str, hash_function: &str) -> bool {
+        let padding = utils::padding_util("sign", padding_scheme, hash_function, digest);
+
         self.pub_instance.verify(padding, digest, &sig).is_ok()
     }
 
@@ -94,7 +82,7 @@ mod rsa_public_tests {
 
     #[test]
     fn can_encrypt() {
-        let rsa_pubic = RsaPublic::new(RsaPrivate::new(Some(1024), None).get_public_key_pem());
-        assert_ne!(rsa_pubic.encrypt(b"secret", ""), Vec::<u8>::new());
+        let rsa_public = RsaPublic::new(RsaPrivate::new(Some(1024), None).get_public_key_pem());
+        assert_ne!(rsa_public.encrypt(b"secret", "OAEP", "SHA256"), Vec::<u8>::new());
     }
 }

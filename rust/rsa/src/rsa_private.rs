@@ -43,29 +43,17 @@ impl RsaPrivate {
         }
     }
 
-    // TODO: add custom digest algo support for OAEP; now default is Sha256
-    pub fn decrypt(&self, ciphertext: &[u8], padding_scheme: &str) -> Vec<u8> {
-        // default padding scheme: OAEP with sha256
-        let padding = match padding_scheme {
-            "PKCS1V15" => PaddingScheme::new_pkcs1v15_encrypt(),
-            "OAEP" => PaddingScheme::new_oaep::<sha2::Sha256>(),
-            _ => PaddingScheme::new_oaep::<sha2::Sha256>(),
-        };
+    pub fn decrypt(&self, ciphertext: &[u8], padding_scheme: &str, hash_function: &str) -> Vec<u8> {
+        let padding = utils::padding_util("encrypt", padding_scheme, hash_function, b"");
 
         self.pri_instance
             .decrypt(padding, ciphertext)
             .expect("Failed to decrypt the ciphertext!")
     }
 
-    // TODO add custom hasher input
-    pub fn sign(&self, digest: &[u8], padding_str: &str) -> Vec<u8> {
-        let padding = match padding_str {
-            // use sha256 as default hasher for pkcs1v15
-            // TODO: add mapping for hash function. The input of hash here is to check the digest length
-            "PKCS1V15" => PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA3_256)),
-            "PSS" => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len()),
-            _ => PaddingScheme::new_pss_with_salt::<sha2::Sha256, ThreadRng>(rand::thread_rng(), digest.len())
-        };
+    pub fn sign(&self, digest: &[u8], padding_scheme: &str, hash_function: &str) -> Vec<u8> {
+        let padding = utils::padding_util("sign", padding_scheme, hash_function, digest);
+
         self.pri_instance.sign(padding, &digest).expect("Failed to sign digest")
     }
 

@@ -1,10 +1,29 @@
 import { init, RsaPrivate, RsaPublic, } from './rsa_bg.js';
+import { MD5, } from '../algo/hash/md5.js';
+import { SHA1, } from '../algo/hash/sha1.js';
+import { SHA224, } from '../algo/hash/sha224.js';
+import { SHA256, } from '../algo/hash/sha256.js';
+import { SHA384, } from '../algo/hash/sha384.js';
+import { SHA512, } from '../algo/hash/sha512.js';
+import { RIPEMD160, } from '../algo/hash/ripemd160.js';
 
 const DEFAULT_RSA_KEY_SIZE = 1024;
 const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
 const DEFAULT_RSA_SIGN_PADDING = 'PSS';
+const DEFAULT_RSA_HASH_ALGO = 'SHA256';
 const RSA_PRIVATE_KEY_START = '-----BEGIN PRIVATE KEY-----';
 const RSA_PUBLIC_KEY_START = '-----BEGIN PUBLIC KEY-----';
+
+// TODO: what if a new hasher is added?
+const RSA_HASH_ALGOS = new Map([
+  ['MD5', MD5,],
+  ['SHA1', SHA1,],
+  ['SHA224', SHA224,],
+  ['SHA256', SHA256,],
+  ['SHA384', SHA384,],
+  ['SHA512', SHA512,],
+  ['RIPEMD160', RIPEMD160,],
+]);
 
 // TODO: should extend AsymmetricCipher(class not created yet)
 export class RSAAlgo {
@@ -63,7 +82,17 @@ export class RSAAlgo {
    */
   constructor(keyFilePathOrKeySize, cfg) {
     RSAAlgo.updateRsaKey(keyFilePathOrKeySize);
+    this.resetConfig();
     this.updateConfig(cfg);
+  }
+
+  /**
+   * Reset config to default
+   */
+  resetConfig() {
+    this.updateEncryptPadding(DEFAULT_RSA_ENCRYPT_PADDING);
+    this.updateSignPadding(DEFAULT_RSA_SIGN_PADDING);
+    this.updateHashAlgo(DEFAULT_RSA_HASH_ALGO);
   }
 
   /**
@@ -74,15 +103,18 @@ export class RSAAlgo {
    * @param cfg {object} the config for rsa
    */
   updateConfig(cfg) {
-    this.updateEncryptPadding(DEFAULT_RSA_ENCRYPT_PADDING);
-    this.updateSignPadding(DEFAULT_RSA_SIGN_PADDING);
     if (cfg !== undefined) {
+      // TODO: consider lower case like 'md5', 'pss'
       if (cfg.encryptPadding !== undefined) {
         this.updateEncryptPadding(cfg.encryptPadding);
       }
 
       if (cfg.signPadding !== undefined) {
         this.updateEncryptPadding(cfg.signPadding);
+      }
+
+      if (cfg.hashAlgo !== undefined) {
+        this.updateHashAlgo(cfg.hashAlgo);
       }
 
       if (cfg.key !== undefined) {
@@ -199,13 +231,17 @@ export class RSAAlgo {
     this.signPadding = signPadding;
   }
 
+  updateHashAlgo(hashAlgo) {
+    this.hashAlgo = hashAlgo;
+  }
+
   init(privateKey, publicKey) {
     if (!RSAAlgo.wasm) {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
 
-    if (publicKey === undefined || privateKey === null) {
-      if (privateKey === undefined || privateKey === null) {
+    if (publicKey === undefined) {
+      if (privateKey === undefined) {
         // create a new 1024 bit RSA key pair if no parameter is specified
         privateKey = new RsaPrivate(DEFAULT_RSA_KEY_SIZE);
       }
@@ -223,7 +259,7 @@ export class RSAAlgo {
   encrypt(msg) {
     this.initKeys();
 
-    return this.RsaPublic.encrypt(this.strToBytes(msg), this.encryptPadding);
+    return this.RsaPublic.encrypt(this.strToBytes(msg), this.encryptPadding, this.hashAlgo);
   }
 
   /**
@@ -237,12 +273,27 @@ export class RSAAlgo {
 
     let result;
     try {
-      result = this.RsaPrivate.decrypt(msgEncrypted, this.encryptPadding);
+      result = this.RsaPrivate.decrypt(msgEncrypted, this.encryptPadding, this.hashAlgo);
     } catch (e) {
       console.error('Error occurred when decrypting : ', e);
       return null;
     }
     return result;
+  }
+
+  /**
+   * Generate the digest of the input message according to the specified hash algorithm
+   *
+   * @param {string} msg input message
+   * @returns {Uint8Array} the digest of input message
+   */
+  digest (msg) {
+    let digestAlgo = RSA_HASH_ALGOS.get(this.hashAlgo);
+    const digestWords = digestAlgo(msg);
+    const digestUint32Array = new Uint32Array(digestWords.words).slice(0, digestWords.sigBytes/4);
+    const digest = new Uint8Array(digestUint32Array.buffer);
+
+    return digest;
   }
 
   // TODO: only support Uint8Array for now. Consider adding support for string(base64)
@@ -254,7 +305,7 @@ export class RSAAlgo {
   sign(digest) {
     this.initKeys();
 
-    return this.RsaPrivate.sign(this.strToBytes(digest), this.signPadding);
+    return this.RsaPrivate.sign(this.strToBytes(digest), this.signPadding, this.hashAlgo);
   }
 
   /**
@@ -266,10 +317,10 @@ export class RSAAlgo {
   verify(digest, signature) {
     this.initKeys();
 
-    return this.RsaPublic.verify(digest, signature, this.signPadding);
+    return this.RsaPublic.verify(digest, signature, this.signPadding, this.hashAlgo);
   }
 
-  async generateKeyFile(keyType = 'pairs', fileFmt = 'pem', fileName = 'key', dir = './keys') {
+  generateKeyFile(keyType = 'pairs', fileFmt = 'pem', fileName = 'key', dir = './keys') {
     this.initKeys();
     this.errorIfInBrowser();
 
@@ -291,16 +342,13 @@ export class RSAAlgo {
     }
 
     let keyPath = `${dir}/${fileName}.${fileFmt}`;
+    let keyContent = this.getKeyContent(keyType, fileFmt);
 
     // TODO: .der file cannot be verified by openssl
     // TODO: .der file key content is not TypedArray now
     // get key content based on fileFmt
-    let keyContent = this.getKeyContent(keyType, fileFmt);
-    if (fileFmt == 'der') {
-      keyContent = Uint8Array.from(keyContent);
-    }
 
-    const { fs, } = await import('fs');
+    const fs = require('fs');
 
     // create dir if not existed
     if (!fs.existsSync(dir)) {
@@ -308,21 +356,16 @@ export class RSAAlgo {
     }
 
     // write key file
-    fs.writeFile(keyPath, keyContent, err => {
-      if (err) {
-        throw err;
-      }
-    });
+    fs.writeFileSync(keyPath, keyContent);
   }
 
   /**
    * Get current key type
    * @returns {string} key type
    */
-  // TODO: unused
   getKeyType() {
     this.initKeys();
-    return RsaPrivate ? 'private' : 'public';
+    return this.RsaPrivate ? 'private' : 'public';
   }
 
   /**
@@ -332,10 +375,10 @@ export class RSAAlgo {
    * @returns {*}
    */
   getKeyContent(keyType, keyFmt = 'pem') {
-    this.errorIfNoPrivateInstance();
     this.initKeys();
 
     if (keyType == 'private') {
+      this.errorIfNoPrivateInstance();
       return this.RsaPrivate.getPrivateKeyContent(keyFmt);
     }
 
@@ -364,8 +407,8 @@ export class RSAAlgo {
    * Throws if private key is not instantiated
    */
   errorIfNoPrivateInstance() {
-    if (this.RsaPrivate === null || this.RsaPublic === null) {
-      throw TypeError('Private key or public key has not benn instantiated');
+    if (this.getKeyType() === 'public') {
+      throw TypeError('Private key or public key has not been instantiated');
     }
   }
 
@@ -374,7 +417,7 @@ export class RSAAlgo {
    */
   errorIfInBrowser() {
     if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-      throw Error('This function is not supported in browser mode');
+      throw Error('This function is not supported in browser');
     }
   }
 }
@@ -403,6 +446,10 @@ export const RSA = {
     await RSAAlgo.loadWasm();
   },
 
+  resetConfig() {
+    this.rsa.resetConfig();
+  },
+
   updateConfig(cfg) {
     this.rsa.updateConfig(cfg);
   },
@@ -421,6 +468,11 @@ export const RSA = {
     return this.rsa.decrypt(ciphertext);
   },
 
+  digest(message, cfg) {
+    this.rsa.updateConfig(cfg);
+    return this.rsa.digest(message);
+  },
+
   sign(digest, cfg) {
     this.rsa.updateConfig(cfg);
     return this.rsa.sign(digest);
@@ -431,8 +483,8 @@ export const RSA = {
     return this.rsa.verify(digest, signature);
   },
 
-  async generateKeyFile(keyType, fileFm, fileName, dir) {
-    return this.rsa.generateKeyFile(keyType, fileFm, fileName, dir);
+  generateKeyFile(keyType, fileFmt, fileName, dir) {
+    return this.rsa.generateKeyFile(keyType, fileFmt, fileName, dir);
   },
 
   getKeyType() {
