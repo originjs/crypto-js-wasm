@@ -74,9 +74,7 @@ describe('algo-rsa-test', () => {
   test('signDigestOfMd5WithPKCS1V15', () => {
     const message = 'test message';
     const digest = C.RSA.digest(message, {hashAlgo: 'md5',});
-    C.RSA.updateConfig({signPadding: 'pkcs1v15',});
-    const signature = C.RSA.sign(digest);
-    // const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15',});
+    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15',});
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
@@ -169,6 +167,22 @@ describe('algo-rsa-test', () => {
     const digest = C.RSA.digest(message, {hashAlgo: 'RIPEMD160',});
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
+  });
+
+  test('testRSAAlgo', () => {
+    const RSA = new C.algo.RSA();
+    expect(RSA.getKeyContent('private', 'pem')).not.toBe('');
+
+    // encrypt and decrypt
+    const msg = 'testMessage';
+    const encrypted = RSA.encrypt(msg);
+    const decrypted = RSA.decrypt(encrypted);
+    expect(new TextDecoder().decode(decrypted)).toBe(msg);
+
+    // sign and verify
+    const digest = RSA.digest(msg, {hashAlgo: 'md5',});
+    const signature = RSA.sign(digest, {signPadding: 'pkcs1v15',});
+    expect(RSA.verify(digest, signature)).toBe(true);
   });
 
   // TODO: add tests for sign, verify, generateKeyFile and getKeyType
