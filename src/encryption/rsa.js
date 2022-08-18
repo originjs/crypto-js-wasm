@@ -104,17 +104,16 @@ export class RSAAlgo {
    */
   updateConfig(cfg) {
     if (cfg !== undefined) {
-      // TODO: consider lower case like 'md5', 'pss'
-      if (cfg.encryptPadding !== undefined) {
-        this.updateEncryptPadding(cfg.encryptPadding);
+      if (cfg.encryptPadding !== undefined && typeof cfg.encryptPadding === 'string') {
+        this.updateEncryptPadding(cfg.encryptPadding.toUpperCase());
       }
 
-      if (cfg.signPadding !== undefined) {
-        this.updateEncryptPadding(cfg.signPadding);
+      if (cfg.signPadding !== undefined && typeof cfg.signPadding === 'string') {
+        this.updateEncryptPadding(cfg.signPadding.toUpperCase());
       }
 
-      if (cfg.hashAlgo !== undefined) {
-        this.updateHashAlgo(cfg.hashAlgo);
+      if (cfg.hashAlgo !== undefined && typeof cfg.hashAlgo === 'string') {
+        this.updateHashAlgo(cfg.hashAlgo.toUpperCase());
       }
 
       if (cfg.key !== undefined) {
