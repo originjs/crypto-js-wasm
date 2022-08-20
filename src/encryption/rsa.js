@@ -8,6 +8,7 @@ import { SHA512, } from '../algo/hash/sha512.js';
 import { RIPEMD160, } from '../algo/hash/ripemd160.js';
 
 const DEFAULT_RSA_KEY_SIZE = 1024;
+const DEFAULT_IS_PUBLIC_KEY = false;
 const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
 const DEFAULT_RSA_SIGN_PADDING = 'PSS';
 const DEFAULT_RSA_HASH_ALGO = 'SHA256';
@@ -27,6 +28,7 @@ const RSA_HASH_ALGOS = new Map([
 
 // TODO: should extend AsymmetricCipher(class not created yet)
 export class RSAAlgo {
+  // TODO: invalid inputs should be check and reported
   static wasm = null;
   static keyFilePathOrKeySize = null;
   static isPublicKey = false;
@@ -38,7 +40,7 @@ export class RSAAlgo {
    * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
    * @param isPublicKey true if the input key file is a public key file
    */
-  static updateRsaKey(keyFilePathOrKeySize = 1024, isPublicKey = false) {
+  static updateRsaKey(keyFilePathOrKeySize = DEFAULT_RSA_KEY_SIZE, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
     if (keyFilePathOrKeySize === null || keyFilePathOrKeySize === undefined) {
       keyFilePathOrKeySize = 1024;
     }
@@ -90,6 +92,7 @@ export class RSAAlgo {
    * Reset config to default
    */
   resetConfig() {
+    this.updateRsaKey(DEFAULT_RSA_KEY_SIZE, DEFAULT_IS_PUBLIC_KEY);
     this.updateEncryptPadding(DEFAULT_RSA_ENCRYPT_PADDING);
     this.updateSignPadding(DEFAULT_RSA_SIGN_PADDING);
     this.updateHashAlgo(DEFAULT_RSA_HASH_ALGO);
@@ -98,10 +101,14 @@ export class RSAAlgo {
   /**
    * Update the config for rsa. The configs of RSA are:
    * encryptPadding: encrypt padding mode, values may be 'OAEP'(default)/'PKCS1V15'
-   * signPadding: sign padding mode, value may be 'PSS'(default)/'PKCS1V15'
+   * signPadding: sign padding mode, values may be 'PSS'(default)/'PKCS1V15'
+   * hashAlgo: hasher for encryption and sign, values may be 'sha256'(default)/'md5'/'sha1'/'sha224'/'sha384'/'sha512'/'ripemd160'
+   * key: can be path to the RSA key file(string), the content of RSA key(string), or the size of the RSA key(number)
+   * isPublicKey: true if the cfg.key is the RSA public key
    *
    * @param cfg {object} the config for rsa
    */
+  // TODO: invalid configurations should be reported here
   updateConfig(cfg) {
     if (cfg !== undefined) {
       if (cfg.encryptPadding !== undefined && typeof cfg.encryptPadding === 'string') {
@@ -131,7 +138,7 @@ export class RSAAlgo {
     }
 
     // only update keys if key has been changed, and private/public key is specified
-    if (!RSAAlgo.keyChanged && (this.RsaPrivate !== null || this.RsaPublic != null)) {
+    if (!RSAAlgo.keyChanged && (this.RsaPrivate !== undefined || this.RsaPublic != undefined)) {
       return;
     }
 
@@ -183,8 +190,8 @@ export class RSAAlgo {
    */
   initFromKeyContent(keyContent, isPublicKey = false) {
     isPublicKey
-      ? this.init(null, new RsaPublic(keyContent))
-      : this.init(new RsaPrivate(null, keyContent));
+      ? this.initWithPublicKey(new RsaPublic(keyContent))
+      : this.initWithPrivateKey(new RsaPrivate(null, keyContent));
   }
 
   /**
@@ -219,7 +226,7 @@ export class RSAAlgo {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
 
-    this.init(new RsaPrivate(bits));
+    this.initWithPrivateKey(new RsaPrivate(bits));
   }
 
   updateEncryptPadding(encryptPadding) {
@@ -234,18 +241,26 @@ export class RSAAlgo {
     this.hashAlgo = hashAlgo;
   }
 
-  init(privateKey, publicKey) {
+  initWithPublicKey(publicKey) {
     if (!RSAAlgo.wasm) {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
 
-    if (publicKey === undefined) {
-      if (privateKey === undefined) {
-        // create a new 1024 bit RSA key pair if no parameter is specified
-        privateKey = new RsaPrivate(DEFAULT_RSA_KEY_SIZE);
-      }
-      publicKey = new RsaPublic(privateKey.getPublicKeyPem());
+    this.RsaPublic = publicKey;
+    this.RsaPrivate = null;
+  }
+
+  initWithPrivateKey(privateKey) {
+    if (!RSAAlgo.wasm) {
+      throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
     }
+
+    if (privateKey === undefined) {
+      // create a new 1024 bit RSA key pair if no parameter is specified
+      privateKey = new RsaPrivate(DEFAULT_RSA_KEY_SIZE);
+    }
+    const publicKey = new RsaPublic(privateKey.getPublicKeyPem());
+
     this.RsaPrivate = privateKey;
     this.RsaPublic = publicKey;
   }
@@ -301,6 +316,7 @@ export class RSAAlgo {
    * @returns {Uint8Array} the rsa signature
    */
   sign(digest) {
+    this.errorIfNoPrivateInstance();
     this.initKeys();
 
     return this.RsaPrivate.sign(this.strToBytes(digest), this.signPadding, this.hashAlgo);
@@ -322,30 +338,31 @@ export class RSAAlgo {
     this.initKeys();
     this.errorIfInBrowser();
 
+    // key type and file fmt should be case insensitive
+    keyType = keyType.toLowerCase();
+    fileFmt = fileFmt.toLowerCase();
+
     switch (keyType) {
     case 'pairs':
-      this.generateKeyFile('private', fileFmt, fileName, dir);
-      this.generateKeyFile('public', fileFmt, fileName, dir);
+      this.generateKeyFile('private', fileFmt, fileName + '_private', dir);
+      this.generateKeyFile('public', fileFmt, fileName + '_public', dir);
       return;
     case 'private':
       this.errorIfNoPrivateInstance();
       break;
     case 'public':
-      // set file name to pubkey if no file name specified
-      // TODO: fileName default to be "key"?
-      fileName = fileName == 'key' ? 'pubkey' : fileName;
+      // no operations
       break;
     default:
       throw TypeError('wrong key type provided. Should be \'pairs\', \'private\' or \'public\'');
     }
 
     let keyPath = `${dir}/${fileName}.${fileFmt}`;
+    // get key content based on fileFmt
     let keyContent = this.getKeyContent(keyType, fileFmt);
 
     // TODO: .der file cannot be verified by openssl
     // TODO: .der file key content is not TypedArray now
-    // get key content based on fileFmt
-
     const fs = require('fs');
 
     // create dir if not existed
