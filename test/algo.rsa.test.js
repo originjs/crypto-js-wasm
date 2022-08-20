@@ -1,4 +1,5 @@
 import C from '../src/index';
+import fs from 'fs';
 
 beforeAll(async () => {
   await C.loadAllWasm();
@@ -76,6 +77,9 @@ describe('algo-rsa-test', () => {
     const digest = C.RSA.digest(message, {hashAlgo: 'md5',});
     const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15',});
     expect(C.RSA.verify(digest, signature)).toBe(true);
+
+    const errorDigest = C.RSA.digest('another message', {hashAlgo: 'md5',});
+    expect(C.RSA.verify(errorDigest, signature)).toBe(false);
   });
 
   test('signDigestOfSha1WithPKCS1V15', () => {
@@ -185,5 +189,58 @@ describe('algo-rsa-test', () => {
     expect(RSA.verify(digest, signature)).toBe(true);
   });
 
-  // TODO: add tests for sign, verify, generateKeyFile and getKeyType
+  test('verifyDigestWithWrongPadding', () => {
+    C.RSA.resetConfig();
+
+    // error is expected, ignore console error print
+    const consoleErrorFun = console.error;
+    console.error = () => {};
+
+    const message = 'testMessage';
+    const digest = C.RSA.digest(message, {hashAlgo: 'ripemd160',});
+    const signature = C.RSA.sign(digest, {signPadding: 'PSS',});
+    expect(C.RSA.verify(digest, signature, {signPadding: 'pkcs1v15',})).toBe(false);
+
+    // recover console error print
+    console.error = consoleErrorFun;
+  });
+
+  test('generatePrivateAndPublicKeyFile', () => {
+    C.RSA.resetConfig();
+    C.RSA.generateKeyFile('pairs');
+    expect(fs.readFileSync('./keys/key.pem', { encoding: 'utf-8', }))
+      .toMatch(/^-----BEGIN PRIVATE KEY-----/);
+    expect(fs.readFileSync('./keys/pubkey.pem', { encoding: 'utf-8', }))
+      .toMatch(/^-----BEGIN PUBLIC KEY-----/);
+    fs.rmSync('./keys', { recursive: true, force: true, });
+  });
+
+  test('generatePrivateKeyFile', () => {
+    C.RSA.resetConfig();
+    C.RSA.generateKeyFile('private', 'pem', 'key');
+    expect(fs.readFileSync('./keys/key.pem', { encoding: 'utf-8', }))
+      .toMatch(/^-----BEGIN PRIVATE KEY-----/);
+    fs.rmSync('./keys', { recursive: true, force: true, });
+  });
+
+  test('generatePublicKeyFile', () => {
+    C.RSA.resetConfig();
+    C.RSA.generateKeyFile('public', 'pem', 'key');
+    expect(fs.readFileSync('./keys/pubkey.pem', { encoding: 'utf-8', }))
+      .toMatch(/^-----BEGIN PUBLIC KEY-----/);
+    fs.rmSync('./keys', { recursive: true, force: true, });
+  });
+
+  test('getKeyTypeOfPrivateKey', () => {
+    C.RSA.resetConfig();
+    expect(C.RSA.getKeyType()).toBe('private');
+  });
+
+  test('getKeyTypeOfPublicKey', () => {
+    C.RSA.resetConfig();
+    C.RSA.generateKeyFile('public');
+    C.RSA.updateRsaKey('./keys/pubkey.pem', true);
+    expect(C.RSA.getKeyType()).toBe('public');
+    fs.rmSync('./keys', { recursive: true, force: true, });
+  });
 });

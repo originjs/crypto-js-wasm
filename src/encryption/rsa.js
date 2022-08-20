@@ -109,7 +109,7 @@ export class RSAAlgo {
       }
 
       if (cfg.signPadding !== undefined && typeof cfg.signPadding === 'string') {
-        this.updateEncryptPadding(cfg.signPadding.toUpperCase());
+        this.updateSignPadding(cfg.signPadding.toUpperCase());
       }
 
       if (cfg.hashAlgo !== undefined && typeof cfg.hashAlgo === 'string') {
@@ -295,7 +295,6 @@ export class RSAAlgo {
     return digest;
   }
 
-  // TODO: only support Uint8Array for now. Consider adding support for string(base64)
   /**
    * RSA sign
    * @param {string | Uint8Array} digest the digest of the message
