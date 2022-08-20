@@ -1,63 +1,63 @@
 # RSA
 
-RSA is supported in crypto-js-wasm now!
+crypto-js-wasm当前已经支持RSA!
 
-We support all kinds of traditional usage of RSA, including `generation of keys`, `encryption`, `decryption`, `digest`, `sign` and `verify`.
+RSA算法的各种常规用法当前已经支持, 包括`生成密钥`, `加密`, `解密`, `签名`和`验签`.
 
-### Configurations
+### 配置说明
 
-Configurations of RSA should be a object consisting of:
+RSA的配置项应为一个object, 可以包含如下属性:
 
 - encryptPadding
-  - Type: `string`
-  - Default: `OAEP`
-  - Valid values: `OAEP`/`PKCS1V15`
+  - 类型: `string`
+  - 默认值: `OAEP`
+  - 有效值: `OAEP`/`PKCS1V15`
 
-Padding mode for `encrypt` and `decrypt`. Case insensitive.
+用于`encrypt`和`decrypt`的填充模式, 大小写不敏感.
 
 - signPadding
-  - Type: `string`
-  - Default: `PSS`
-  - Valid values: `PSS`/`PKCS1V15`
+  - 类型: `string`
+  - 默认值:: `PSS`
+  - 有效值: `PSS`/`PKCS1V15`
 
-Padding mode for `sign` and `verify`. Case insensitive.
+用于`sign`和`verify`的填充模式, 大小写不敏感.
 
 - hashAlgo
-  - Type: `string`
-  - Default: `SHA256`
-  - Valid values: `MD5`/`SHA1`/`SHA224`/`SHA256`/`SHA384`/`SHA512`/`RIPEMD160`
+  - 类型: `string`
+  - 默认值:: `SHA256`
+  - 有效值: `MD5`/`SHA1`/`SHA224`/`SHA256`/`SHA384`/`SHA512`/`RIPEMD160`
 
-Hasher for `encrypt`, `decrypt`, `sign` and `verify`. Case insensitive.
+用于`encrypt`, `decrypt`, `sign`和`verify`的哈希算法, 大小写不敏感.
 
 - key
-  - Type: `string` | `number`
-  - Default: `1024`
+  - 类型: `string` | `number`
+  - 默认值:: `1024`
 
-When `key` is a `string`: path to the RSA key file, or the content of RSA key.
+当 `key`是`string`类型时: 可以是RSA key文件的路径, 也可以是RSA key的内容.
 
-- Content of RSA key: should be a string starting with `-----BEGIN PRIVATE KEY-----` or `-----BEGIN PUBLIC KEY-----`. Supported in `browser` and `nodejs`.
-- Path to the RSA key file: strings not starting with `-----BEGIN PRIVATE KEY-----` or `-----BEGIN PUBLIC KEY-----` will be parsed as a file path. Only supported in `nodejs`.
+- RSA key的内容: 应当以 `-----BEGIN PRIVATE KEY-----`或`-----BEGIN PUBLIC KEY-----`开始. 同时在`browser`和`nodejs`环境下可用.
+- RSA key文件的路径: 不以`-----BEGIN PRIVATE KEY-----`或`-----BEGIN PUBLIC KEY-----`开始的字符串，将被视作key文件的路径. 只在`nodejs`环境下可用.
 
-When `key` is a `number`: size of RSA key. We will generate a new pair of RSA public key and private key according to the key size.
+当 `key`是`number`类型时: RSA key的位长. 我们会根据这个位长重新生成一对RSA公钥和私钥.
 
 - isPublicKey
-  - Type: `boolean`
-  - Default: `false`
+  - 类型: `boolean`
+  - 默认值:: `false`
 
-True if the `key` is the public key of RSA. Should be used along with `key`.
+若配置的`key`是公钥, 则应设置为true. 需要与`key`同时进行配置。
 
-Please note that RSA public key can be generated from RSA private key. So if a RSA private key is specified, a corresponding RSA public key will be generated. But RSA private key can **NOT** be generated from RSA public key. 
+需要注意的是, RSA私钥可以生成公钥, 因此当配置了RSA私钥时, 对应的RSA公钥也会生成. 但是RSA公钥**不能**生成私钥.
 
-RSA private key is used in `decrypt` and `sign`. Therefore `decrypt`, `sign`, `generateKeyFile`(when generating `pairs`/`private`) and `getKeyContent`(when getting private key) will throw error if no private key is specified.
+RSA私钥在 `decrypt`和`sign`调用时需要用到, 因此, 如果没有配置RSA私钥, 在调用`decrypt`, `sign`, `generateKeyFile`(生成`pairs`/`private`时) and `getKeyContent`(获取私钥时)时会报错.
 
 
 
-Configurations can be updated like this:
+配置项可以通过如下方式进行配置:
 
 ```javascript
 import C from '@originjs/crypto-js-wasm';
 
-// await the loading wasm
+// 等待异步的读取wasm完成
 await C.RSA.loadWasm();
 
 const config = {
@@ -68,10 +68,10 @@ const config = {
     isPublicKey: false
 }
 
-// configurations can be passed with updateConfig
+// 可以通过updateConfig方法更新配置
 C.RSA.updateConfig(config);
 
-// and can be passed along with other apis like encrypt/decrypt/digest/sign/verify
+// 也可以在调用encrypt/decrypt/digest/sign/verify等api时进行配置更新
 const encryptedMessage = C.RSA.encrypt('message', {
     encryptPadding: 'PKCS1V15'
     key: '/home/user/rsa_private_key.pem',
@@ -86,53 +86,53 @@ const signature = C.RSA.sign('message', {
 });
 ```
 
-### Create a RSA instance
+### 创建RSA实例
 
 ```javascript
 import C from '@originjs/crypto-js-wasm';
 
-// like other algorithms in crypto-js-wasm, you can create a RSA instance
+// 与crypto-js-wasm中的其他算法一样, 你可以自己创建一个RSA示例
 const rsa = new C.algo.RSA();
 
 rsa.loadWasm();
 let keyContent = rsa.getKeyContent('private', 'pem');
 let encrypted = rsa.encrypt('mesage');
 
-// or you can use the shortcut of RSA
+// 你也可以使用我们准备好的RSA示例
 keyContent = C.RSA.getKeyContent('private', 'pem');
 encrypted = C.RSA.encrypt('mesage');
 ```
 
-### Update RSA key
+### 更新RSA密钥
 
-By default, a pair of private key and public key will be generated with size of 1024. You can change the default keys using `updateConfig` or `updateRsaKey`.
+默认情况下, 我们会生成一对1024位长的公钥和私钥. 你可以通过`updateConfig`或`updateRsaKey`方法更新密钥.
 
 ```javascript
 import C from '@originjs/crypto-js-wasm';
 
 await C.RSA.loadWasm();
 
-// you can get the key content in string
+// 你可以获取默认的RSA密钥
 const privateKeyContent = C.RSA.getKeyContent('private', 'pem');
 const publicKeyContent = C.RSA.getKeyContent('public', 'pem');
 
-// you can generate another RSA key
+// 你也可以重新生成一份RSA密钥
 C.RSA.updateRsaKey(2048);
 
-// and you can specify an existing RSA key
+// 同时也可以指定一个已存在的RSA密钥
 C.RSA.updateConfig({
     key: '/home/rsa_private_key.pem'
 });
 
-// you can generate the RSA key files
-// private key file will be generated in ./keys/key.dem
+// 你可以生成RSA密钥文件
+// 私钥文件会生成在./keys/key.dem
 C.RSA.generateKeyFile('private');
-// public key : /home/lee/my_rsa_keys/my_rsa_keys_public.pem
-// private key : /home/lee/my_rsa_keys/my_rsa_keys_private.pem
+// 公钥 : /home/lee/my_rsa_keys/my_rsa_keys_public.pem
+// 私钥 : /home/lee/my_rsa_keys/my_rsa_keys_private.pem
 C.RSA.generateKeyFile('pairs', 'pem', 'my_rsa_keys', '/home/lee/my_rsa_keys');
 ```
 
-### Encrypt and decrypt
+### 加密和解密
 
 ```javascript
 import C from '@originjs/crypto-js-wasm';
@@ -145,7 +145,9 @@ const decrypted = C.RSA.decrypt(encrypted, {encryptPadding: 'pkcs1v15',});
 expect(new TextDecoder().decode(decrypted)).toBe(msg);
 ```
 
-### Digest, sign and verify
+### 摘要, 签名和验签
+
+你可以用`md5`, `sha1`或其他hash算法自行生成摘要, 但是我们建议你使用`RSA.digest`方法生成密钥, 这是因为你生成密钥所用的hash算法必须与`sign`和`verify`时的一致. 通过使用`RSA.digest`, 我们可以保证`digest`, `sign`和`verify`中hash算法的一致性.
 
 You can get the digest using hash algorithms like `md5`, `sha1` or other ones by yourself. But it's recommended to use `RSA.digest`, because the hasher you used in `digest` must be the same with the ones in `sign` and `verify`. By using `RSA.digest`, we can assure the consistency of the hasher in `digest`, `sign` and `verify`.
 

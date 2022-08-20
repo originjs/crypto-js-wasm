@@ -63,6 +63,12 @@ And the `loadWasm` in `pbkdf2` only calls `SHA1.loadWasm` as `SHA1` is the defau
 
 
 
+**Usage of RSA**
+
+Please refer to [this document](./docs/rsa.md).
+
+
+
 **Available standards**
 
 - MD5 / HmacMD5
@@ -86,11 +92,6 @@ And the `loadWasm` in `pbkdf2` only calls `SHA1.loadWasm` as `SHA1` is the defau
 - RabbitLegacy
 - RC4
 - RC4Drop
-
-
-
-**Coming next**
-
 - RSA
 
 

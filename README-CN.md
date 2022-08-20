@@ -61,6 +61,10 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 
 同时， `pbkdf2` 中的 `loadWasm` 实现是调用了 `SHA1.loadWasm` ，这是因为 `SHA1` 是 `pbkdf2` 的默认哈希算法。 如果指定了另一个哈希算法，则应分别调用该哈希算法对应的 `loadWasm`。 `evpkdf`/`MD5` 的情况与之类似， `MD5` 是 `evpkdf` 的默认哈希算法。
 
+**RSA使用说明**
+
+请参考[这篇文档](./docs/rsa-CN.md).
+
 
 
 **目前可用的算法**
@@ -86,10 +90,6 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 - RabbitLegacy
 - RC4
 - RC4Drop
-
-
-
-**下一步计划支持**
 
 - RSA
 
