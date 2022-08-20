@@ -1,3 +1,4 @@
+import { parameterCheck, } from '../utils';
 import { init, RsaPrivate, RsaPublic, } from './rsa_bg.js';
 import { MD5, } from '../algo/hash/md5.js';
 import { SHA1, } from '../algo/hash/sha1.js';
@@ -28,7 +29,6 @@ const RSA_HASH_ALGOS = new Map([
 
 // TODO: should extend AsymmetricCipher(class not created yet)
 export class RSAAlgo {
-  // TODO: invalid inputs should be check and reported
   static wasm = null;
   static keyFilePathOrKeySize = null;
   static isPublicKey = false;
@@ -45,9 +45,7 @@ export class RSAAlgo {
       keyFilePathOrKeySize = 1024;
     }
 
-    if (typeof keyFilePathOrKeySize !== 'number' && typeof keyFilePathOrKeySize !== 'string') {
-      throw new Error('The input keyFilePathOrKeySize should be a number or string');
-    }
+    parameterCheck(keyFilePathOrKeySize, 'RSA keyFilePathOrKeySize', ['number', 'string',]);
 
     if (keyFilePathOrKeySize === RSAAlgo.keyFilePathOrKeySize && isPublicKey == RSAAlgo.isPublicKey) {
       // do not update keys if nothing changed
@@ -89,7 +87,7 @@ export class RSAAlgo {
   }
 
   /**
-   * Reset config to default
+   * Reset configs to default values
    */
   resetConfig() {
     this.updateRsaKey(DEFAULT_RSA_KEY_SIZE, DEFAULT_IS_PUBLIC_KEY);
@@ -108,7 +106,6 @@ export class RSAAlgo {
    *
    * @param cfg {object} the config for rsa
    */
-  // TODO: invalid configurations should be reported here
   updateConfig(cfg) {
     if (cfg !== undefined) {
       if (cfg.encryptPadding !== undefined && typeof cfg.encryptPadding === 'string') {
@@ -230,14 +227,17 @@ export class RSAAlgo {
   }
 
   updateEncryptPadding(encryptPadding) {
+    parameterCheck(encryptPadding, 'RSA encryption padding mode', 'string', 'OAEP', 'PKCS1V15');
     this.encryptPadding = encryptPadding;
   }
 
   updateSignPadding(signPadding) {
+    parameterCheck(signPadding, 'RSA sign padding mode', 'string', 'PSS', 'PKCS1V15');
     this.signPadding = signPadding;
   }
 
   updateHashAlgo(hashAlgo) {
+    parameterCheck(hashAlgo, 'RSA hasher', 'string', 'MD5', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'RIPEMD160');
     this.hashAlgo = hashAlgo;
   }
 
@@ -267,10 +267,13 @@ export class RSAAlgo {
 
   /**
    * Encrypt the given message
+   *
    * @param {string | Uint8Array} msg the original message
+   * @param {object} cfg RSA configurations
    * @returns {Uint8Array} the encrypted message
    */
-  encrypt(msg) {
+  encrypt(msg, cfg) {
+    this.updateConfig(cfg);
     this.initKeys();
 
     return this.RsaPublic.encrypt(this.strToBytes(msg), this.encryptPadding, this.hashAlgo);
@@ -278,10 +281,13 @@ export class RSAAlgo {
 
   /**
    * Decrypt the given message
+   *
    * @param {Uint8Array} msgEncrypted the encrypted message
+   * @param {object} cfg RSA configurations
    * @returns {Uint8Array} the decrypted message
    */
-  decrypt(msgEncrypted) {
+  decrypt(msgEncrypted, cfg) {
+    this.updateConfig(cfg);
     this.errorIfNoPrivateInstance();
     this.initKeys();
 
@@ -299,9 +305,11 @@ export class RSAAlgo {
    * Generate the digest of the input message according to the specified hash algorithm
    *
    * @param {string} msg input message
+   * @param {object} cfg RSA configurations
    * @returns {Uint8Array} the digest of input message
    */
-  digest (msg) {
+  digest (msg, cfg) {
+    this.updateConfig(cfg);
     let digestAlgo = RSA_HASH_ALGOS.get(this.hashAlgo);
     const digestWords = digestAlgo(msg);
     const digestUint32Array = new Uint32Array(digestWords.words).slice(0, digestWords.sigBytes/4);
@@ -312,10 +320,13 @@ export class RSAAlgo {
 
   /**
    * RSA sign
+   *
    * @param {string | Uint8Array} digest the digest of the message
+   * @param {object} cfg RSA configurations
    * @returns {Uint8Array} the rsa signature
    */
-  sign(digest) {
+  sign(digest, cfg) {
+    this.updateConfig(cfg);
     this.errorIfNoPrivateInstance();
     this.initKeys();
 
@@ -326,9 +337,11 @@ export class RSAAlgo {
    * Verify the given RSA signature
    * @param {Uint8Array} digest the digest of the message
    * @param {Uint8Array} signature the signature signed using private key
+   * @param {object} cfg RSA configurations
    * @returns {boolean} true if signature is valid
    */
-  verify(digest, signature) {
+  verify(digest, signature, cfg) {
+    this.updateConfig(cfg);
     this.initKeys();
 
     return this.RsaPublic.verify(digest, signature, this.signPadding, this.hashAlgo);
@@ -474,28 +487,23 @@ export const RSA = {
   },
 
   encrypt(message, cfg) {
-    this.rsa.updateConfig(cfg);
-    return this.rsa.encrypt(message);
+    return this.rsa.encrypt(message, cfg);
   },
 
   decrypt(ciphertext, cfg) {
-    this.rsa.updateConfig(cfg);
-    return this.rsa.decrypt(ciphertext);
+    return this.rsa.decrypt(ciphertext, cfg);
   },
 
   digest(message, cfg) {
-    this.rsa.updateConfig(cfg);
-    return this.rsa.digest(message);
+    return this.rsa.digest(message, cfg);
   },
 
   sign(digest, cfg) {
-    this.rsa.updateConfig(cfg);
-    return this.rsa.sign(digest);
+    return this.rsa.sign(digest, cfg);
   },
 
   verify(digest, signature, cfg) {
-    this.rsa.updateConfig(cfg);
-    return this.rsa.verify(digest, signature);
+    return this.rsa.verify(digest, signature, cfg);
   },
 
   generateKeyFile(keyType, fileFmt, fileName, dir) {
