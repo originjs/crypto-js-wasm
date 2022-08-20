@@ -15,6 +15,12 @@
 
 
 
+## What's new
+
+RSA is supported now!
+
+
+
 ## Getting started
 
 ```bash
