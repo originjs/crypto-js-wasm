@@ -77,7 +77,7 @@ export class RSAAlgo {
   /**
    * Constructor of RSAAlgo
    *
-   * @param keyFilePathOrKeySize {string | number | null} the key file path or key size in bytes, set as 1024 bits as default
+   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
    * @param cfg {object} the config for rsa
    */
   constructor(keyFilePathOrKeySize, cfg) {
@@ -179,13 +179,14 @@ export class RSAAlgo {
 
     return false;
   }
+
   /**
    * Init rsa keys with given key content
    *
    * @param keyContent the input key content
    * @param isPublicKey true if the input content is a public content
    */
-  initFromKeyContent(keyContent, isPublicKey = false) {
+  initFromKeyContent(keyContent, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
     isPublicKey
       ? this.initWithPublicKey(new RsaPublic(keyContent))
       : this.initWithPrivateKey(new RsaPrivate(null, keyContent));
@@ -196,7 +197,7 @@ export class RSAAlgo {
    * @param path the input key file path
    * @param isPublicKey true if the input key file is a public key file
    */
-  initFromKeyFile(path, isPublicKey = false) {
+  initFromKeyFile(path, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
     this.errorIfInBrowser();
     if (!RSAAlgo.wasm) {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
@@ -226,21 +227,44 @@ export class RSAAlgo {
     this.initWithPrivateKey(new RsaPrivate(bits));
   }
 
+  /**
+   * Update encrypt padding of RSA.
+   * Valid values are 'OAEP', 'PKCS1V15'
+   *
+   * @param encryptPadding new padding mode of RSA encrypt
+   */
   updateEncryptPadding(encryptPadding) {
     parameterCheck(encryptPadding, 'RSA encryption padding mode', 'string', 'OAEP', 'PKCS1V15');
     this.encryptPadding = encryptPadding;
   }
 
+  /**
+   * Update sign padding of RSA.
+   * Valid values are 'PSS', 'PKCS1V15'
+   *
+   * @param signPadding new padding mode of RSA sign
+   */
   updateSignPadding(signPadding) {
     parameterCheck(signPadding, 'RSA sign padding mode', 'string', 'PSS', 'PKCS1V15');
     this.signPadding = signPadding;
   }
 
+  /**
+   * Update hash algorithm of RSA.
+   * Valid values are 'MD5', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'RIPEMD160'
+   *
+   * @param hashAlgo new hash algorithm of RSA
+   */
   updateHashAlgo(hashAlgo) {
     parameterCheck(hashAlgo, 'RSA hasher', 'string', 'MD5', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'RIPEMD160');
     this.hashAlgo = hashAlgo;
   }
 
+  /**
+   * Initial RSA keys using public key
+   *
+   * @param publicKey the pointer to the new RSA public key
+   */
   initWithPublicKey(publicKey) {
     if (!RSAAlgo.wasm) {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
@@ -250,6 +274,11 @@ export class RSAAlgo {
     this.RsaPrivate = null;
   }
 
+  /**
+   * Initial RSA keys using private key
+   *
+   * @param publicKey the pointer to the new RSA private key
+   */
   initWithPrivateKey(privateKey) {
     if (!RSAAlgo.wasm) {
       throw new Error('WASM is not loaded yet. \'RSAAlgo.loadWasm\' should be called first');
@@ -308,7 +337,7 @@ export class RSAAlgo {
    * @param {object} cfg RSA configurations
    * @returns {Uint8Array} the digest of input message
    */
-  digest (msg, cfg) {
+  digest(msg, cfg) {
     this.updateConfig(cfg);
     let digestAlgo = RSA_HASH_ALGOS.get(this.hashAlgo);
     const digestWords = digestAlgo(msg);
@@ -335,6 +364,7 @@ export class RSAAlgo {
 
   /**
    * Verify the given RSA signature
+   *
    * @param {Uint8Array} digest the digest of the message
    * @param {Uint8Array} signature the signature signed using private key
    * @param {object} cfg RSA configurations
@@ -347,6 +377,14 @@ export class RSAAlgo {
     return this.RsaPublic.verify(digest, signature, this.signPadding, this.hashAlgo);
   }
 
+  /**
+   * generate the key file in specific directory
+   *
+   * @param {string} keyType valid values are 'pairs', 'private', 'public'. Default to be 'pairs'
+   * @param {string} fileFmt file type of the generated key file. Valid values are 'pem', 'der'. Default to be 'pem'
+   * @param {string} fileName the name of the generated key file
+   * @param {string} dir the dir of the generated key file
+   */
   generateKeyFile(keyType = 'pairs', fileFmt = 'pem', fileName = 'key', dir = './keys') {
     this.initKeys();
     this.errorIfInBrowser();
@@ -389,7 +427,7 @@ export class RSAAlgo {
 
   /**
    * Get current key type
-   * @returns {string} key type
+   * @returns {string} key type, may be 'public' or 'private'
    */
   getKeyType() {
     this.initKeys();
@@ -398,9 +436,10 @@ export class RSAAlgo {
 
   /**
    * Get key content based on key type
+   *
    * @param keyType the type of key files. Should be "private" or "public"
    * @param keyFmt the encoding scheme. Should be "pem" or "der"
-   * @returns {*}
+   * @returns {string} the key content
    */
   getKeyContent(keyType, keyFmt = 'pem') {
     this.initKeys();
@@ -417,6 +456,7 @@ export class RSAAlgo {
     throw TypeError('Key type should be private or public');
   }
 
+  // TODO: should be moved to utils
   /**
    * String to Uint8Array
    * @param val
@@ -458,13 +498,13 @@ export class RSAAlgo {
  * @example
  *  // encrypt/decrypt
  *  const msg = "Secret";
- *  const msgEnc = RSA.encrypt(msg);
- *  const msgDec = RSA.decrypto(msgEnc);
+ *  const msgEnc = C.RSA.encrypt(msg);
+ *  const msgDec = C.RSA.decrypto(msgEnc);
  *
  *  // sign/verify
- *  const dig = createHash("sha256").update(msg).digest();
- *  const sig = RSA.sign(dig);
- *  const isVerified = RSA.verify(dig, sig);
+ *  const digest = C.RSA.digest(msg);
+ *  const signature = RSA.sign(dig);
+ *  const isVerified = RSA.verify(digest, signature);
  */
 export const RSA = {
   // TODO: extract this into a helper class
