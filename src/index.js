@@ -53,6 +53,8 @@ import {
   RC4DropAlgo,
   RC4Drop
 } from './encryption/rc4.js';
+import { RSAAlgo, RSA } from './encryption/rsa.js';
+
 import { CFB } from './mode/mode-cfb.js';
 import { CTR } from './mode/mode-ctr.js';
 import { CTRGladman } from './mode/mode-ctr-gladman.js';
@@ -118,7 +120,8 @@ export default {
     Rabbit: RabbitAlgo,
     RabbitLegacy: RabbitLegacyAlgo,
     RC4: RC4Algo,
-    RC4Drop: RC4DropAlgo
+    RC4Drop: RC4DropAlgo,
+    RSA: RSAAlgo
   },
 
   mode: {
@@ -177,5 +180,6 @@ export default {
   Rabbit,
   RabbitLegacy,
   RC4,
-  RC4Drop
+  RC4Drop,
+  RSA
 };
