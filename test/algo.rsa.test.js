@@ -273,7 +273,7 @@ uwIDAQAB
       .toMatch(/^-----BEGIN PRIVATE KEY-----/);
     expect(fs.readFileSync('./keys/key_public.pem', { encoding: 'utf-8', }))
       .toMatch(/^-----BEGIN PUBLIC KEY-----/);
-    fs.rmSync('./keys', { recursive: true, force: true, });
+    fs.rm('./keys', { recursive: true, force: true, });
   });
 
   test('generatePrivateKeyFile', () => {
@@ -281,7 +281,7 @@ uwIDAQAB
     C.RSA.generateKeyFile('private', 'pem', 'key');
     expect(fs.readFileSync('./keys/key.pem', { encoding: 'utf-8', }))
       .toMatch(/^-----BEGIN PRIVATE KEY-----/);
-    fs.rmSync('./keys', { recursive: true, force: true, });
+    fs.rm('./keys', { recursive: true, force: true, });
   });
 
   test('generatePublicKeyFile', () => {
@@ -289,7 +289,7 @@ uwIDAQAB
     C.RSA.generateKeyFile('public', 'pem', 'key');
     expect(fs.readFileSync('./keys/key.pem', { encoding: 'utf-8', }))
       .toMatch(/^-----BEGIN PUBLIC KEY-----/);
-    fs.rmSync('./keys', { recursive: true, force: true, });
+    fs.rm('./keys', { recursive: true, force: true, });
   });
 
   test('getKeyTypeOfPrivateKey', () => {
@@ -302,6 +302,6 @@ uwIDAQAB
     C.RSA.generateKeyFile('public');
     C.RSA.updateRsaKey('./keys/key.pem', true);
     expect(C.RSA.getKeyType()).toBe('public');
-    fs.rmSync('./keys', { recursive: true, force: true, });
+    fs.rm('./keys', { recursive: true, force: true, });
   });
 });
