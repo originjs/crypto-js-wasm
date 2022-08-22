@@ -67,7 +67,7 @@ interface RSAAlgoShortcut {
      * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
      * @param isPublicKey true if the input key file is a public key file
      */
-    updateRsaKey(keyFilePathOrKeySize?: string|number, isPublicKey?: boolean);
+    updateRsaKey(keyFilePathOrKeySize?: string|number, isPublicKey?: boolean): void;
 
     /**
      * Update the config for rsa. The configs of RSA are:
@@ -167,7 +167,7 @@ interface RSAAlgoClass extends RSAAlgoShortcut{
      * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
      * @param cfg {object} the config for rsa
      */
-    constructor(keyFilePathOrKeySize?: string|number, cfg?: object);
+    constructor(keyFilePathOrKeySize?: string|number, cfg?: object): RSAAlgoClass;
 
     /**
      * init keys from key file or key size
@@ -217,7 +217,7 @@ interface RSAAlgoClass extends RSAAlgoShortcut{
      *
      * @param signPadding new padding mode of RSA sign
      */
-    updateSignPadding(signPadding): void;
+    updateSignPadding(signPadding: string): void;
 
     /**
      * Update hash algorithm of RSA.

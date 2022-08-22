@@ -17,7 +17,7 @@
 
 ## What's new
 
-RSA is supported now!
+We have supported RSA and TypeScript now!
 
 
 
