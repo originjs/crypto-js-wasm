@@ -1,7 +1,7 @@
 use super::*;
 
 use rsa::pkcs8::{DecodePublicKey, EncodePublicKey};
-use rsa::{PublicKey, RsaPublicKey};
+use rsa::{PublicKey, RsaPublicKey, PublicKeyParts};
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -37,11 +37,15 @@ impl RsaPublic {
             .expect("Failed to encrypt the message!")
     }
 
-    // TODO add custom hasher input
     pub fn verify(&self, digest: &[u8], sig: Vec<u8>, padding_scheme: &str, hash_function: &str) -> bool {
         let padding = utils::padding_util("sign", padding_scheme, hash_function, digest);
 
         self.pub_instance.verify(padding, digest, &sig).is_ok()
+    }
+
+    #[wasm_bindgen(js_name = getKeySize)]
+    pub fn get_key_size(&self) -> usize {
+        self.pub_instance.size()
     }
 
     #[wasm_bindgen(js_name = getPublicKeyContent)]
@@ -84,5 +88,11 @@ mod rsa_public_tests {
     fn can_encrypt() {
         let rsa_public = RsaPublic::new(RsaPrivate::new(Some(1024), None).get_public_key_pem());
         assert_ne!(rsa_public.encrypt(b"secret", "OAEP", "SHA256"), Vec::<u8>::new());
+    }
+
+    #[test]
+    fn can_get_size() {
+        let rsa_public = RsaPublic::new(RsaPrivate::new(Some(1024), None).get_public_key_pem());
+        assert_eq!(rsa_public.get_key_size(), 1024 / 8);
     }
 }

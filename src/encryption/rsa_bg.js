@@ -382,6 +382,13 @@ export class RsaPublic {
     return ret !== 0;
   }
   /**
+   * @returns {number}
+   */
+  getKeySize() {
+    const ret = wasm.rsapublic_getKeySize(this.ptr);
+    return ret >>> 0;
+  }
+  /**
    * @param {string} fmt
    * @returns {any}
    */

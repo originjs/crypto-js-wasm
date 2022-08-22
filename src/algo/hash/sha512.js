@@ -1,15 +1,16 @@
-import {Hasher} from '../../core/hasher';
-import {WordArray} from '../../core/core.js';
-import {X64Word, X64WordArray} from '../../core/x64-core.js';
-import {loadWasm} from '../../utils/wasm-utils';
-import {wasmBytes} from './sha512_wasm';
-import {sha512Wasm} from './sha512_bg';
+import {Hasher,} from '../../core/hasher';
+import {WordArray,} from '../../core/core.js';
+import {X64Word, X64WordArray,} from '../../core/x64-core.js';
+import {loadWasm,} from '../../utils/wasm-utils';
+import {wasmBytes,} from './sha512_wasm';
+import {sha512Wasm,} from './sha512_bg';
 
 /**
  * SHA-512 hash algorithm.
  */
 export class SHA512Algo extends Hasher {
   static wasm = null;
+  static outputSize = 512 / 8;
 
   static async loadWasm() {
     if (SHA512Algo.wasm) {
@@ -39,7 +40,7 @@ export class SHA512Algo extends Hasher {
       new X64Word(0x510e527f, 0xade682d1),
       new X64Word(0x9b05688c, 0x2b3e6c1f),
       new X64Word(0x1f83d9ab, 0xfb41bd6b),
-      new X64Word(0x5be0cd19, 0x137e2179)
+      new X64Word(0x5be0cd19, 0x137e2179),
     ]);
   }
 

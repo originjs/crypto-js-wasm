@@ -4,3 +4,6 @@ node_modules
 coverage
 .idea
 pnpm-lock.yaml
+Cargo.lock
+rust/*/pkg/*
+rust/*/target/*

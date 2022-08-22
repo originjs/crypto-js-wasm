@@ -1,5 +1,5 @@
-import {BufferedBlockAlgorithm, Base} from './core';
-import {HMAC} from '../algo/hmac/hmac';
+import {BufferedBlockAlgorithm, Base,} from './core';
+import {HMAC,} from '../algo/hmac/hmac';
 
 
 /**
@@ -45,6 +45,7 @@ export class Hasher extends BufferedBlockAlgorithm {
         await SubHasher.loadWasm();
       }
     };
+    result.outputSize = SubHasher.outputSize;
 
     return result;
   }

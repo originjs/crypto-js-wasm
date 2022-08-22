@@ -8,13 +8,17 @@ import { SHA384, } from '../algo/hash/sha384.js';
 import { SHA512, } from '../algo/hash/sha512.js';
 import { RIPEMD160, } from '../algo/hash/ripemd160.js';
 
-const DEFAULT_RSA_KEY_SIZE = 2048;
-const DEFAULT_IS_PUBLIC_KEY = false;
-const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
-const DEFAULT_RSA_SIGN_PADDING = 'PSS';
-const DEFAULT_RSA_HASH_ALGO = 'SHA256';
+const RSA_PADDING_OAEP = 'OAEP';
+const RSA_PADDING_PSS = 'PSS';
+const RSA_PADDING_PKCS1V15 = 'PKCS1V15';
 const RSA_PRIVATE_KEY_START = '-----BEGIN PRIVATE KEY-----';
 const RSA_PUBLIC_KEY_START = '-----BEGIN PUBLIC KEY-----';
+
+const DEFAULT_RSA_KEY_SIZE = 2048;
+const DEFAULT_IS_PUBLIC_KEY = false;
+const DEFAULT_RSA_ENCRYPT_PADDING = RSA_PADDING_OAEP;
+const DEFAULT_RSA_SIGN_PADDING = RSA_PADDING_PSS;
+const DEFAULT_RSA_HASH_ALGO = 'SHA256';
 
 // TODO: what if a new hasher is added?
 const RSA_HASH_ALGOS = new Map([
@@ -77,8 +81,8 @@ export class RSAAlgo {
    * @param cfg {object} the config for rsa
    */
   constructor(keyFilePathOrKeySize, cfg) {
-    RSAAlgo.updateRsaKey(keyFilePathOrKeySize);
     this.resetConfig();
+    RSAAlgo.updateRsaKey(keyFilePathOrKeySize);
     this.updateConfig(cfg);
   }
 
@@ -230,7 +234,7 @@ export class RSAAlgo {
    * @param encryptPadding new padding mode of RSA encrypt
    */
   updateEncryptPadding(encryptPadding) {
-    parameterCheck(encryptPadding, 'RSA encryption padding mode', 'string', 'OAEP', 'PKCS1V15');
+    parameterCheck(encryptPadding, 'RSA encryption padding mode', 'string', RSA_PADDING_OAEP, RSA_PADDING_PKCS1V15);
     this.encryptPadding = encryptPadding;
   }
 
@@ -241,7 +245,7 @@ export class RSAAlgo {
    * @param signPadding new padding mode of RSA sign
    */
   updateSignPadding(signPadding) {
-    parameterCheck(signPadding, 'RSA sign padding mode', 'string', 'PSS', 'PKCS1V15');
+    parameterCheck(signPadding, 'RSA sign padding mode', 'string', RSA_PADDING_PSS, RSA_PADDING_PKCS1V15);
     this.signPadding = signPadding;
   }
 
@@ -301,7 +305,10 @@ export class RSAAlgo {
     this.updateConfig(cfg);
     this.initKeys();
 
-    return this.RsaPublic.encrypt(this.strToBytes(msg), this.encryptPadding, this.hashAlgo);
+    const msgInBytes = this.strToBytes(msg);
+    this.errorIfExceedSizeLimit(msgInBytes, 'encrypt');
+
+    return this.RsaPublic.encrypt(msgInBytes, this.encryptPadding, this.hashAlgo);
   }
 
   /**
@@ -352,10 +359,12 @@ export class RSAAlgo {
    */
   sign(digest, cfg) {
     this.updateConfig(cfg);
-    this.errorIfNoPrivateInstance();
     this.initKeys();
 
-    return this.RsaPrivate.sign(this.strToBytes(digest), this.signPadding, this.hashAlgo);
+    const digestInBytes = this.strToBytes(digest);
+    this.errorIfNoPrivateInstance(digestInBytes, 'sign');
+
+    return this.RsaPrivate.sign(digestInBytes, this.signPadding, this.hashAlgo);
   }
 
   /**
@@ -431,6 +440,16 @@ export class RSAAlgo {
   }
 
   /**
+   * Get current key size
+   *
+   * @returns {number} key size in bytes, e.g. 128 for key pair of 1024 bits
+   */
+  getKeySize() {
+    this.initKeys();
+    return this.RsaPublic.getKeySize();
+  }
+
+  /**
    * Get key content based on key type
    *
    * @param keyType the type of key files. Should be "private" or "public"
@@ -465,6 +484,47 @@ export class RSAAlgo {
     }
 
     return val;
+  }
+
+  /**
+   * Throws if the input (message/digest) length exceed the limit decided by key size and padding scheme
+   *
+   * @param input the input message/digest
+   * @param op the operation mode. Should be 'encrypt' or 'sign'
+   */
+  errorIfExceedSizeLimit(input, op = 'encrypt') {
+    const keySize = this.getKeySize(); // 256 by default
+    const hashAlgoOutputSize = RSA_HASH_ALGOS.get(this.hashAlgo).outputSize; // 32 by default
+    let inputLimit;
+
+    switch(op) {
+    case 'encrypt':
+      if (this.encryptPadding === RSA_PADDING_OAEP) {
+        inputLimit = (keySize - 2 * hashAlgoOutputSize - 2); // 190 by default
+      } else {
+        // PKCS1V15
+        inputLimit = keySize - 11;
+      }
+
+      if (input.length > inputLimit) {
+        throw new Error(`The input message is too long (${input.length} bytes). The maximum length is ${inputLimit}`);
+      }
+      break;
+    case 'sign':
+      if (this.signPadding === RSA_PADDING_PSS) {
+        inputLimit = Math.floor(((keySize * 8 - 9) / 2) / 8); // 127 by default
+      } else {
+        // PKCS1V15
+        inputLimit = keySize - 11;
+      }
+
+      if (input.length > inputLimit) {
+        throw new Error(`The input message is too long (${input.length} bytes). The maximum length is ${inputLimit}`);
+      }
+      break;
+    default:
+      throw new Error('op should be \'encrypt\' or \'sign\'');
+    }
   }
 
   /**
@@ -548,6 +608,10 @@ export const RSA = {
 
   getKeyType() {
     return this.rsa.getKeyType();
+  },
+
+  getKeySize() {
+    return this.rsa.getKeySize();
   },
 
   getKeyContent(keyType, keyFmt) {

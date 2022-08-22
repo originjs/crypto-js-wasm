@@ -86,17 +86,11 @@ uwIDAQAB
 
   test('encryptWithErrorPadding', () => {
     C.RSA.resetConfig();
-    // error is expected, ignore console error print
-    const consoleErrorFun = console.error;
-    console.error = () => {};
 
     const msg = 'testMessage';
     expect(() => {
       C.RSA.encrypt(msg, {encryptPadding: 'ErrorPadding',});
     }).toThrow();
-
-    // recover console error print
-    console.error = consoleErrorFun;
   });
 
   test('encryptWithPKCS1V15AndOAEP', () => {
@@ -113,6 +107,43 @@ uwIDAQAB
     const OAEPEncrypted = C.RSA.encrypt(msg, {encryptPadding: 'oaep',});
     const PKCSDecrypted = C.RSA.decrypt(OAEPEncrypted, {encryptPadding: 'pkcs1v15',});
     expect(PKCSDecrypted).toBeNull();
+
+    // recover console error print
+    console.error = consoleErrorFun;
+  });
+
+  test('encryptTooLongMessage', () => {
+    C.RSA.resetConfig();
+
+    const msgOAEPTooLong = new Uint8Array(191);
+    expect(() => {
+      C.RSA.encrypt(msgOAEPTooLong, { encryptPadding: 'oaep', });
+    }).toThrow();
+
+    const msgOAEPMD5TooLong = new Uint8Array(223);
+    expect(() => {
+      C.RSA.encrypt(msgOAEPMD5TooLong, { encryptPadding: 'oaep', hashAlgo: 'md5', });
+    }).toThrow();
+
+    const msgPKCS1V15TooLong = new Uint8Array(246);
+    expect(() => {
+      C.RSA.encrypt(msgPKCS1V15TooLong, { encryptPadding: 'pkcs1v15', });
+    }).toThrow();
+  });
+
+  test('signTooLongDigest', () => {
+    C.RSA.resetConfig();
+    C.RSA.updateRsaKey(1024);
+
+    // error is expected, ignore console error print
+    const consoleErrorFun = console.error;
+    console.error = () => {};
+
+    const msg = 'test message';
+    const digestSha512 = C.RSA.digest(msg, {hashAlgo: 'sha512',});
+    expect(() => {
+      C.RSA.sign(digestSha512);
+    }).toThrow();
 
     // recover console error print
     console.error = consoleErrorFun;
@@ -253,17 +284,10 @@ uwIDAQAB
   test('verifyDigestWithWrongPadding', () => {
     C.RSA.resetConfig();
 
-    // error is expected, ignore console error print
-    const consoleErrorFun = console.error;
-    console.error = () => {};
-
     const message = 'testMessage';
     const digest = C.RSA.digest(message, {hashAlgo: 'ripemd160',});
     const signature = C.RSA.sign(digest, {signPadding: 'PSS',});
     expect(C.RSA.verify(digest, signature, {signPadding: 'pkcs1v15',})).toBe(false);
-
-    // recover console error print
-    console.error = consoleErrorFun;
   });
 
   test('generatePrivateAndPublicKeyFile', () => {

@@ -20,11 +20,11 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import { Hasher } from '../../core/hasher';
-import {WordArray} from '../../core/core.js';
-import {ripemd160Wasm} from './ripemd160_bg';
-import {wasmBytes} from './ripemd160_wasm';
-import {loadWasm} from '../../utils/wasm-utils';
+import { Hasher, } from '../../core/hasher';
+import {WordArray,} from '../../core/core.js';
+import {ripemd160Wasm,} from './ripemd160_bg';
+import {wasmBytes,} from './ripemd160_wasm';
+import {loadWasm,} from '../../utils/wasm-utils';
 
 
 
@@ -33,6 +33,7 @@ import {loadWasm} from '../../utils/wasm-utils';
  */
 export class RIPEMD160Algo extends Hasher {
   static wasm = null;
+  static outputSize = 160 / 8;
 
   static async loadWasm() {
     if (RIPEMD160Algo.wasm) {
@@ -48,7 +49,7 @@ export class RIPEMD160Algo extends Hasher {
   }
 
   _doReset() {
-    this._hash = new WordArray([0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]);
+    this._hash = new WordArray([0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0,]);
   }
 
   _process(doFlush) {
