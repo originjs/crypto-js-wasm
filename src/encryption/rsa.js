@@ -8,7 +8,7 @@ import { SHA384, } from '../algo/hash/sha384.js';
 import { SHA512, } from '../algo/hash/sha512.js';
 import { RIPEMD160, } from '../algo/hash/ripemd160.js';
 
-const DEFAULT_RSA_KEY_SIZE = 1024;
+const DEFAULT_RSA_KEY_SIZE = 2048;
 const DEFAULT_IS_PUBLIC_KEY = false;
 const DEFAULT_RSA_ENCRYPT_PADDING = 'OAEP';
 const DEFAULT_RSA_SIGN_PADDING = 'PSS';
@@ -37,14 +37,10 @@ export class RSAAlgo {
   /**
    * Update the key of RSA. The input can be a path to the private/public key file, or the key size in bits
    *
-   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
+   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
    * @param isPublicKey true if the input key file is a public key file
    */
   static updateRsaKey(keyFilePathOrKeySize = DEFAULT_RSA_KEY_SIZE, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
-    if (keyFilePathOrKeySize === null || keyFilePathOrKeySize === undefined) {
-      keyFilePathOrKeySize = 1024;
-    }
-
     parameterCheck(keyFilePathOrKeySize, 'RSA keyFilePathOrKeySize', ['number', 'string',]);
 
     if (keyFilePathOrKeySize === RSAAlgo.keyFilePathOrKeySize && isPublicKey == RSAAlgo.isPublicKey) {
@@ -77,7 +73,7 @@ export class RSAAlgo {
   /**
    * Constructor of RSAAlgo
    *
-   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
+   * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
    * @param cfg {object} the config for rsa
    */
   constructor(keyFilePathOrKeySize, cfg) {
@@ -161,7 +157,7 @@ export class RSAAlgo {
       return;
     }
 
-    // set the key size to 1024 by default
+    // set the key size to default value
     this.initFromKeySize(DEFAULT_RSA_KEY_SIZE);
     RSAAlgo.keyChanged = false;
   }
@@ -285,7 +281,7 @@ export class RSAAlgo {
     }
 
     if (privateKey === undefined) {
-      // create a new 1024 bit RSA key pair if no parameter is specified
+      // create a new DEFAULT_RSA_KEY_SIZE bit RSA key pair if no parameter is specified
       privateKey = new RsaPrivate(DEFAULT_RSA_KEY_SIZE);
     }
     const publicKey = new RsaPublic(privateKey.getPublicKeyPem());
@@ -491,7 +487,7 @@ export class RSAAlgo {
 }
 
 /**
- * Shortcut of RSAAlgo with an instantiated 1024 bits key pair
+ * Shortcut of RSAAlgo with an instantiated 2048 bits key pair
  * @name RSA
  * @type {RSAAlgo}
  *
