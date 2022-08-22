@@ -144,6 +144,13 @@ interface RSAAlgoShortcut {
     getKeyType(): string;
 
     /**
+     * Get current key size
+     *
+     * @returns {number} key size in bytes, e.g. 128 for key pair of 1024 bits
+     */
+    getKeySize(): number;
+
+    /**
      * Get key content based on key type
      *
      * @param keyType the type of key files. Should be "private" or "public"
