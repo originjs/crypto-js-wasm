@@ -64,7 +64,7 @@ interface RSAAlgoShortcut {
     /**
      * Update the key of RSA. The input can be a path to the private/public key file, or the key size in bits
      *
-     * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
+     * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
      * @param isPublicKey true if the input key file is a public key file
      */
     updateRsaKey(keyFilePathOrKeySize?: string|number, isPublicKey?: boolean): void;
@@ -164,7 +164,7 @@ interface RSAAlgoClass extends RSAAlgoShortcut{
     /**
      * Constructor of RSAAlgo
      *
-     * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 1024 bits as default
+     * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
      * @param cfg {object} the config for rsa
      */
     constructor(keyFilePathOrKeySize?: string|number, cfg?: object): RSAAlgoClass;
@@ -1960,7 +1960,7 @@ declare global {
         export const RabbitLegacy: WasmCipherHelper;
 
         /**
-         * Shortcut of RSAAlgo with an instantiated 1024 bits key pair
+         * Shortcut of RSAAlgo with an instantiated 2048 bits key pair
          * @name RSA
          * @type {RSAAlgo}
          *

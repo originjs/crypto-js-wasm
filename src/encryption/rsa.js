@@ -551,7 +551,7 @@ export class RSAAlgo {
  *  // encrypt/decrypt
  *  const msg = "Secret";
  *  const msgEnc = C.RSA.encrypt(msg);
- *  const msgDec = C.RSA.decrypto(msgEnc);
+ *  const msgDec = C.RSA.decrypt(msgEnc);
  *
  *  // sign/verify
  *  const digest = C.RSA.digest(msg);
