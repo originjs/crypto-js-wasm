@@ -44,7 +44,7 @@ export class RSAAlgo {
    * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
    * @param isPublicKey true if the input key file is a public key file
    */
-  static updateRsaKey(keyFilePathOrKeySize = DEFAULT_RSA_KEY_SIZE, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
+  updateRsaKey(keyFilePathOrKeySize = DEFAULT_RSA_KEY_SIZE, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
     parameterCheck(keyFilePathOrKeySize, 'RSA keyFilePathOrKeySize', ['number', 'string',]);
 
     if (keyFilePathOrKeySize === RSAAlgo.keyFilePathOrKeySize && isPublicKey == RSAAlgo.isPublicKey) {
@@ -54,10 +54,6 @@ export class RSAAlgo {
     RSAAlgo.keyFilePathOrKeySize = keyFilePathOrKeySize;
     RSAAlgo.isPublicKey = isPublicKey;
     RSAAlgo.keyChanged = true;
-  }
-
-  updateRsaKey(keyFilePathOrKeySize, isPublicKey) {
-    RSAAlgo.updateRsaKey(keyFilePathOrKeySize, isPublicKey);
   }
 
   static async loadWasm() {
@@ -82,7 +78,7 @@ export class RSAAlgo {
    */
   constructor(keyFilePathOrKeySize, cfg) {
     this.resetConfig();
-    RSAAlgo.updateRsaKey(keyFilePathOrKeySize);
+    this.updateRsaKey(keyFilePathOrKeySize);
     this.updateConfig(cfg);
   }
 
