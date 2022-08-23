@@ -41,14 +41,17 @@ export const generateWasmBytes = function (compressedBase64Bytes) {
  * @return {Promise<WebAssembly.Exports>} the generated WebAssembly target
  */
 export const loadWasm = async function(wasmBytes, imports) {
-  if (WebAssembly === 'undefined') {
+  if (typeof WebAssembly !== 'object' || typeof WebAssembly.instantiate !== 'function') {
     throw new Error('WebAssembly is not supported.');
   }
 
-  var loadResult = await WebAssembly.instantiate(wasmBytes, imports);
+  const loadResult = await WebAssembly.instantiate(wasmBytes, imports);
   return loadResult.instance.exports;
 };
 
+/**
+ * An async function to load all existing WebAssembly modules. Please note that this only need to be called once.
+ */
 export const loadAllWasm = async function() {
   await Promise.allSettled(
     Object.values(index.algo).map(algo => {

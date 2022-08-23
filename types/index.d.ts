@@ -2,6 +2,27 @@
 
 // added TypeScript definitions for crypto-js-wasm
 
+interface WasmHasherHelper extends HasherHelper {
+    /**
+     * Async call to load thw wasm binary
+     */
+    loadWasm(): Promise<void>;
+}
+
+interface WasmHasherStatic extends HasherStatic {
+    /**
+     * Async call to load thw wasm binary
+     */
+    loadWasm(): Promise<void>;
+}
+
+interface WasmHmacHasherHelper extends HmacHasherHelper {
+    /**
+     * Async call to load thw wasm binary
+     */
+    loadWasm(): Promise<void>;
+}
+
 interface WasmCipherHelper extends CipherHelper {
     /**
      * Async call to load thw wasm binary
@@ -160,14 +181,14 @@ interface RSAAlgoShortcut {
     getKeyContent(keyType: string, keyFmt?: string): string;
 }
 
-interface RSAAlgoClass extends RSAAlgoShortcut{
+interface WasmRSAAlgoClass extends RSAAlgoShortcut{
     /**
      * Constructor of RSAAlgo
      *
      * @param keyFilePathOrKeySize {string | number} the key file path or key size in bytes, set as 2048 bits as default
      * @param cfg {object} the config for rsa
      */
-    constructor(keyFilePathOrKeySize?: string|number, cfg?: object): RSAAlgoClass;
+    constructor(keyFilePathOrKeySize?: string|number, cfg?: object): WasmRSAAlgoClass;
 
     /**
      * init keys from key file or key size
@@ -739,7 +760,7 @@ interface KDFOption {
     /**
      * The hasher to use.
      */
-    hasher?: HasherStatic | undefined;
+    hasher?: WasmHasherStatic | undefined;
     /**
      * The number of iterations to perform.
      */
@@ -902,7 +923,7 @@ declare global {
                  *
                  *     var SHA256 = CryptoJSWasm.lib.Hasher._createHelper(CryptoJSWasm.algo.SHA256);
                  */
-                _createHelper(hasher: HasherStatic): HasherHelper;
+                _createHelper(hasher: WasmHasherStatic): WasmHasherHelper;
                 /**
                  * Creates a shortcut function to the HMAC's object interface.
                  *
@@ -914,7 +935,7 @@ declare global {
                  *
                  *     var HmacSHA256 = CryptoJSWasm.lib.Hasher._createHmacHelper(CryptoJSWasm.algo.SHA256);
                  */
-                _createHmacHelper(hasher: HasherStatic): HmacHasherHelper;
+                _createHmacHelper(hasher: WasmHasherStatic): WasmHmacHasherHelper;
             };
 
             const Cipher: {
@@ -1293,38 +1314,38 @@ declare global {
             /**
              * MD5 hash algorithm.
              */
-            const MD5: HasherStatic;
+            const MD5: WasmHasherStatic;
 
             /**
              * SHA-1 hash algorithm.
              */
-            const SHA1: HasherStatic;
+            const SHA1: WasmHasherStatic;
 
             /**
              * SHA-256 hash algorithm.
              */
-            const SHA256: HasherStatic;
+            const SHA256: WasmHasherStatic;
             /**
              * SHA-224 hash algorithm.
              */
-            const SHA224: HasherStatic;
+            const SHA224: WasmHasherStatic;
             /**
              * SHA-512 hash algorithm.
              */
-            const SHA512: HasherStatic;
+            const SHA512: WasmHasherStatic;
 
             /**
              * SHA-384 hash algorithm.
              */
-            const SHA384: HasherStatic;
+            const SHA384: WasmHasherStatic;
             /**
              * SHA-3 hash algorithm.
              */
-            const SHA3: HasherStatic;
+            const SHA3: WasmHasherStatic;
             /**
              * RIPEMD160 hash algorithm.
              */
-            const RIPEMD160: HasherStatic;
+            const RIPEMD160: WasmHasherStatic;
             /**
              * HMAC algorithm.
              */
@@ -1339,7 +1360,7 @@ declare global {
                  *
                  *     var hmacHasher = CryptoJSWasm.algo.HMAC.create(CryptoJSWasm.algo.SHA256, key);
                  */
-                static create(hasher: HasherStatic, key: WordArray | string): HMAC;
+                static create(hasher: WasmHasherStatic, key: WordArray | string): HMAC;
                 /**
                  * Resets this HMAC to its initial state.
                  *
@@ -1426,7 +1447,7 @@ declare global {
                  *     var kdf = CryptoJSWasm.algo.EvpKDF.create({ keySize: 8 });
                  *     var kdf = CryptoJSWasm.algo.EvpKDF.create({ keySize: 8, iterations: 1000 });
                  */
-                static create(cfg?: { keySize: number; hasher?: HasherStatic | undefined; iterations: number }): EvpKDF;
+                static create(cfg?: { keySize: number; hasher?: WasmHasherStatic | undefined; iterations: number }): EvpKDF;
 
                 /**
                  * Derives a key from a password.
@@ -1490,7 +1511,7 @@ declare global {
             /**
              * RSA cipher algorithm
              */
-            const RSA: RSAAlgoClass;
+            const RSA: WasmRSAAlgoClass;
         }
 
         /**
@@ -1652,6 +1673,11 @@ declare global {
         }
 
         /**
+         * An async function to load all existing WebAssembly modules. Please note that this only need to be called once.
+         */
+        export function loadAllWasm(): Promise<void>;
+
+        /**
          * Shortcut function to the hasher's object interface.
          *
          * @param message The message to hash.
@@ -1663,7 +1689,7 @@ declare global {
          *     var hash = CryptoJSWasm.MD5('message');
          *     var hash = CryptoJSWasm.MD5(wordArray);
          */
-        export const MD5: HasherHelper;
+        export const MD5: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1676,7 +1702,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacMD5(message, key);
          */
-        export const HmacMD5: HmacHasherHelper;
+        export const HmacMD5: WasmHmacHasherHelper;
         /**
          * Shortcut function to the hasher's object interface.
          *
@@ -1689,7 +1715,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA1('message');
          *     var hash = CryptoJSWasm.SHA1(wordArray);
          */
-        export const SHA1: HasherHelper;
+        export const SHA1: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1702,7 +1728,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA1(message, key);
          */
-        export const HmacSHA1: HmacHasherHelper;
+        export const HmacSHA1: WasmHmacHasherHelper;
 
         /**
          * Shortcut function to the hasher's object interface.
@@ -1716,7 +1742,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA256('message');
          *     var hash = CryptoJSWasm.SHA256(wordArray);
          */
-        export const SHA256: HasherHelper;
+        export const SHA256: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1729,7 +1755,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA256(message, key);
          */
-        export const HmacSHA256: HmacHasherHelper;
+        export const HmacSHA256: WasmHmacHasherHelper;
         /**
          * Shortcut function to the hasher's object interface.
          *
@@ -1742,7 +1768,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA224('message');
          *     var hash = CryptoJSWasm.SHA224(wordArray);
          */
-        export const SHA224: HasherHelper;
+        export const SHA224: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1755,7 +1781,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA224(message, key);
          */
-        export const HmacSHA224: HmacHasherHelper;
+        export const HmacSHA224: WasmHmacHasherHelper;
         /**
          * Shortcut function to the hasher's object interface.
          *
@@ -1768,7 +1794,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA512('message');
          *     var hash = CryptoJSWasm.SHA512(wordArray);
          */
-        export const SHA512: HasherHelper;
+        export const SHA512: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1781,7 +1807,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA512(message, key);
          */
-        export const HmacSHA512: HmacHasherHelper;
+        export const HmacSHA512: WasmHmacHasherHelper;
         /**
          * Shortcut function to the hasher's object interface.
          *
@@ -1794,7 +1820,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA384('message');
          *     var hash = CryptoJSWasm.SHA384(wordArray);
          */
-        export const SHA384: HasherHelper;
+        export const SHA384: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1807,7 +1833,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA384(message, key);
          */
-        export const HmacSHA384: HmacHasherHelper;
+        export const HmacSHA384: WasmHmacHasherHelper;
 
         /**
          * Shortcut function to the hasher's object interface.
@@ -1821,7 +1847,7 @@ declare global {
          *     var hash = CryptoJSWasm.SHA3('message');
          *     var hash = CryptoJSWasm.SHA3(wordArray);
          */
-        export const SHA3: HasherHelper;
+        export const SHA3: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1834,7 +1860,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacSHA3(message, key);
          */
-        export const HmacSHA3: HmacHasherHelper;
+        export const HmacSHA3: WasmHmacHasherHelper;
 
         /**
          * Shortcut function to the hasher's object interface.
@@ -1848,7 +1874,7 @@ declare global {
          *     var hash = CryptoJSWasm.RIPEMD160('message');
          *     var hash = CryptoJSWasm.RIPEMD160(wordArray);
          */
-        export const RIPEMD160: HasherHelper;
+        export const RIPEMD160: WasmHasherHelper;
         /**
          * Shortcut function to the HMAC's object interface.
          *
@@ -1861,7 +1887,7 @@ declare global {
          *
          *     var hmac = CryptoJSWasm.HmacRIPEMD160(message, key);
          */
-        export const HmacRIPEMD160: HmacHasherHelper;
+        export const HmacRIPEMD160: WasmHmacHasherHelper;
         /**
          * Computes the Password-Based Key Derivation Function 2.
          *
@@ -1997,7 +2023,7 @@ declare global {
             salt: WordArray | string,
             cfg?: {
                 keySize: number;
-                hasher?: HasherStatic | undefined;
+                hasher?: WasmHasherStatic | undefined;
                 iterations: number;
             },
         ): WordArray;
