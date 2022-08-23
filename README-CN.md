@@ -1,5 +1,10 @@
 # @originjs/crypto-js-wasm
 
+<p align="center">
+  <a href="https://github.com/originjs/crypto-js-wasm/actions/workflows/ci.yml"><img src="https://github.com/originjs/crypto-js-wasm/actions/workflows/ci.yml/badge.svg?branch=main" alt="Build Status"></a>
+  <a href="https://www.npmjs.com/package/@originjs/crypto-js-wasm"><img src="https://badgen.net/npm/v/@originjs/crypto-js-wasm" alt="Version"></a>
+ </p>
+
 [English](README.md) | [中文](README-CN.md)
 
 ---
