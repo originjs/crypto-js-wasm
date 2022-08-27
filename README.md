@@ -131,6 +131,12 @@ The benchmark below is run on a desktop PC (i5-4590, 16 GB RAM, Windows 10 Versi
 
 
 
+*RSA(vs jsencrypt) in Chrome:*
+
+![rsa_chrome](benchmark/benchmark_chrome_rsa.png)
+
+
+
 ## Development
 
 ```bash

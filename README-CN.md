@@ -130,6 +130,12 @@ CryptoJSW.SHA256.loadWasm().then(() => {
 
 
 
+*RSA(vs jsencrypt) in Chrome:*
+
+![rsa_chrome](benchmark/benchmark_chrome_rsa.png)
+
+
+
 ## 开发
 
 ```bash
