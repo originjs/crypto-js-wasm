@@ -2,8 +2,7 @@ import C from '../src/index';
 import fs from 'fs';
 
 beforeAll(async () => {
-  await C.loadAllWasm();
-  C.RSA.loadWasm();
+  await C.RSA.loadWasm();
 });
 
 describe('algo-rsa-test', () => {

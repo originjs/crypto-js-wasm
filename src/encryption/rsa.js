@@ -61,6 +61,9 @@ export class RSAAlgo {
       return RSAAlgo.wasm;
     }
 
+    // load wasm of available hashers
+    [...RSA_HASH_ALGOS.values(),].map(async hash => await hash.loadWasm());
+
     await init();
     RSAAlgo.wasm = true;
     return RSAAlgo.wasm;
@@ -323,7 +326,7 @@ export class RSAAlgo {
     try {
       result = this.RsaPrivate.decrypt(msgEncrypted, this.encryptPadding, this.hashAlgo);
     } catch (e) {
-      console.error('Error occurred when decrypting : ', e);
+      console.error('Error occurred when decrypting: ', e);
       return null;
     }
     return result;

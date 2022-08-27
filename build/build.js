@@ -8,7 +8,7 @@ const terser = require('terser');
 const config = require('./config');
 const rollupConfig = require('./rollup.config');
 
-const spinner = ora('building for crypto-js...\n');
+const spinner = ora('building for crypto-js-wasm...\n');
 spinner.start()
 
 if (!fs.existsSync(config.build.assetsRootPath)) {
