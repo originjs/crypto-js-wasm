@@ -894,7 +894,7 @@ declare global {
                  *     var wordArray = CryptoJSWasm.lib.WordArray.create([0x00010203, 0x04050607]);
                  *     var wordArray = CryptoJSWasm.lib.WordArray.create([0x00010203, 0x04050607], 6);
                  */
-                create(words?: number[], sigBytes?: number): WordArray;
+                create(words?: number[] | Uint8Array | Int8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array, sigBytes?: number): WordArray;
                 /**
                  * Creates a word array filled with random bytes.
                  *

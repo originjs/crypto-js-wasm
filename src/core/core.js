@@ -3,9 +3,9 @@
 /**
  * Base class for inheritance.
  */
-import { Utf8 } from '../encoding/enc-utf8';
-import { Hex } from '../encoding/enc-hax';
-import { isString } from '../utils';
+import { Utf8, } from '../encoding/enc-utf8';
+import { Hex, } from '../encoding/enc-hax';
+import { isString, } from '../utils';
 
 let crypto;
 // Native crypto from window (Browser)
@@ -162,6 +162,17 @@ export class WordArray extends Base {
   }
 
   /**
+   * Creates and initializes a word array
+   * A compatibility method for crypto-js
+   *
+   * @param {Array} words (Optional) An array of 32-bit words.
+   * @param {number} sigBytes (Optional) The number of significant bytes in the words.
+   */
+  static create(words = [], sigBytes = words.length * 4) {
+    return new WordArray(words, sigBytes);
+  }
+
+  /**
    * Creates a word array filled with random bytes.
    *
    * @param {number} nBytes The number of random bytes to generate.
@@ -252,7 +263,7 @@ export class WordArray extends Base {
     // Shortcuts
     const {
       words,
-      sigBytes
+      sigBytes,
     } = this;
 
     // Clamp
@@ -351,7 +362,7 @@ export class BufferedBlockAlgorithm extends Base {
     // Shortcuts
     const {
       _data: data,
-      blockSize
+      blockSize,
     } = this;
     const dataWords = data.words;
     const dataSigBytes = data.sigBytes;
