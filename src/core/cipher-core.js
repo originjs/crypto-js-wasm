@@ -3,17 +3,17 @@
 import {
   Base,
   WordArray,
-  BufferedBlockAlgorithm
+  BufferedBlockAlgorithm,
 } from '../core/core.js';
 import {
-  Base64
+  Base64,
 } from '../encoding/enc-base64.js';
 import {
-  EvpKDFAlgo
+  EvpKDFAlgo,
 } from '../encryption/evpkdf.js';
-import { isString } from '../utils';
-import { Pkcs7 } from '../pad/pad-pkcs7';
-import {MD5Algo} from '../algo/hash/md5';
+import { isString, } from '../utils';
+import { Pkcs7, } from '../pad/pad-pkcs7';
+import {MD5Algo,} from '../algo/hash/md5';
 
 
 /**
@@ -152,7 +152,7 @@ export class Cipher extends BufferedBlockAlgorithm {
 
       decrypt(ciphertext, key, cfg) {
         return selectCipherStrategy(key).decrypt(SubCipher, ciphertext, key, cfg);
-      }
+      },
     };
   }
 
@@ -324,7 +324,9 @@ function xorBlock(words, offset, blockSize) {
 /**
  * Abstract base CBC mode.
  */
-export class CBC extends BlockCipherMode { }
+export class CBC extends BlockCipherMode {
+  static _name = 'CBC';
+}
 /**
  * CBC encryptor.
  */
@@ -343,7 +345,7 @@ CBC.Encryptor = class extends CBC {
     // Shortcuts
     const cipher = this._cipher;
     const {
-      blockSize
+      blockSize,
     } = cipher;
 
     // XOR and encrypt
@@ -372,7 +374,7 @@ CBC.Decryptor = class extends CBC {
     // Shortcuts
     const cipher = this._cipher;
     const {
-      blockSize
+      blockSize,
     } = cipher;
 
     // Remember this block to use with next block
@@ -404,7 +406,7 @@ export class BlockCipher extends Cipher {
      */
     super(xformMode, key, Object.assign({
       mode: CBC,
-      padding: Pkcs7
+      padding: Pkcs7,
     },
     cfg,
     ));
@@ -420,11 +422,11 @@ export class BlockCipher extends Cipher {
 
     // Shortcuts
     const {
-      cfg
+      cfg,
     } = this;
     const {
       iv,
-      mode
+      mode,
     } = cfg;
 
     // Reset block mode
@@ -450,7 +452,7 @@ export class BlockCipher extends Cipher {
 
     // Shortcut
     const {
-      padding
+      padding,
     } = this.cfg;
 
     // Finalize
@@ -555,12 +557,12 @@ export const OpenSSLFormatter = {
     // Shortcuts
     const {
       ciphertext,
-      salt
+      salt,
     } = cipherParams;
 
     // Format
     if (salt) {
-      wordArray = new WordArray([0x53616c74, 0x65645f5f]).concat(salt).concat(ciphertext);
+      wordArray = new WordArray([0x53616c74, 0x65645f5f,]).concat(salt).concat(ciphertext);
     } else {
       wordArray = ciphertext;
     }
@@ -602,9 +604,9 @@ export const OpenSSLFormatter = {
 
     return new CipherParams({
       ciphertext,
-      salt
+      salt,
     });
-  }
+  },
 };
 
 /**
@@ -653,7 +655,7 @@ export class SerializableCipher extends Base {
       mode: cipherCfg.mode,
       padding: cipherCfg.padding,
       blockSize: encryptor.blockSize,
-      formatter: _cfg.format
+      formatter: _cfg.format,
     });
   }
 
@@ -726,7 +728,7 @@ export class SerializableCipher extends Base {
  */
 SerializableCipher.cfg = Object.assign(
   new Base(), {
-    format: OpenSSLFormatter
+    format: OpenSSLFormatter,
   },
 );
 
@@ -768,9 +770,9 @@ export const OpenSSLKdf = {
     // Derive key and IV
     let key;
     if (!hasher) {
-      key = new EvpKDFAlgo({keySize: keySize + ivSize}).compute(password, _salt);
+      key = new EvpKDFAlgo({keySize: keySize + ivSize,}).compute(password, _salt);
     } else {
-      key = new EvpKDFAlgo({keySize: keySize + ivSize, hasher: hasher}).compute(password, salt);
+      key = new EvpKDFAlgo({keySize: keySize + ivSize, hasher: hasher,}).compute(password, salt);
     }
 
     // Separate key and IV
@@ -781,9 +783,9 @@ export const OpenSSLKdf = {
     return new CipherParams({
       key,
       iv,
-      salt: _salt
+      salt: _salt,
     });
-  }
+  },
 };
 
 /**
@@ -891,5 +893,5 @@ export class PasswordBasedCipher extends SerializableCipher {
  *     Default: OpenSSL
  */
 PasswordBasedCipher.cfg = Object.assign(SerializableCipher.cfg, {
-  kdf: OpenSSLKdf
+  kdf: OpenSSLKdf,
 });
