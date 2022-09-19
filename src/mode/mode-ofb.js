@@ -2,10 +2,11 @@
  * Output Feedback block mode.
  */
 import {
-  BlockCipherMode
+  BlockCipherMode,
 } from '../core/cipher-core.js';
 
 export class OFB extends BlockCipherMode {
+  static _name = 'OFB';
 }
 OFB.Encryptor = class extends OFB {
   processBlock(words, offset) {
@@ -13,7 +14,7 @@ OFB.Encryptor = class extends OFB {
 
     // Shortcuts
     const cipher = this._cipher;
-    const { blockSize } = cipher;
+    const { blockSize, } = cipher;
     const iv = this._iv;
     let keystream = this._keystream;
 

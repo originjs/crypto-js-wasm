@@ -1,8 +1,8 @@
-import {blowfishWasm} from './blowfish_bg';
-import {WordArray} from '../core/core';
-import {BlockCipher} from '../core/cipher-core.js';
-import {loadWasm} from '../utils/wasm-utils';
-import {wasmBytes} from './blowfish_wasm';
+import {blowfishWasm,} from './blowfish_bg';
+import {WordArray,} from '../core/core';
+import {BlockCipher,} from '../core/cipher-core.js';
+import {loadWasm,} from '../utils/wasm-utils';
+import {wasmBytes,} from './blowfish_wasm';
 
 /**
  * Blowfish block cipher algorithm.
@@ -109,15 +109,15 @@ export class BlowfishAlgo extends BlockCipher {
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
         } else {
-          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doEncrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
         }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this.pbox, s);
         } else {
-          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
+          this.modeProcessBlock = blowfishWasm(BlowfishAlgo.wasm).doDecrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, this.pbox, s);
         }
       }
       dataWords = Array.from(dataArray);

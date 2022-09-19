@@ -1,8 +1,8 @@
-import {WordArray} from '../core/core.js';
-import {BlockCipher} from '../core/cipher-core.js';
-import {desWasm} from './des_bg';
-import {wasmBytes} from './des_wasm';
-import {loadWasm} from '../utils/wasm-utils';
+import {WordArray,} from '../core/core.js';
+import {BlockCipher,} from '../core/cipher-core.js';
+import {desWasm,} from './des_bg';
+import {wasmBytes,} from './des_wasm';
+import {loadWasm,} from '../utils/wasm-utils';
 
 // Permuted Choice 1 constants
 const PC1 = [
@@ -12,7 +12,7 @@ const PC1 = [
   60, 52, 44, 36, 63, 55, 47, 39,
   31, 23, 15, 7, 62, 54, 46, 38,
   30, 22, 14, 6, 61, 53, 45, 37,
-  29, 21, 13, 5, 28, 20, 12, 4
+  29, 21, 13, 5, 28, 20, 12, 4,
 ];
 
 // Permuted Choice 2 constants
@@ -24,11 +24,11 @@ const PC2 = [
   41, 52, 31, 37, 47, 55,
   30, 40, 51, 45, 33, 48,
   44, 49, 39, 56, 34, 53,
-  46, 42, 50, 36, 29, 32
+  46, 42, 50, 36, 29, 32,
 ];
 
 // Cumulative bit shift constants
-const BIT_SHIFTS = [1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28];
+const BIT_SHIFTS = [1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28,];
 
 /**
  * DES block cipher algorithm.
@@ -163,15 +163,15 @@ export class DESAlgo extends BlockCipher {
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
         } else {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doEncrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
         }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, this._key.words);
         } else {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).doDecrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, this._key.words);
         }
       }
       dataWords = Array.from(dataArray);
@@ -284,15 +284,15 @@ export class TripleDESAlgo extends BlockCipher {
       // Perform concrete-algorithm logic
       if (this._xformMode == this._ENC_XFORM_MODE) {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
         } else {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleEncrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
         }
       } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
         if (this.modeProcessBlock != undefined) {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode.name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode._name, nWordsReady, blockSize, this.modeProcessBlock, dataArray, key1, key2, key3);
         } else {
-          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode.name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
+          this.modeProcessBlock = desWasm(DESAlgo.wasm).tripleDecrypt(this.cfg.mode._name, nWordsReady, blockSize, ivWords, dataArray, key1, key2, key3);
         }
       }
       dataWords = Array.from(dataArray);
