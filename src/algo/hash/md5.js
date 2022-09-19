@@ -1,8 +1,8 @@
-import {WordArray,} from '../../core/core.js';
-import {Hasher,} from '../../core/hasher';
-import {loadWasm,} from '../../utils/wasm-utils';
-import {wasmBytes,} from './md5_wasm';
-import {md5Wasm,} from './md5_bg';
+import {WordArray} from '../../core/core.js';
+import {Hasher} from '../../core/hasher';
+import {loadWasm} from '../../utils/wasm-utils';
+import {wasmBytes} from './md5_wasm';
+import {md5Wasm} from './md5_bg';
 
 /**
  * MD5 hash algorithm.
@@ -29,7 +29,7 @@ export class MD5Algo extends Hasher {
       0x67452301,
       0xefcdab89,
       0x98badcfe,
-      0x10325476,
+      0x10325476
     ]);
   }
 

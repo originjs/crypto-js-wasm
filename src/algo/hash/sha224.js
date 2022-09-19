@@ -1,5 +1,5 @@
-import { WordArray, } from '../../core/core.js';
-import { SHA256Algo, } from './sha256.js';
+import { WordArray } from '../../core/core.js';
+import { SHA256Algo } from './sha256.js';
 
 /**
  * SHA-224 hash algorithm.
@@ -24,7 +24,7 @@ export class SHA224Algo extends SHA256Algo {
       0xffc00b31,
       0x68581511,
       0x64f98fa7,
-      0xbefa4fa4,
+      0xbefa4fa4
     ]);
   }
 

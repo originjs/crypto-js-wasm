@@ -2,7 +2,7 @@
  * Counter block mode.
  */
 import {
-  BlockCipherMode,
+  BlockCipherMode
 } from '../core/cipher-core.js';
 
 export class CTR extends BlockCipherMode {
@@ -14,7 +14,7 @@ CTR.Encryptor = class extends CTR {
 
     // Shortcuts
     const cipher = this._cipher;
-    const { blockSize, } = cipher;
+    const { blockSize } = cipher;
     const iv = this._iv;
     let counter = this._counter;
 

@@ -1,12 +1,12 @@
-import { parameterCheck, } from '../utils';
-import { init, RsaPrivate, RsaPublic, } from './rsa_bg.js';
-import { MD5, } from '../algo/hash/md5.js';
-import { SHA1, } from '../algo/hash/sha1.js';
-import { SHA224, } from '../algo/hash/sha224.js';
-import { SHA256, } from '../algo/hash/sha256.js';
-import { SHA384, } from '../algo/hash/sha384.js';
-import { SHA512, } from '../algo/hash/sha512.js';
-import { RIPEMD160, } from '../algo/hash/ripemd160.js';
+import { parameterCheck } from '../utils';
+import { init, RsaPrivate, RsaPublic } from './rsa_bg.js';
+import { MD5 } from '../algo/hash/md5.js';
+import { SHA1 } from '../algo/hash/sha1.js';
+import { SHA224 } from '../algo/hash/sha224.js';
+import { SHA256 } from '../algo/hash/sha256.js';
+import { SHA384 } from '../algo/hash/sha384.js';
+import { SHA512 } from '../algo/hash/sha512.js';
+import { RIPEMD160 } from '../algo/hash/ripemd160.js';
 
 const RSA_PADDING_OAEP = 'OAEP';
 const RSA_PADDING_PSS = 'PSS';
@@ -22,13 +22,13 @@ const DEFAULT_RSA_HASH_ALGO = 'SHA256';
 
 // TODO: what if a new hasher is added?
 const RSA_HASH_ALGOS = new Map([
-  ['MD5', MD5,],
-  ['SHA1', SHA1,],
-  ['SHA224', SHA224,],
-  ['SHA256', SHA256,],
-  ['SHA384', SHA384,],
-  ['SHA512', SHA512,],
-  ['RIPEMD160', RIPEMD160,],
+  ['MD5', MD5],
+  ['SHA1', SHA1],
+  ['SHA224', SHA224],
+  ['SHA256', SHA256],
+  ['SHA384', SHA384],
+  ['SHA512', SHA512],
+  ['RIPEMD160', RIPEMD160]
 ]);
 
 // TODO: should extend AsymmetricCipher(class not created yet)
@@ -45,7 +45,7 @@ export class RSAAlgo {
    * @param isPublicKey true if the input key file is a public key file
    */
   updateRsaKey(keyFilePathOrKeySize = DEFAULT_RSA_KEY_SIZE, isPublicKey = DEFAULT_IS_PUBLIC_KEY) {
-    parameterCheck(keyFilePathOrKeySize, 'RSA keyFilePathOrKeySize', ['number', 'string',]);
+    parameterCheck(keyFilePathOrKeySize, 'RSA keyFilePathOrKeySize', ['number', 'string']);
 
     if (keyFilePathOrKeySize === RSAAlgo.keyFilePathOrKeySize && isPublicKey == RSAAlgo.isPublicKey) {
       // do not update keys if nothing changed
@@ -62,7 +62,7 @@ export class RSAAlgo {
     }
 
     // load wasm of available hashers
-    [...RSA_HASH_ALGOS.values(),].map(async hash => await hash.loadWasm());
+    [...RSA_HASH_ALGOS.values()].map(async hash => await hash.loadWasm());
 
     await init();
     RSAAlgo.wasm = true;
@@ -209,7 +209,7 @@ export class RSAAlgo {
     }
     const keyContent = fs.readFileSync(path, {
       encoding: 'utf-8',
-      flag: 'r',
+      flag: 'r'
     });
     this.initFromKeyContent(keyContent, isPublicKey);
   }
@@ -615,5 +615,5 @@ export const RSA = {
 
   getKeyContent(keyType, keyFmt) {
     return this.rsa.getKeyContent(keyType, keyFmt);
-  },
+  }
 };

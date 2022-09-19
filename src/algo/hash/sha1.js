@@ -1,8 +1,8 @@
-import {WordArray,} from '../../core/core';
-import {Hasher,} from '../../core/hasher';
-import {wasmBytes,} from './sha1_wasm';
-import {loadWasm,} from '../../utils/wasm-utils';
-import {sha1Wasm,} from './sha1_bg';
+import {WordArray} from '../../core/core';
+import {Hasher} from '../../core/hasher';
+import {wasmBytes} from './sha1_wasm';
+import {loadWasm} from '../../utils/wasm-utils';
+import {sha1Wasm} from './sha1_bg';
 
 /**
  * SHA-1 hash algorithm.
@@ -30,7 +30,7 @@ export class SHA1Algo extends Hasher {
       0xefcdab89,
       0x98badcfe,
       0x10325476,
-      0xc3d2e1f0,
+      0xc3d2e1f0
     ]);
   }
 

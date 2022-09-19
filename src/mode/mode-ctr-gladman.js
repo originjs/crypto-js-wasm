@@ -1,5 +1,5 @@
 import {
-  BlockCipherMode,
+  BlockCipherMode
 } from '../core/cipher-core.js';
 
 const incWord = (word) => {
@@ -61,7 +61,7 @@ CTRGladman.Encryptor = class extends CTRGladman {
 
     // Shortcuts
     const cipher = this._cipher;
-    const { blockSize, } = cipher;
+    const { blockSize } = cipher;
     const iv = this._iv;
     let counter = this._counter;
 

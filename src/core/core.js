@@ -3,9 +3,9 @@
 /**
  * Base class for inheritance.
  */
-import { Utf8, } from '../encoding/enc-utf8';
-import { Hex, } from '../encoding/enc-hax';
-import { isString, } from '../utils';
+import { Utf8 } from '../encoding/enc-utf8';
+import { Hex } from '../encoding/enc-hax';
+import { isString } from '../utils';
 
 let crypto;
 // Native crypto from window (Browser)
@@ -263,7 +263,7 @@ export class WordArray extends Base {
     // Shortcuts
     const {
       words,
-      sigBytes,
+      sigBytes
     } = this;
 
     // Clamp
@@ -362,7 +362,7 @@ export class BufferedBlockAlgorithm extends Base {
     // Shortcuts
     const {
       _data: data,
-      blockSize,
+      blockSize
     } = this;
     const dataWords = data.words;
     const dataSigBytes = data.sigBytes;

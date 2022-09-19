@@ -1,8 +1,8 @@
-import {blowfishWasm,} from './blowfish_bg';
-import {WordArray,} from '../core/core';
-import {BlockCipher,} from '../core/cipher-core.js';
-import {loadWasm,} from '../utils/wasm-utils';
-import {wasmBytes,} from './blowfish_wasm';
+import {blowfishWasm} from './blowfish_bg';
+import {WordArray} from '../core/core';
+import {BlockCipher} from '../core/cipher-core.js';
+import {loadWasm} from '../utils/wasm-utils';
+import {wasmBytes} from './blowfish_wasm';
 
 /**
  * Blowfish block cipher algorithm.

@@ -1,5 +1,5 @@
 import {
-  BlockCipherMode,
+  BlockCipherMode
 } from '../core/cipher-core.js';
 
 function generateKeystreamAndEncrypt(words, offset, blockSize, cipher) {
@@ -38,7 +38,7 @@ CFB.Encryptor = class extends CFB {
   processBlock(words, offset) {
     // Shortcuts
     const cipher = this._cipher;
-    const { blockSize, } = cipher;
+    const { blockSize } = cipher;
 
     generateKeystreamAndEncrypt.call(this, words, offset, blockSize, cipher);
 
@@ -50,7 +50,7 @@ CFB.Decryptor = class extends CFB {
   processBlock(words, offset) {
     // Shortcuts
     const cipher = this._cipher;
-    const { blockSize, } = cipher;
+    const { blockSize } = cipher;
 
     // Remember this block to use with next block
     const thisBlock = words.slice(offset, offset + blockSize);

@@ -1,8 +1,8 @@
-import {aesWasm,} from './aes_bg';
-import {WordArray,} from '../core/core';
-import {BlockCipher,} from '../core/cipher-core.js';
-import {loadWasm,} from '../utils/wasm-utils';
-import {wasmBytes,} from './aes_wasm';
+import {aesWasm} from './aes_bg';
+import {WordArray} from '../core/core';
+import {BlockCipher} from '../core/cipher-core.js';
+import {loadWasm} from '../utils/wasm-utils';
+import {wasmBytes} from './aes_wasm';
 
 /**
  * AES block cipher algorithm.

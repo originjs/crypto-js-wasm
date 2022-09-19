@@ -2,7 +2,7 @@
  * Electronic Codebook block mode.
  */
 import {
-  BlockCipherMode,
+  BlockCipherMode
 } from '../core/cipher-core.js';
 
 export class ECB extends BlockCipherMode {

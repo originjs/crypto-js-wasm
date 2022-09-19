@@ -1,4 +1,4 @@
-import { wasmBytes, } from './rsa_wasm';
+import { wasmBytes } from './rsa_wasm';
 let wasm;
 let globalThis;
 const heap = new Array(32).fill(undefined);
@@ -21,7 +21,7 @@ function takeObject(idx) {
   return ret;
 }
 
-const cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true, });
+const cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
 cachedTextDecoder.decode();
 
@@ -125,7 +125,7 @@ const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
     view.set(buf);
     return {
       read: arg.length,
-      written: buf.length,
+      written: buf.length
     };
   });
 
@@ -563,4 +563,4 @@ async function init() {
   cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
 }
 
-export { init, };
+export { init };

@@ -1,5 +1,5 @@
-import {BufferedBlockAlgorithm, Base,} from './core';
-import {HMAC,} from '../algo/hmac/hmac';
+import {BufferedBlockAlgorithm, Base} from './core';
+import {HMAC} from '../algo/hmac/hmac';
 
 
 /**

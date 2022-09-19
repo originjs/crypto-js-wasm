@@ -1,11 +1,11 @@
-import {WordArray,} from '../../core/core.js';
-import {Hasher,} from '../../core/hasher';
-import {loadWasm,} from '../../utils/wasm-utils';
-import {wasmBytes,} from './sha256_wasm';
-import {sha256Wasm,} from './sha256_bg';
+import {WordArray} from '../../core/core.js';
+import {Hasher} from '../../core/hasher';
+import {loadWasm} from '../../utils/wasm-utils';
+import {wasmBytes} from './sha256_wasm';
+import {sha256Wasm} from './sha256_bg';
 
 // Initialization and round constants tables
-const H = [1779033703, -1150833019, 1013904242, -1521486534, 1359893119, -1694144372, 528734635, 1541459225,];
+const H = [1779033703, -1150833019, 1013904242, -1521486534, 1359893119, -1694144372, 528734635, 1541459225];
 
 /**
  * SHA-256 hash algorithm.
