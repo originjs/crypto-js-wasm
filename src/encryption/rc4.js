@@ -1,8 +1,8 @@
-import {WordArray} from '../core/core.js';
-import {StreamCipher} from '../core/cipher-core.js';
-import {rc4Wasm} from './rc4_bg';
-import {wasmBytes} from './rc4_wasm';
-import {loadWasm} from '../utils/wasm-utils';
+import { WordArray } from '../core/core.js';
+import { StreamCipher } from '../core/cipher-core.js';
+import { rc4Wasm } from './rc4_bg';
+import { wasmBytes } from './rc4_wasm';
+import { loadWasm } from '../utils/wasm-utils';
 
 function generateKeystreamWord() {
   // Shortcuts

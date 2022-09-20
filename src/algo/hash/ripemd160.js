@@ -21,10 +21,10 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 */
 
 import { Hasher } from '../../core/hasher';
-import {WordArray} from '../../core/core.js';
-import {ripemd160Wasm} from './ripemd160_bg';
-import {wasmBytes} from './ripemd160_wasm';
-import {loadWasm} from '../../utils/wasm-utils';
+import { WordArray } from '../../core/core.js';
+import { ripemd160Wasm } from './ripemd160_bg';
+import { wasmBytes } from './ripemd160_wasm';
+import { loadWasm } from '../../utils/wasm-utils';
 
 
 

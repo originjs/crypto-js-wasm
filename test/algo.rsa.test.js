@@ -70,16 +70,16 @@ uwIDAQAB
   test('encryptAndDecryptWithPKCS1V15', () => {
     C.RSA.resetConfig();
     const msg = 'testMessage';
-    const encrypted = C.RSA.encrypt(msg, {encryptPadding: 'pkcs1v15'});
-    const decrypted = C.RSA.decrypt(encrypted, {encryptPadding: 'pkcs1v15'});
+    const encrypted = C.RSA.encrypt(msg, { encryptPadding: 'pkcs1v15' });
+    const decrypted = C.RSA.decrypt(encrypted, { encryptPadding: 'pkcs1v15' });
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
   test('encryptAndDecryptWithOAEP', () => {
     C.RSA.resetConfig();
     const msg = 'testMessage';
-    const encrypted = C.RSA.encrypt(msg, {encryptPadding: 'oaep'});
-    const decrypted = C.RSA.decrypt(encrypted, {encryptPadding: 'oaep'});
+    const encrypted = C.RSA.encrypt(msg, { encryptPadding: 'oaep' });
+    const decrypted = C.RSA.decrypt(encrypted, { encryptPadding: 'oaep' });
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
   });
 
@@ -88,7 +88,7 @@ uwIDAQAB
 
     const msg = 'testMessage';
     expect(() => {
-      C.RSA.encrypt(msg, {encryptPadding: 'ErrorPadding'});
+      C.RSA.encrypt(msg, { encryptPadding: 'ErrorPadding' });
     }).toThrow();
   });
 
@@ -99,12 +99,12 @@ uwIDAQAB
     console.error = () => {};
 
     const msg = 'testMessage';
-    const PKCSEncrypted = C.RSA.encrypt(msg, {encryptPadding: 'pkcs1v15'});
-    const OAEPDecrypted = C.RSA.decrypt(PKCSEncrypted, {encryptPadding: 'oaep'});
+    const PKCSEncrypted = C.RSA.encrypt(msg, { encryptPadding: 'pkcs1v15' });
+    const OAEPDecrypted = C.RSA.decrypt(PKCSEncrypted, { encryptPadding: 'oaep' });
     expect(OAEPDecrypted).toBeNull();
 
-    const OAEPEncrypted = C.RSA.encrypt(msg, {encryptPadding: 'oaep'});
-    const PKCSDecrypted = C.RSA.decrypt(OAEPEncrypted, {encryptPadding: 'pkcs1v15'});
+    const OAEPEncrypted = C.RSA.encrypt(msg, { encryptPadding: 'oaep' });
+    const PKCSDecrypted = C.RSA.decrypt(OAEPEncrypted, { encryptPadding: 'pkcs1v15' });
     expect(PKCSDecrypted).toBeNull();
 
     // recover console error print
@@ -139,7 +139,7 @@ uwIDAQAB
     console.error = () => {};
 
     const msg = 'test message';
-    const digestSha512 = C.RSA.digest(msg, {hashAlgo: 'sha512'});
+    const digestSha512 = C.RSA.digest(msg, { hashAlgo: 'sha512' });
     expect(() => {
       C.RSA.sign(digestSha512);
     }).toThrow();
@@ -151,66 +151,66 @@ uwIDAQAB
   test('signDigestOfMd5WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'md5'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'md5' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
 
-    const errorDigest = C.RSA.digest('another message', {hashAlgo: 'md5'});
+    const errorDigest = C.RSA.digest('another message', { hashAlgo: 'md5' });
     expect(C.RSA.verify(errorDigest, signature)).toBe(false);
   });
 
   test('signDigestOfSha1WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha1'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha1' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfSha224WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha224'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha224' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfSha256WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha256'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha256' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfSha384WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha384'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha384' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfSha512WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha512'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha512' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfRIPEMD160WithPKCS1V15', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'RIPEMD160'});
-    const signature = C.RSA.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'RIPEMD160' });
+    const signature = C.RSA.sign(digest, { signPadding: 'pkcs1v15' });
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
 
   test('signDigestOfMd5WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'md5'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'md5' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -218,7 +218,7 @@ uwIDAQAB
   test('signDigestOfSha1WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha1'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha1' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -226,7 +226,7 @@ uwIDAQAB
   test('signDigestOfSha224WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha224'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha224' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -234,7 +234,7 @@ uwIDAQAB
   test('signDigestOfSha256WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha256'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha256' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -242,7 +242,7 @@ uwIDAQAB
   test('signDigestOfSha384WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha384'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha384' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -250,7 +250,7 @@ uwIDAQAB
   test('signDigestOfSha512WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'sha512'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'sha512' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -258,7 +258,7 @@ uwIDAQAB
   test('signDigestOfRipemd160WithPSS', () => {
     C.RSA.resetConfig();
     const message = 'test message';
-    const digest = C.RSA.digest(message, {hashAlgo: 'ripemd160'});
+    const digest = C.RSA.digest(message, { hashAlgo: 'ripemd160' });
     const signature = C.RSA.sign(digest);
     expect(C.RSA.verify(digest, signature)).toBe(true);
   });
@@ -275,8 +275,8 @@ uwIDAQAB
     expect(new TextDecoder().decode(decrypted)).toBe(msg);
 
     // sign and verify
-    const digest = rsa.digest(msg, {hashAlgo: 'md5'});
-    const signature = rsa.sign(digest, {signPadding: 'pkcs1v15'});
+    const digest = rsa.digest(msg, { hashAlgo: 'md5' });
+    const signature = rsa.sign(digest, { signPadding: 'pkcs1v15' });
     expect(rsa.verify(digest, signature)).toBe(true);
   });
 
@@ -284,9 +284,9 @@ uwIDAQAB
     C.RSA.resetConfig();
 
     const message = 'testMessage';
-    const digest = C.RSA.digest(message, {hashAlgo: 'ripemd160'});
-    const signature = C.RSA.sign(digest, {signPadding: 'PSS'});
-    expect(C.RSA.verify(digest, signature, {signPadding: 'pkcs1v15'})).toBe(false);
+    const digest = C.RSA.digest(message, { hashAlgo: 'ripemd160' });
+    const signature = C.RSA.sign(digest, { signPadding: 'PSS' });
+    expect(C.RSA.verify(digest, signature, { signPadding: 'pkcs1v15' })).toBe(false);
   });
 
   test('generatePrivateAndPublicKeyFile', () => {

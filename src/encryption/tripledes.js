@@ -1,8 +1,8 @@
-import {WordArray} from '../core/core.js';
-import {BlockCipher} from '../core/cipher-core.js';
-import {desWasm} from './des_bg';
-import {wasmBytes} from './des_wasm';
-import {loadWasm} from '../utils/wasm-utils';
+import { WordArray } from '../core/core.js';
+import { BlockCipher } from '../core/cipher-core.js';
+import { desWasm } from './des_bg';
+import { wasmBytes } from './des_wasm';
+import { loadWasm } from '../utils/wasm-utils';
 
 // Permuted Choice 1 constants
 const PC1 = [

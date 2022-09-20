@@ -13,7 +13,7 @@ import {
 } from '../encryption/evpkdf.js';
 import { isString } from '../utils';
 import { Pkcs7 } from '../pad/pad-pkcs7';
-import {MD5Algo} from '../algo/hash/md5';
+import { MD5Algo } from '../algo/hash/md5';
 
 
 /**
@@ -770,9 +770,9 @@ export const OpenSSLKdf = {
     // Derive key and IV
     let key;
     if (!hasher) {
-      key = new EvpKDFAlgo({keySize: keySize + ivSize}).compute(password, _salt);
+      key = new EvpKDFAlgo({ keySize: keySize + ivSize }).compute(password, _salt);
     } else {
-      key = new EvpKDFAlgo({keySize: keySize + ivSize, hasher: hasher}).compute(password, salt);
+      key = new EvpKDFAlgo({ keySize: keySize + ivSize, hasher: hasher }).compute(password, salt);
     }
 
     // Separate key and IV

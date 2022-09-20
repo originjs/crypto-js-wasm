@@ -30,6 +30,6 @@ describe('algo-blowfish-test', () => {
         hasher: C.algo.SHA256
       }).toString();
 
-    expect(C.Blowfish.decrypt(encryptedA, 'pass', {hasher: C.algo.SHA256}).toString(C.enc.Utf8)).toBe('Test');
+    expect(C.Blowfish.decrypt(encryptedA, 'pass', { hasher: C.algo.SHA256 }).toString(C.enc.Utf8)).toBe('Test');
   });
 });

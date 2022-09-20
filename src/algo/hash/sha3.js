@@ -1,9 +1,9 @@
-import {WordArray} from '../../core/core.js';
-import {X64Word} from '../../core/x64-core.js';
-import {Hasher} from '../../core/hasher';
-import {wasmBytes} from './sha3_wasm';
-import {sha3Wasm} from './sha3_bg';
-import {loadWasm} from '../../utils/wasm-utils';
+import { WordArray } from '../../core/core.js';
+import { X64Word } from '../../core/x64-core.js';
+import { Hasher } from '../../core/hasher';
+import { wasmBytes } from './sha3_wasm';
+import { sha3Wasm } from './sha3_bg';
+import { loadWasm } from '../../utils/wasm-utils';
 
 /**
  * SHA-3 hash algorithm.
@@ -34,7 +34,7 @@ export class SHA3Algo extends Hasher {
      *   Default: 512
      */
     super(Object.assign(
-      {outputLength: 512},
+      { outputLength: 512 },
       cfg
     ));
   }

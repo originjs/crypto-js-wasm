@@ -1,8 +1,8 @@
-import {WordArray} from '../core/core.js';
-import {StreamCipher} from '../core/cipher-core.js';
-import {rabbitWasm} from './rabbit_bg';
-import {wasmBytes} from './rabbit_wasm';
-import {loadWasm} from '../utils/wasm-utils';
+import { WordArray } from '../core/core.js';
+import { StreamCipher } from '../core/cipher-core.js';
+import { rabbitWasm } from './rabbit_bg';
+import { wasmBytes } from './rabbit_wasm';
+import { loadWasm } from '../utils/wasm-utils';
 
 // Reusable objects
 const C_ = [];

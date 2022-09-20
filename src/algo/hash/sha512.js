@@ -1,9 +1,9 @@
-import {Hasher} from '../../core/hasher';
-import {WordArray} from '../../core/core.js';
-import {X64Word, X64WordArray} from '../../core/x64-core.js';
-import {loadWasm} from '../../utils/wasm-utils';
-import {wasmBytes} from './sha512_wasm';
-import {sha512Wasm} from './sha512_bg';
+import { Hasher } from '../../core/hasher';
+import { WordArray } from '../../core/core.js';
+import { X64Word, X64WordArray } from '../../core/x64-core.js';
+import { loadWasm } from '../../utils/wasm-utils';
+import { wasmBytes } from './sha512_wasm';
+import { sha512Wasm } from './sha512_bg';
 
 /**
  * SHA-512 hash algorithm.

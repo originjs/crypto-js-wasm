@@ -26,21 +26,21 @@ describe('config-test', () => {
 
   test('testCustomKDFHasher', () => {
     //SHA1
-    let encryptedSHA1 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA1}).toString();
-    expect(C.AES.decrypt(encryptedSHA1, 'Pass', { hasher: C.algo.SHA1}).toString(C.enc.Utf8)).toBe('Test');
+    let encryptedSHA1 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA1 }).toString();
+    expect(C.AES.decrypt(encryptedSHA1, 'Pass', { hasher: C.algo.SHA1 }).toString(C.enc.Utf8)).toBe('Test');
 
     //SHA256
-    let encryptedSHA256 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA256}).toString();
-    expect(C.AES.decrypt(encryptedSHA256, 'Pass', { hasher: C.algo.SHA256}).toString(C.enc.Utf8)).toBe('Test');
+    let encryptedSHA256 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA256 }).toString();
+    expect(C.AES.decrypt(encryptedSHA256, 'Pass', { hasher: C.algo.SHA256 }).toString(C.enc.Utf8)).toBe('Test');
 
     //SHA512
-    let encryptedSHA512 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA512}).toString();
-    expect(C.AES.decrypt(encryptedSHA512, 'Pass', { hasher: C.algo.SHA512}).toString(C.enc.Utf8)).toBe('Test');
+    let encryptedSHA512 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.SHA512 }).toString();
+    expect(C.AES.decrypt(encryptedSHA512, 'Pass', { hasher: C.algo.SHA512 }).toString(C.enc.Utf8)).toBe('Test');
 
     //Default: MD5
     let encryptedDefault = C.AES.encrypt('Test', 'Pass', { salt: data.saltA }).toString();
-    let encryptedMD5 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.MD5}).toString();
-    expect(C.AES.decrypt(encryptedMD5, 'Pass', { hasher: C.algo.MD5}).toString(C.enc.Utf8)).toBe('Test');
+    let encryptedMD5 = C.AES.encrypt('Test', 'Pass', { salt: data.saltA, hasher: C.algo.MD5 }).toString();
+    expect(C.AES.decrypt(encryptedMD5, 'Pass', { hasher: C.algo.MD5 }).toString(C.enc.Utf8)).toBe('Test');
     expect(encryptedMD5).toBe(encryptedDefault);
 
     //Different KDFHasher

@@ -21,21 +21,21 @@ test('testHelper', () => {
 
 test('testEncrypt', () => {
   expect(cryptoJsWasm.Rabbit.encrypt('Test', cryptoJsWasm.SHA256('key')).toString()).toEqual(cryptoJs.Rabbit.encrypt('Test', cryptoJs.SHA256('key')).toString());
-  expect(cryptoJsWasm.Rabbit.encrypt('Test', cryptoJsWasm.SHA256('key'), {iv: iv}).toString()).toEqual(cryptoJs.Rabbit.encrypt('Test', cryptoJs.SHA256('key'), {iv: iv}).toString());
+  expect(cryptoJsWasm.Rabbit.encrypt('Test', cryptoJsWasm.SHA256('key'), { iv: iv }).toString()).toEqual(cryptoJs.Rabbit.encrypt('Test', cryptoJs.SHA256('key'), { iv: iv }).toString());
 });
 
 test('testDecrypt', () => {
   const encrypted = cryptoJs.Rabbit.encrypt('Test', 'key').toString();
   expect(cryptoJs.Rabbit.decrypt(encrypted, 'key').toString(cryptoJs.enc.Utf8)).toEqual('Test');
   expect(cryptoJsWasm.Rabbit.decrypt(encrypted, 'key').toString(cryptoJsWasm.enc.Utf8)).toEqual('Test');
-  const encryptedWithIv = cryptoJs.Rabbit.encrypt('Test', 'key', {iv: iv}).toString();
+  const encryptedWithIv = cryptoJs.Rabbit.encrypt('Test', 'key', { iv: iv }).toString();
   expect(cryptoJs.Rabbit.decrypt(encryptedWithIv, 'key').toString(cryptoJs.enc.Utf8)).toEqual('Test');
   expect(cryptoJsWasm.Rabbit.decrypt(encryptedWithIv, 'key').toString(cryptoJsWasm.enc.Utf8)).toEqual('Test');
 });
 
 test('testMultiPart', () => {
-  let rabbit = cryptoJs.algo.Rabbit.createEncryptor(cryptoJs.SHA256('key'), {iv: iv});
-  let rabbitWasm = cryptoJsWasm.algo.Rabbit.createEncryptor(cryptoJsWasm.SHA256('key'), {iv: iv});
+  let rabbit = cryptoJs.algo.Rabbit.createEncryptor(cryptoJs.SHA256('key'), { iv: iv });
+  let rabbitWasm = cryptoJsWasm.algo.Rabbit.createEncryptor(cryptoJsWasm.SHA256('key'), { iv: iv });
   let ciphertext1 = rabbit.process(data1);
   let ciphertext2 = rabbit.process(data2);
   let ciphertext3 = rabbit.process(data3);
@@ -51,6 +51,6 @@ test('testMultiPart', () => {
   expect(ciphertext3.toString()).toEqual(ciphertextWasm3.toString());
   expect(ciphertext4.toString()).toEqual(ciphertextWasm4.toString());
   expect(ciphertext.toString()).toEqual(ciphertextWasm.toString());
-  expect(ciphertext.toString(cryptoJs.enc.Base64)).toEqual(cryptoJs.Rabbit.encrypt(data, cryptoJs.SHA256('key'), {iv: iv}).toString());
-  expect(ciphertextWasm.toString(cryptoJsWasm.enc.Base64)).toEqual(cryptoJsWasm.Rabbit.encrypt(data, cryptoJsWasm.SHA256('key'), {iv: iv}).toString());
+  expect(ciphertext.toString(cryptoJs.enc.Base64)).toEqual(cryptoJs.Rabbit.encrypt(data, cryptoJs.SHA256('key'), { iv: iv }).toString());
+  expect(ciphertextWasm.toString(cryptoJsWasm.enc.Base64)).toEqual(cryptoJsWasm.Rabbit.encrypt(data, cryptoJsWasm.SHA256('key'), { iv: iv }).toString());
 });

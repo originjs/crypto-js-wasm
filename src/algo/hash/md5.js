@@ -1,8 +1,8 @@
-import {WordArray} from '../../core/core.js';
-import {Hasher} from '../../core/hasher';
-import {loadWasm} from '../../utils/wasm-utils';
-import {wasmBytes} from './md5_wasm';
-import {md5Wasm} from './md5_bg';
+import { WordArray } from '../../core/core.js';
+import { Hasher } from '../../core/hasher';
+import { loadWasm } from '../../utils/wasm-utils';
+import { wasmBytes } from './md5_wasm';
+import { md5Wasm } from './md5_bg';
 
 /**
  * MD5 hash algorithm.
