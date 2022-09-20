@@ -31,6 +31,7 @@ module.exports = {
     'default-case':'error',
     'no-eval': 'error',
     'no-use-before-define': 'warn',
-    'max-len': 'off'
+    'max-len': 'off',
+    'object-curly-spacing': ['warn', 'always', { 'arraysInObjects': false, 'objectsInObjects': false }]
   }
 };
