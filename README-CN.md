@@ -51,7 +51,7 @@ yarn add @originjs/crypto-js-wasm
 在使用各算法前需调用一次对应的`loadWasm()`，或调用`loadAllWasm()`以加载所有算法的WebAssembly文件。
 
 ```javascript
-import CryptoJSW from 'crypto-js-wasm';
+import CryptoJSW from '@originjs/crypto-js-wasm';
 
 // (可选) 加载所有 wasm 文件
 await CryptoJSW.loadAllWasm();

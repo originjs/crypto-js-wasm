@@ -51,7 +51,7 @@ yarn add @originjs/crypto-js-wasm
 Note that the async function `loadWasm()` should be called once (and once only!) for each algorithm that will be used, unless `loadAllWasm()` is called at the very beginning.
 
 ```javascript
-import CryptoJSW from 'crypto-js-wasm';
+import CryptoJSW from '@originjs/crypto-js-wasm';
 
 // (Optional) load all wasm files
 await CryptoJSW.loadAllWasm();
