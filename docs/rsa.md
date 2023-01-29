@@ -163,3 +163,23 @@ const errorDigest = C.RSA.digest('another message', {hashAlgo: 'md5',});
 expect(C.RSA.verify(errorDigest, signature)).toBe(false);
 ```
 
+### Notes
+
+The implementations of `initFromKeyFile` and `generateKeyFile` depends on `fs` in `nodejs`(as they are designed to read from or write to files), which means they cannot be used in browser. We will throw an error if the runtime is not `nodejs`, but the usage of `fs` still may report in `webpack` like this:
+
+```shell
+Module not found: Error: Can't resolve 'fs' in '...\node_modules\@originjs\crypto-js-wasm\lib'
+```
+
+For `webpack > 5`, you can add this in your `webpack.config.js` to avoid the error report(check [this issue](https://github.com/webpack-contrib/css-loader/issues/447) for details):
+
+```javascript
+module.exports = {
+    ...
+    resolve: {
+        fallback: {
+            fs: false
+        },
+    }
+}
+```

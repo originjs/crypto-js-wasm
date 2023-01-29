@@ -165,3 +165,23 @@ const errorDigest = C.RSA.digest('another message', {hashAlgo: 'md5',});
 expect(C.RSA.verify(errorDigest, signature)).toBe(false);
 ```
 
+### 注意
+
+`initFromKeyFile` 和 `generateKeyFile` 的内部实现依赖于 `nodejs` 的 `fs`(因为他们就是设计用来从文件中读取，或写入文件的)，这意味着他们不能在浏览器中使用。如果在非`nodejs`环境使用他们，我们会报错，但是方法内部所使用的`fs`在`webpack`中还是可能报错：
+
+```shell
+Module not found: Error: Can't resolve 'fs' in '...\node_modules\@originjs\crypto-js-wasm\lib'
+```
+
+对于 `webpack > 5`, 你可以在 `webpack.config.js` 中添加如下配置来避免此报错(通过[这个issue](https://github.com/webpack-contrib/css-loader/issues/447)可以查看更多细节):
+
+```javascript
+module.exports = {
+    ...
+    resolve: {
+        fallback: {
+            fs: false
+        },
+    }
+}
+```
