@@ -96,6 +96,22 @@ export class Base {
     Object.assign(clone, this);
     return clone;
   }
+
+  /**
+   * Get a new instance of this class.
+   * Arguments to create() will be passed to constructor.
+   *
+   * @return {Object} The new object.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var instance = MyType.create();
+   */
+  static create(...args) {
+    return new this(...args);
+  }
 }
 
 /**

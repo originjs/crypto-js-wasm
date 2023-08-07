@@ -48,6 +48,16 @@ describe('algo-md5-test', () => {
     expect(md5.finalize().toString()).toBe('7d017545e0268a6a12f2b507871d0429');
   });
 
+  test('testCreate', () => {
+    let i = 0;
+    const md5 = C.algo.MD5.create();
+    while (i < 100) {
+      md5.update('12345678901234567890123456789012345678901234567890');
+      i++;
+    }
+    expect(md5.finalize().toString()).toBe('7d017545e0268a6a12f2b507871d0429');
+  });
+
   test('testInputIntegrity', () => {
     const message = new C.lib.WordArray([0x12345678]);
     const expected = message.toString();
