@@ -1,7 +1,7 @@
 import C from '../src/index';
 
 beforeAll(async () => {
-  await C.SHA1.loadWasm();
+  await C.SHA256.loadWasm();
 });
 
 describe('algo-pbkdf2-profile', () => {

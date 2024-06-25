@@ -2,7 +2,7 @@ import {
   Base,
   WordArray
 } from '../../core/core.js';
-import { SHA1Algo } from '../hash/sha1.js';
+import { SHA256Algo } from '../hash/sha256.js';
 import { HMAC } from '../hmac/hmac.js';
 
 
@@ -28,28 +28,28 @@ export class PBKDF2Algo extends Base {
      * Configuration options.
      *
      * @property {number} keySize The key size in words to generate. Default: 4 (128 bits)
-     * @property {Hasher} hasher The hasher to use. Default: SHA1
-     * @property {number} iterations The number of iterations to perform. Default: 1
+     * @property {Hasher} hasher The hasher to use. Default: SHA256
+     * @property {number} iterations The number of iterations to perform. Default: 250000
      */
     this.cfg = Object.assign(
       new Base(),
       {
         keySize: 128 / 32,
-        hasher: SHA1Algo,
-        iterations: 1
+        hasher: SHA256Algo,
+        iterations: 250000
       },
       cfg
     );
   }
 
   /**
-   * SHA1 is the default hasher of pbkdf2.
+   * SHA256 is the default hasher of pbkdf2.
    * With another hasher configured, user should call the corresponding loadWasm of the configured hasher.
    *
    * @returns {Promise<null>}
    */
   static async loadWasm() {
-    return SHA1Algo.loadWasm();
+    return SHA256Algo.loadWasm();
   }
 
   async loadWasm() {
